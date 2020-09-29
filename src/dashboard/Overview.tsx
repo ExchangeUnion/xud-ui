@@ -1,12 +1,17 @@
+import { inject, observer } from "mobx-react";
 import React, { Component, ReactElement } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { PartialObserver, Subscription, timer } from "rxjs";
 import { mergeMap } from "rxjs/operators";
 import api from "../api";
 import { Path } from "../router/Path";
+import { SETTINGS_STORE } from "../stores/settingsStore";
+import { WithStores } from "../stores/WithStores";
 
-type PropsType = RouteComponentProps<{ param1: string }>;
+type PropsType = RouteComponentProps<{ param1: string }> & WithStores;
 
+@inject(SETTINGS_STORE)
+@observer
 class Overview extends Component<PropsType> {
   private subscriptions: Subscription[] = [];
 
@@ -18,7 +23,9 @@ class Overview extends Component<PropsType> {
   componentDidMount() {
     this.subscriptions.push(
       timer(0, 5000)
-        .pipe(mergeMap(api.getinfo$))
+        .pipe(
+          mergeMap(() => api.getinfo$(this.props.settingsStore!.xudDockerUrl))
+        )
         .subscribe(this.handleGetinfo())
     );
   }

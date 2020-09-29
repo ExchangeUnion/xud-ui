@@ -4,5 +4,5 @@ import { Path } from "../../router/Path";
 export type MenuItemProps = {
   path: Path;
   text: string;
-  component: ComponentClass | (() => ReactElement);
+  component: ComponentClass<any> | (() => ReactElement);
 };

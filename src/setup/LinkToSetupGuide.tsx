@@ -1,9 +1,7 @@
 import Link from "@material-ui/core/Link";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import React, { ReactElement } from "react";
-
-const DOCS_URL =
-  "https://docs.exchangeunion.com/start-earning/market-maker-guide";
+import { XUD_DOCKER_DOCS_URL } from "../constants";
 
 function LinkToSetupGuide(): ReactElement {
   return (
@@ -11,7 +9,9 @@ function LinkToSetupGuide(): ReactElement {
       <Link
         component="button"
         color="textSecondary"
-        onClick={() => (window as any).electron.openExternal(DOCS_URL)}
+        onClick={() =>
+          (window as any).electron.openExternal(XUD_DOCKER_DOCS_URL)
+        }
       >
         How to set up XUD Docker
       </Link>
