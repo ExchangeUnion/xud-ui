@@ -1,6 +1,7 @@
 import React, { Component, ReactElement } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { Subscription, timer } from "rxjs";
+import { PartialObserver, Subscription, timer } from "rxjs";
+import { mergeMap } from "rxjs/operators";
 import api from "../api";
 import { Path } from "../router/Path";
 
@@ -15,21 +16,25 @@ class Overview extends Component<PropsType> {
   }
 
   componentDidMount() {
-    this.subscriptions.push(timer(0, 5000).subscribe(() => this.fetchData()));
+    this.subscriptions.push(
+      timer(0, 5000)
+        .pipe(mergeMap(api.getinfo$))
+        .subscribe(this.handleGetinfo())
+    );
   }
 
   componentWillUnmount() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  fetchData(): void {
-    api.getinfo$().subscribe({
+  handleGetinfo(): PartialObserver<any> {
+    return {
       next: (data) => this.setState({ info: data }),
       error: () =>
         this.props.history.push({
           pathname: Path.HOME,
         }),
-    });
+    };
   }
 
   render(): ReactElement {

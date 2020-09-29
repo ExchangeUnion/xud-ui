@@ -58,11 +58,11 @@ function ConnectToRemote(): ReactElement {
   );
 }
 
-function handleConnectClick(
+const handleConnectClick = (
   setConnectionFailed: (value: boolean) => void,
   setConnecting: (value: boolean) => void,
   history: History
-): void {
+): void => {
   setConnectionFailed(false);
   setConnecting(true);
   api.getinfo$().subscribe({
@@ -75,6 +75,6 @@ function handleConnectClick(
       setConnecting(false);
     },
   });
-}
+};
 
 export default ConnectToRemote;
