@@ -11,7 +11,7 @@ import Overview from "./Overview";
 import Trades from "./Trades";
 import Wallets from "./wallet/Wallets";
 
-const drawerWidth = 150;
+export const drawerWidth = 150;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
