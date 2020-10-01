@@ -55,7 +55,7 @@ const styles = (theme: Theme) => {
 @observer
 class Wallets extends Component<PropsType, StateType> {
   private refreshTimer = timer(0, 5000);
-  private subscriptions: Subscription[] = [];
+  private subs: Subscription = new Subscription();
 
   constructor(props: PropsType) {
     super(props);
@@ -63,10 +63,8 @@ class Wallets extends Component<PropsType, StateType> {
   }
 
   componentDidMount() {
-    this.subscriptions.push(
-      this.updateState(api.getbalance$, "balances"),
-      this.updateState(api.tradinglimits$, "limits")
-    );
+    this.subs.add(this.updateState(api.getbalance$, "balances"));
+    this.subs.add(this.updateState(api.tradinglimits$, "limits"));
   }
 
   updateState<T>(
@@ -89,7 +87,7 @@ class Wallets extends Component<PropsType, StateType> {
   }
 
   componentWillUnmount() {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.subs.unsubscribe();
   }
 
   render(): ReactElement {
