@@ -1,3 +1,4 @@
+import { Typography } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
@@ -5,13 +6,12 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import React, { ReactElement } from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 import { Path } from "../router/Path";
-import MenuItem from "./menu/MenuItem";
-import { MenuItemProps } from "./menu/MenuItemProps";
+import MenuItem, { MenuItemProps } from "./menu/MenuItem";
 import Overview from "./Overview";
 import Trades from "./Trades";
-import Wallets from "./Wallets";
+import Wallets from "./wallet/Wallets";
 
-const drawerWidth = 200;
+const drawerWidth = 150;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,6 +21,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     drawerPaper: {
       width: drawerWidth,
+    },
+    header: {
+      padding: "16px",
     },
     content: {
       flexWrap: "wrap",
@@ -50,6 +53,14 @@ function Dashboard(): ReactElement {
         }}
         anchor="left"
       >
+        <Typography
+          className={classes.header}
+          variant="overline"
+          component="p"
+          color="textSecondary"
+        >
+          XUD Explorer
+        </Typography>
         <List>
           {menuItems.map((item) => (
             <MenuItem
