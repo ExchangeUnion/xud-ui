@@ -61,22 +61,31 @@ function OverviewItem(props: OverviewItemProps): ReactElement {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const classes = useStyles();
   const statusDotClass = `${classes.statusDot} ${
-    status.status.toLowerCase().startsWith("ready")
+    status.status.startsWith("Ready") ||
+    (status.service === "xud" && status.status === "Waiting for channels")
       ? classes.active
       : classes.inactive
   }`;
+
+  const isDetailsIconVisible = (status: Status): boolean => {
+    return (
+      !status.status.includes("light mode") && status.status !== "Disabled"
+    );
+  };
 
   return (
     <Grid item xs={12} md={6} lg={4}>
       <Card>
         <Box className={classes.infoIconContainer}>
-          <IconButton
-            size="small"
-            title="details"
-            onClick={() => setDetailsOpen(true)}
-          >
-            <InfoIcon fontSize="small" />
-          </IconButton>
+          {isDetailsIconVisible(status) && (
+            <IconButton
+              size="small"
+              title="details"
+              onClick={() => setDetailsOpen(true)}
+            >
+              <InfoIcon fontSize="small" />
+            </IconButton>
+          )}
         </Box>
         <Grid
           container

@@ -5,6 +5,7 @@ import {
   Grid,
   makeStyles,
   Theme,
+  Typography,
 } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
@@ -35,10 +36,6 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     content: {
       padding: 0,
-      "&:last-child": {
-        paddingBottom: 0,
-        borderBottom: theme.palette.divider,
-      },
     },
     contentCell: {
       padding: theme.spacing(2),
@@ -46,8 +43,14 @@ const useStyles = makeStyles((theme: Theme) =>
       wordWrap: "break-word",
       whiteSpace: "pre-wrap",
     },
+    textRow: {
+      padding: theme.spacing(3),
+      textAlign: "center",
+    },
   })
 );
+
+const servicesWithAdditionalInfo = ["xud", "lndbtc", "lndltc", "connext"];
 
 const fetchInfo = (
   settingsStore: SettingsStore,
@@ -138,6 +141,9 @@ const ServiceDetailsContent = inject(SETTINGS_STORE)(
       const [rows, setRows] = useState<InfoRow[]>([]);
 
       useEffect(() => {
+        if (!servicesWithAdditionalInfo.includes(status.service)) {
+          return;
+        }
         const onNextValue = (value: Info): void => {
           setRows(createRows(value, status));
         };
@@ -147,33 +153,44 @@ const ServiceDetailsContent = inject(SETTINGS_STORE)(
 
       return (
         <DialogContent className={classes.content}>
-          {!!rows?.length && (
-            <>
-              {rows.map((row) => (
-                <Grid key={row.label} container item alignItems="center">
-                  <Grid item xs={3} className={classes.contentCell}>
-                    <strong>{row.label}</strong>
-                  </Grid>
-                  <Divider orientation="vertical" flexItem />
-                  <Grid item xs={7} className={classes.contentCell}>
-                    {row.value}
-                  </Grid>
-                  <Grid item xs={1} className={classes.contentCell}>
-                    {row.copyIcon && (
-                      <IconButton
-                        onClick={() =>
-                          (window as any).electron.copyToClipboard(row.value)
-                        }
-                      >
-                        <FileCopyOutlinedIcon fontSize="small" />
-                      </IconButton>
-                    )}
-                  </Grid>
-                </Grid>
-              ))}
-              <Divider />
-            </>
-          )}
+          {rows?.map((row) => (
+            <Grid
+              key={row.label}
+              container
+              item
+              justify="space-between"
+              alignItems="center"
+            >
+              <Grid item xs={3} md={2} className={classes.contentCell}>
+                <strong>{row.label}</strong>
+              </Grid>
+              <Divider orientation="vertical" flexItem />
+              <Grid item xs={6} md={8} className={classes.contentCell}>
+                {row.value}
+              </Grid>
+              <Grid item xs={2} md={1} className={classes.contentCell}>
+                {row.copyIcon && (
+                  <IconButton
+                    onClick={() =>
+                      (window as any).electron.copyToClipboard(row.value)
+                    }
+                  >
+                    <FileCopyOutlinedIcon fontSize="small" />
+                  </IconButton>
+                )}
+              </Grid>
+            </Grid>
+          ))}
+          {!rows?.length &&
+            !servicesWithAdditionalInfo.includes(status.service) && (
+              <Typography
+                variant="body1"
+                component="p"
+                className={classes.textRow}
+              >
+                No additional information to display
+              </Typography>
+            )}
         </DialogContent>
       );
     }

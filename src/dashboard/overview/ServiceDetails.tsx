@@ -34,11 +34,10 @@ const useStyles = makeStyles((theme: Theme) =>
     dialog: {
       position: "absolute",
       left: drawerWidth,
+      top: 0,
       margin: theme.spacing(3),
       width: "100%",
       maxWidth: `calc(100% - ${drawerWidth + theme.spacing(3) * 2}px)`,
-      maxHeight: "100%",
-      height: `calc(100% - ${theme.spacing(3) * 2}px)`,
       backgroundColor: theme.palette.background.default,
     },
     snackbar: {
@@ -83,22 +82,28 @@ const ServiceDetails = inject(SETTINGS_STORE)(
         >
           <DialogTitle>
             <Grid container justify="space-between" alignItems="center">
-              <IconButton onClick={handleClose}>
-                <CloseIcon />
-              </IconButton>
-              <Typography variant="h4" component="h4">
-                General {status.service} info
-              </Typography>
-              <Button
-                startIcon={<GetAppOutlinedIcon />}
-                onClick={() =>
-                  downloadLogs(settingsStore!, status.service, () =>
-                    setErrorMsgOpen(true)
-                  )
-                }
-              >
-                Download logs
-              </Button>
+              <Grid item container xs={2}>
+                <IconButton onClick={handleClose}>
+                  <CloseIcon />
+                </IconButton>
+              </Grid>
+              <Grid item container justify="center" xs={8}>
+                <Typography variant="h4" component="h4">
+                  General {status.service} info
+                </Typography>
+              </Grid>
+              <Grid item container justify="flex-end" xs={2}>
+                <Button
+                  startIcon={<GetAppOutlinedIcon />}
+                  onClick={() =>
+                    downloadLogs(settingsStore!, status.service, () =>
+                      setErrorMsgOpen(true)
+                    )
+                  }
+                >
+                  Download logs
+                </Button>
+              </Grid>
             </Grid>
           </DialogTitle>
           <Divider />
