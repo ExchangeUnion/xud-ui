@@ -14,7 +14,6 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
-import FileSaver from "file-saver";
 import { inject, observer } from "mobx-react";
 import React, { ReactElement, useState } from "react";
 import api from "../../api";
@@ -57,9 +56,12 @@ const downloadLogs = (
   handleError: () => void
 ): void => {
   api.logs$(serviceName, settingsStore.xudDockerUrl).subscribe({
-    next: (value: string) => {
-      const blob = new Blob([value], { type: "text/plain;charset=utf-8" });
-      FileSaver.saveAs(blob, `${serviceName}_logs.log`);
+    next: (resp: string) => {
+      const anchor = Object.assign(document.createElement("a"), {
+        href: resp,
+        style: { display: "none" },
+      });
+      anchor.click();
     },
     error: handleError,
   });
