@@ -7,7 +7,7 @@ import React, { ReactElement } from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 import { Path } from "../router/Path";
 import MenuItem, { MenuItemProps } from "./menu/MenuItem";
-import Overview from "./Overview";
+import Overview from "./overview/Overview";
 import Trades from "./Trades";
 import Wallets from "./wallet/Wallets";
 
