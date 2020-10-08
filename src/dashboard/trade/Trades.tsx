@@ -15,6 +15,8 @@ import React, { ReactElement } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import api from "../../api";
 import CenterEllipsis from "../../common/CenterEllipsis";
+import TradesSortingOptions, { SortOption } from "../../common/SortingOptions";
+import { getComparator, stableSort } from "../../common/SortingUtil";
 import { OrderRole } from "../../enums/OrderRole";
 import { OrderSide } from "../../enums/OrderSide";
 import { Trade } from "../../models/Trade";
@@ -30,6 +32,7 @@ type PropsType = RouteComponentProps<{ param1: string }> &
 type StateType = {
   trades?: TradehistoryResponse;
   rows: Row[];
+  orderBy: SortOption<Row>;
 };
 
 type Row = {
@@ -40,6 +43,7 @@ type Row = {
   executedAt: string;
   role: OrderRole;
   side: OrderSide;
+  amount: number;
 };
 
 const styles = (theme: Theme) => {
@@ -69,9 +73,21 @@ class Trades extends DashboardContent<PropsType, StateType> {
     { label: "Time", key: "executedAt" },
   ];
 
+  sortOpts: SortOption<Row>[] = [
+    { label: "Time", prop: "executedAt", sortingOrder: "desc" },
+    { label: "Amount", prop: "amount", sortingOrder: "desc" },
+    { label: "Buy", prop: "side", sortingOrder: "asc" },
+    { label: "Sell", prop: "side", sortingOrder: "desc" },
+    { label: "Maker", prop: "role", sortingOrder: "asc" },
+    { label: "Taker", prop: "role", sortingOrder: "desc" },
+  ];
+
   constructor(props: PropsType) {
     super(props);
-    this.state = { trades: undefined, rows: [] };
+    this.state = {
+      rows: [],
+      orderBy: this.sortOpts[0],
+    };
     this.refreshableData.push({
       queryFn: api.tradehistory$,
       stateProp: "trades",
@@ -85,16 +101,16 @@ class Trades extends DashboardContent<PropsType, StateType> {
       const order =
         trade.role === OrderRole.MAKER ? trade.maker_order : trade.taker_order;
       const [baseCurrency, quoteCurrency] = trade.pair_id.split("/");
+      const amount = Number(trade.quantity) / 10 ** 8;
       return {
         swapHash: trade.r_hash,
-        trade: `${trade.side.toLowerCase()} ${
-          Number(trade.quantity) / 10 ** 8
-        } ${baseCurrency} as ${trade.role.toLowerCase()}`,
+        trade: `${trade.side.toLowerCase()} ${amount} ${baseCurrency} as ${trade.role.toLowerCase()}`,
         price: `${trade.price} ${quoteCurrency}`,
         orderId: order.id,
         executedAt: new Date(Number(trade.executed_at)).toLocaleString("en-GB"),
         role: trade.role,
         side: trade.side,
+        amount: amount,
       };
     });
   };
@@ -104,6 +120,11 @@ class Trades extends DashboardContent<PropsType, StateType> {
 
     return (
       <Grid container component={Paper} direction="column">
+        <TradesSortingOptions
+          sortOpts={this.sortOpts}
+          orderBy={this.state.orderBy}
+          onOptionSelected={(opt) => this.setState({ orderBy: opt })}
+        ></TradesSortingOptions>
         <Grid item container justify="space-between" wrap="nowrap">
           {this.tableHeaders.map((header) => (
             <Grid
@@ -123,7 +144,13 @@ class Trades extends DashboardContent<PropsType, StateType> {
         <Divider />
         <Grid item container direction="column">
           {!!this.state.trades &&
-            this.state.rows.map((row) => (
+            stableSort(
+              this.state.rows,
+              getComparator(
+                this.state.orderBy.sortingOrder,
+                this.state.orderBy.prop
+              )
+            ).map((row) => (
               <Grid
                 item
                 container
@@ -148,7 +175,7 @@ class Trades extends DashboardContent<PropsType, StateType> {
                         alignItems="flex-start"
                         justify="center"
                       >
-                        <CenterEllipsis text={row[column.key]} />
+                        <CenterEllipsis text={row[column.key] + ""} />
                         <IconButton
                           size="small"
                           className={classes.tableCellIcon}
