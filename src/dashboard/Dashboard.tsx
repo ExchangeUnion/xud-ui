@@ -8,17 +8,13 @@ import { Route, Switch, useRouteMatch } from "react-router-dom";
 import { Path } from "../router/Path";
 import MenuItem, { MenuItemProps } from "./menu/MenuItem";
 import Overview from "./overview/Overview";
-import Trades from "./Trades";
+import Trades from "./trade/Trades";
 import Wallets from "./wallet/Wallets";
 
 export const drawerWidth = 150;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
     drawerPaper: {
       width: drawerWidth,
     },
@@ -26,8 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: "16px",
     },
     content: {
-      flexWrap: "wrap",
-      flexGrow: 1,
+      marginLeft: drawerWidth,
       backgroundColor: theme.palette.background.default,
       padding: theme.spacing(3),
     },
@@ -44,9 +39,8 @@ function Dashboard(): ReactElement {
   ];
 
   return (
-    <Box display="flex">
+    <Box>
       <Drawer
-        className={classes.drawer}
         variant="permanent"
         classes={{
           paper: classes.drawerPaper,
