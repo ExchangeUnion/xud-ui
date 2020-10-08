@@ -15,7 +15,9 @@ import React, { ReactElement } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import api from "../../api";
 import CenterEllipsis from "../../common/CenterEllipsis";
-import TradesSortingOptions, { SortOption } from "../../common/sorting/SortingOptions";
+import TradesSortingOptions, {
+  SortOption,
+} from "../../common/sorting/SortingOptions";
 import { getComparator, stableSort } from "../../common/sorting/SortingUtil";
 import { OrderRole } from "../../enums/OrderRole";
 import { OrderSide } from "../../enums/OrderSide";
