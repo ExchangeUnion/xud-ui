@@ -1,4 +1,5 @@
 import {
+  Button,
   createStyles,
   Divider,
   Grid,
@@ -10,11 +11,13 @@ import {
   WithStyles,
 } from "@material-ui/core";
 import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
+import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
 import { inject, observer } from "mobx-react";
 import React, { ReactElement } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import api from "../../api";
 import CenterEllipsis from "../../common/CenterEllipsis";
+import CSVLink from "../../common/csv/CsvLink";
 import TradesSortingOptions, {
   SortOption,
 } from "../../common/sorting/SortingOptions";
@@ -55,6 +58,12 @@ const styles = (theme: Theme) => {
     },
     tableCellIcon: {
       marginLeft: theme.spacing(1),
+    },
+    downloadButtonContainer: {
+      paddingTop: theme.spacing(3),
+    },
+    downloadLink: {
+      textDecoration: "none",
     },
   });
 };
@@ -121,84 +130,103 @@ class Trades extends DashboardContent<PropsType, StateType> {
     const { classes } = this.props;
 
     return (
-      <Grid container component={Paper} direction="column">
-        <TradesSortingOptions
-          sortOpts={this.sortOpts}
-          orderBy={this.state.orderBy}
-          onOptionSelected={(opt) => this.setState({ orderBy: opt })}
-        ></TradesSortingOptions>
-        <Grid item container justify="space-between" wrap="nowrap">
-          {this.tableHeaders.map((header) => (
-            <Grid
-              key={header.key}
-              item
-              container
-              xs={header.grids || 2}
-              className={classes.tableCell}
-              justify="center"
-            >
-              <Typography component="span" variant="body1">
-                {header.label}
-              </Typography>
-            </Grid>
-          ))}
-        </Grid>
-        <Divider />
-        <Grid item container direction="column">
-          {!!this.state.trades &&
-            stableSort(
-              this.state.rows,
-              getComparator(
-                this.state.orderBy.sortingOrder,
-                this.state.orderBy.prop
-              )
-            ).map((row) => (
+      <Grid container direction="column">
+        <Grid container component={Paper} direction="column">
+          <TradesSortingOptions
+            sortOpts={this.sortOpts}
+            orderBy={this.state.orderBy}
+            onOptionSelected={(opt) => this.setState({ orderBy: opt })}
+          ></TradesSortingOptions>
+          <Grid item container justify="space-between" wrap="nowrap">
+            {this.tableHeaders.map((header) => (
               <Grid
+                key={header.key}
                 item
                 container
-                justify="space-between"
-                wrap="nowrap"
-                key={row.swapHash}
+                xs={header.grids || 2}
+                className={classes.tableCell}
+                justify="center"
               >
-                {this.tableHeaders.map((column) => (
-                  <Grid
-                    item
-                    container
-                    xs={column.grids || 2}
-                    className={classes.tableCell}
-                    justify="center"
-                    key={`${row.swapHash}_${column.key}`}
-                  >
-                    {column.copyIcon ? (
-                      <Grid
-                        container
-                        item
-                        wrap="nowrap"
-                        alignItems="flex-start"
-                        justify="center"
-                      >
-                        <CenterEllipsis text={row[column.key] + ""} />
-                        <IconButton
-                          size="small"
-                          className={classes.tableCellIcon}
-                          onClick={() =>
-                            (window as any).electron.copyToClipboard(
-                              row[column.key]
-                            )
-                          }
-                        >
-                          <FileCopyOutlinedIcon fontSize="inherit" />
-                        </IconButton>
-                      </Grid>
-                    ) : (
-                      <Typography variant="body2" component="span">
-                        {row[column.key]}
-                      </Typography>
-                    )}
-                  </Grid>
-                ))}
+                <Typography component="span" variant="body1">
+                  {header.label}
+                </Typography>
               </Grid>
             ))}
+          </Grid>
+          <Divider />
+          <Grid item container direction="column">
+            {!!this.state.trades &&
+              stableSort(
+                this.state.rows,
+                getComparator(
+                  this.state.orderBy.sortingOrder,
+                  this.state.orderBy.prop
+                )
+              ).map((row) => (
+                <Grid
+                  item
+                  container
+                  justify="space-between"
+                  wrap="nowrap"
+                  key={row.swapHash}
+                >
+                  {this.tableHeaders.map((column) => (
+                    <Grid
+                      item
+                      container
+                      xs={column.grids || 2}
+                      className={classes.tableCell}
+                      justify="center"
+                      key={`${row.swapHash}_${column.key}`}
+                    >
+                      {column.copyIcon ? (
+                        <Grid
+                          container
+                          item
+                          wrap="nowrap"
+                          alignItems="flex-start"
+                          justify="center"
+                        >
+                          <CenterEllipsis text={row[column.key] + ""} />
+                          <IconButton
+                            size="small"
+                            className={classes.tableCellIcon}
+                            onClick={() =>
+                              (window as any).electron.copyToClipboard(
+                                row[column.key]
+                              )
+                            }
+                          >
+                            <FileCopyOutlinedIcon fontSize="inherit" />
+                          </IconButton>
+                        </Grid>
+                      ) : (
+                        <Typography variant="body2" component="span">
+                          {row[column.key]}
+                        </Typography>
+                      )}
+                    </Grid>
+                  ))}
+                </Grid>
+              ))}
+          </Grid>
+        </Grid>
+        <Grid
+          item
+          container
+          justify="flex-end"
+          className={classes.downloadButtonContainer}
+        >
+          <CSVLink
+            data={this.state.rows}
+            headers={this.tableHeaders}
+            filename={"trades.csv"}
+            className={classes.downloadLink}
+          >
+            <Button variant="contained" startIcon={<GetAppOutlinedIcon />}>
+              Download (.csv)
+            </Button>
+          </CSVLink>
         </Grid>
       </Grid>
     );
