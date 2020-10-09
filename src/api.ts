@@ -4,6 +4,7 @@ import { mergeMapTo, pluck } from "rxjs/operators";
 import { GetbalanceResponse } from "./models/GetbalanceResponse";
 import { Info } from "./models/Info";
 import { Status } from "./models/Status";
+import { TradehistoryResponse } from "./models/TradehistoryResponse";
 import { TradinglimitsResponse } from "./models/TradinglimitsResponse";
 
 const path = "api/v1";
@@ -38,6 +39,12 @@ export default {
 
   tradinglimits$(url: string): Observable<TradinglimitsResponse> {
     return from(axios.get(`${url}/${xudPath}/tradinglimits`)).pipe(
+      pluck("data")
+    );
+  },
+
+  tradehistory$(url: string): Observable<TradehistoryResponse> {
+    return from(axios.get(`${url}/${xudPath}/tradehistory`)).pipe(
       pluck("data")
     );
   },

@@ -8,6 +8,7 @@ import { WithStores } from "../stores/WithStores";
 export type RefreshableData<T, S> = {
   queryFn: (url: string, serviceName?: string) => Observable<T>;
   stateProp: keyof S;
+  onSuccessCb?: (value: T) => void;
 };
 
 abstract class DashboardContent<
@@ -33,12 +34,20 @@ abstract class DashboardContent<
       .pipe(
         mergeMap(() => data.queryFn(this.props.settingsStore!.xudDockerUrl))
       )
-      .subscribe(this.handleResponse(data.stateProp));
+      .subscribe(this.handleResponse(data.stateProp, data.onSuccessCb));
   }
 
-  handleResponse<T>(stateProp: keyof S): PartialObserver<T> {
+  handleResponse<T>(
+    stateProp: keyof S,
+    onSuccessCb?: (value: T) => void
+  ): PartialObserver<T> {
     return {
-      next: (data: T) => this.setState({ [stateProp]: data } as any),
+      next: (data: T) => {
+        this.setState({ [stateProp]: data } as any);
+        if (onSuccessCb) {
+          onSuccessCb(data);
+        }
+      },
       error: () =>
         this.props.history.push({
           pathname: Path.HOME,
