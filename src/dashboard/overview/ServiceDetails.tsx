@@ -109,7 +109,7 @@ const ServiceDetails = inject(SETTINGS_STORE)(
             </Grid>
           </DialogTitle>
           <Divider />
-          <ServiceDetailsContent status={status} />
+          <ServiceDetailsContent status={status} closeDetails={handleClose} />
           <Snackbar
             className={classes.snackbar}
             open={errorMsgOpen}

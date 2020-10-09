@@ -12,11 +12,14 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import React, { ReactElement, useState } from "react";
+import { XUD_NOT_READY } from "../../constants";
 import { Status } from "../../models/Status";
 import ServiceDetails from "./ServiceDetails";
 
 export type OverviewItemProps = {
   status: Status;
+  xudLocked?: boolean;
+  xudNotReady?: boolean;
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -57,19 +60,23 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 function OverviewItem(props: OverviewItemProps): ReactElement {
-  const { status } = props;
+  const { status, xudLocked, xudNotReady } = props;
   const [detailsOpen, setDetailsOpen] = useState(false);
   const classes = useStyles();
   const statusDotClass = `${classes.statusDot} ${
     status.status.startsWith("Ready") ||
-    (status.service === "xud" && status.status === "Waiting for channels")
+    (status.service === "xud" &&
+      !XUD_NOT_READY.some((str) => status.status.startsWith(str)))
       ? classes.active
       : classes.inactive
   }`;
 
   const isDetailsIconVisible = (status: Status): boolean => {
     return (
-      !status.status.includes("light mode") && status.status !== "Disabled"
+      !xudLocked &&
+      !xudNotReady &&
+      !status.status.includes("light mode") &&
+      status.status !== "Disabled"
     );
   };
 

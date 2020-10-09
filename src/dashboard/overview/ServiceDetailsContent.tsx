@@ -9,21 +9,19 @@ import {
 } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
-import { History } from "history";
 import { inject, observer } from "mobx-react";
 import React, { ReactElement, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { Subscription } from "rxjs";
 import api from "../../api";
 import { Info } from "../../models/Info";
 import { LndInfo } from "../../models/LndInfo";
 import { Status } from "../../models/Status";
-import { Path } from "../../router/Path";
 import { SettingsStore, SETTINGS_STORE } from "../../stores/settingsStore";
 import { WithStores } from "../../stores/WithStores";
 
 export type ServiceDetailsContentProps = WithStores & {
   status: Status;
+  closeDetails: () => void;
 };
 
 type InfoRow = {
@@ -55,11 +53,11 @@ const servicesWithAdditionalInfo = ["xud", "lndbtc", "lndltc", "connext"];
 const fetchInfo = (
   settingsStore: SettingsStore,
   onNext: (value: Info) => void,
-  history: History
+  closeDetails: () => void
 ): Subscription => {
   return api.getinfo$(settingsStore.xudDockerUrl).subscribe({
     next: onNext,
-    error: () => history.push(Path.DASHBOARD),
+    error: closeDetails,
   });
 };
 
@@ -135,8 +133,7 @@ const createLndRows = (lndInfo: LndInfo): InfoRow[] => [
 const ServiceDetailsContent = inject(SETTINGS_STORE)(
   observer(
     (props: ServiceDetailsContentProps): ReactElement => {
-      const { settingsStore, status } = props;
-      const history = useHistory();
+      const { settingsStore, status, closeDetails } = props;
       const classes = useStyles();
       const [rows, setRows] = useState<InfoRow[]>([]);
 
@@ -147,9 +144,13 @@ const ServiceDetailsContent = inject(SETTINGS_STORE)(
         const onNextValue = (value: Info): void => {
           setRows(createRows(value, status));
         };
-        const subscription = fetchInfo(settingsStore!, onNextValue, history);
+        const subscription = fetchInfo(
+          settingsStore!,
+          onNextValue,
+          closeDetails
+        );
         return () => subscription.unsubscribe();
-      }, [history, settingsStore, status]);
+      }, [closeDetails, settingsStore, status]);
 
       return (
         <DialogContent className={classes.content}>
