@@ -37,6 +37,7 @@ class Overview extends DashboardContent<PropsType, StateType> {
               status={status}
               key={status.service}
               xudLocked={this.state.xudLocked}
+              xudNotReady={this.state.xudNotReady}
             ></OverviewItem>
           ))}
       </Grid>

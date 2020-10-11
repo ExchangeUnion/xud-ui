@@ -13,6 +13,7 @@ import { inject, observer } from "mobx-react";
 import React, { ReactElement, useEffect, useState } from "react";
 import { Subscription } from "rxjs";
 import api from "../../api";
+import { SERVICES_WITH_ADDITIONAL_INFO } from "../../constants";
 import { Info } from "../../models/Info";
 import { LndInfo } from "../../models/LndInfo";
 import { Status } from "../../models/Status";
@@ -47,8 +48,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-const servicesWithAdditionalInfo = ["xud", "lndbtc", "lndltc", "connext"];
 
 const fetchInfo = (
   settingsStore: SettingsStore,
@@ -138,7 +137,7 @@ const ServiceDetailsContent = inject(SETTINGS_STORE)(
       const [rows, setRows] = useState<InfoRow[]>([]);
 
       useEffect(() => {
-        if (!servicesWithAdditionalInfo.includes(status.service)) {
+        if (!SERVICES_WITH_ADDITIONAL_INFO.includes(status.service)) {
           return;
         }
         const onNextValue = (value: Info): void => {
@@ -183,7 +182,7 @@ const ServiceDetailsContent = inject(SETTINGS_STORE)(
             </Grid>
           ))}
           {!rows?.length &&
-            !servicesWithAdditionalInfo.includes(status.service) && (
+            !SERVICES_WITH_ADDITIONAL_INFO.includes(status.service) && (
               <Typography
                 variant="body1"
                 component="p"

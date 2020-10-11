@@ -7,5 +7,13 @@ export const XUD_NOT_READY = [
   "Error",
   "Container disabled",
   "Container exited",
+  "Container missing",
   "Starting",
+];
+
+export const SERVICES_WITH_ADDITIONAL_INFO = [
+  "xud",
+  "lndbtc",
+  "lndltc",
+  "connext",
 ];

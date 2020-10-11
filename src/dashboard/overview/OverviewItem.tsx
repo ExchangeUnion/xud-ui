@@ -1,22 +1,30 @@
 import {
-  Box,
+  Button,
   createStyles,
   Divider,
   IconButton,
   makeStyles,
+  Snackbar,
+  SnackbarContent,
   Theme,
 } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import CloseIcon from "@material-ui/icons/Close";
+import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
+import { inject, observer } from "mobx-react";
 import React, { ReactElement, useState } from "react";
-import { XUD_NOT_READY } from "../../constants";
+import api from "../../api";
+import { SERVICES_WITH_ADDITIONAL_INFO, XUD_NOT_READY } from "../../constants";
 import { Status } from "../../models/Status";
+import { SettingsStore, SETTINGS_STORE } from "../../stores/settingsStore";
+import { WithStores } from "../../stores/WithStores";
 import ServiceDetails from "./ServiceDetails";
 
-export type OverviewItemProps = {
+export type OverviewItemProps = WithStores & {
   status: Status;
   xudLocked?: boolean;
   xudNotReady?: boolean;
@@ -24,14 +32,8 @@ export type OverviewItemProps = {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    infoIconContainer: {
-      position: "relative",
-      display: "inline-block",
-      top: theme.spacing(3),
-      left: theme.spacing(3),
-    },
     cardHeader: {
-      paddingBottom: theme.spacing(3),
+      padding: theme.spacing(3),
     },
     cardContent: {
       padding: 0,
@@ -56,78 +58,149 @@ const useStyles = makeStyles((theme: Theme) =>
     inactive: {
       backgroundColor: theme.palette.error.light,
     },
+    snackbar: {
+      bottom: theme.spacing(3) * 2,
+      right: theme.spacing(3) * 2,
+    },
+    snackbarMessage: {
+      backgroundColor: theme.palette.error.main,
+      color: theme.palette.error.contrastText,
+    },
   })
 );
 
-function OverviewItem(props: OverviewItemProps): ReactElement {
-  const { status, xudLocked, xudNotReady } = props;
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const classes = useStyles();
-  const statusDotClass = `${classes.statusDot} ${
-    status.status.startsWith("Ready") ||
-    (status.service === "xud" &&
-      !XUD_NOT_READY.some((str) => status.status.startsWith(str)))
-      ? classes.active
-      : classes.inactive
-  }`;
+const downloadLogs = (
+  settingsStore: SettingsStore,
+  serviceName: string,
+  handleError: () => void
+): void => {
+  api.logs$(serviceName, settingsStore.xudDockerUrl).subscribe({
+    next: (resp: string) => {
+      const anchor = Object.assign(document.createElement("a"), {
+        href: resp,
+        style: { display: "none" },
+      });
+      anchor.click();
+    },
+    error: handleError,
+  });
+};
 
-  const isDetailsIconVisible = (status: Status): boolean => {
-    return (
-      !xudLocked &&
-      !xudNotReady &&
-      !status.status.includes("light mode") &&
-      status.status !== "Disabled"
-    );
-  };
+const OverviewItem = inject(SETTINGS_STORE)(
+  observer(
+    (props: OverviewItemProps): ReactElement => {
+      const { settingsStore, status, xudLocked, xudNotReady } = props;
+      const [detailsOpen, setDetailsOpen] = useState(false);
+      const [errorMsgOpen, setErrorMsgOpen] = useState(false);
+      const classes = useStyles();
+      const statusDotClass = `${classes.statusDot} ${
+        status.status.startsWith("Ready") ||
+        (status.service === "xud" &&
+          !XUD_NOT_READY.some((str) => status.status.startsWith(str)))
+          ? classes.active
+          : classes.inactive
+      }`;
 
-  return (
-    <Grid item xs={12} md={6} lg={4}>
-      <Card>
-        <Box className={classes.infoIconContainer}>
-          {isDetailsIconVisible(status) && (
-            <IconButton
-              size="small"
-              title="details"
-              onClick={() => setDetailsOpen(true)}
+      const isDetailsIconVisible = (status: Status): boolean => {
+        return (
+          !xudLocked &&
+          !xudNotReady &&
+          SERVICES_WITH_ADDITIONAL_INFO.includes(status.service)
+        );
+      };
+
+      const isDownloadLogsEnabled = (status: Status): boolean => {
+        return (
+          !status.status.includes("light mode") && status.status !== "Disabled"
+        );
+      };
+
+      return (
+        <Grid item xs={12} lg={6} xl={4}>
+          <Card>
+            <Grid
+              container
+              justify="space-between"
+              alignItems="center"
+              wrap="nowrap"
+              className={classes.cardHeader}
             >
-              <InfoIcon fontSize="small" />
-            </IconButton>
-          )}
-        </Box>
-        <Grid
-          container
-          item
-          alignItems="center"
-          justify="center"
-          className={classes.cardHeader}
-        >
-          <span className={statusDotClass}></span>
-          <Typography component="span" variant="body1">
-            {props.status.service} info
-          </Typography>
-        </Grid>
-        <Divider />
-        <CardContent className={classes.cardContent}>
-          <Grid container item>
-            <Grid item xs={4} className={classes.cardCell}>
-              Status
+              <Grid container item>
+                {isDetailsIconVisible(status) && (
+                  <IconButton
+                    size="small"
+                    title="details"
+                    onClick={() => setDetailsOpen(true)}
+                  >
+                    <InfoIcon fontSize="small" />
+                  </IconButton>
+                )}
+              </Grid>
+              <Grid container item alignItems="center" justify="center">
+                <span className={statusDotClass}></span>
+                <Typography component="span" variant="body1">
+                  {props.status.service} info
+                </Typography>
+              </Grid>
+              <Grid container item justify="flex-end">
+                {isDownloadLogsEnabled(status) && (
+                  <Button
+                    size="small"
+                    title="Download logs"
+                    startIcon={<GetAppOutlinedIcon fontSize="small" />}
+                    onClick={() =>
+                      downloadLogs(settingsStore!, status.service, () =>
+                        setErrorMsgOpen(true)
+                      )
+                    }
+                  >
+                    Logs
+                  </Button>
+                )}
+              </Grid>
             </Grid>
-            <Divider orientation="vertical" flexItem />
-            <Grid item xs={7} className={classes.cardCell}>
-              {props.status.status}
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+            <Divider />
+            <CardContent className={classes.cardContent}>
+              <Grid container item>
+                <Grid item xs={4} className={classes.cardCell}>
+                  Status
+                </Grid>
+                <Divider orientation="vertical" flexItem />
+                <Grid item xs={7} className={classes.cardCell}>
+                  {props.status.status}
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
 
-      {detailsOpen && (
-        <ServiceDetails
-          status={status}
-          handleClose={() => setDetailsOpen(false)}
-        />
-      )}
-    </Grid>
-  );
-}
+          {detailsOpen && (
+            <ServiceDetails
+              status={status}
+              handleClose={() => setDetailsOpen(false)}
+            />
+          )}
+
+          <Snackbar
+            className={classes.snackbar}
+            open={errorMsgOpen}
+            autoHideDuration={10000}
+            onClose={() => setErrorMsgOpen(false)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          >
+            <SnackbarContent
+              className={classes.snackbarMessage}
+              message={`Could not download the logs for ${status.service}`}
+              action={
+                <IconButton onClick={() => setErrorMsgOpen(false)}>
+                  <CloseIcon />
+                </IconButton>
+              }
+            />
+          </Snackbar>
+        </Grid>
+      );
+    }
+  )
+);
 
 export default OverviewItem;
