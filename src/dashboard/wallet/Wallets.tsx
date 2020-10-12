@@ -12,7 +12,7 @@ import { inject, observer } from "mobx-react";
 import React, { ReactElement } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import api from "../../api";
-import Loader from "../../common/Loader";
+import PageCircularProgress from "../../common/PageCircularProgress";
 import { GetbalanceResponse } from "../../models/GetbalanceResponse";
 import { TradinglimitsResponse } from "../../models/TradinglimitsResponse";
 import { SETTINGS_STORE } from "../../stores/settingsStore";
@@ -97,7 +97,7 @@ class Wallets extends DashboardContent<PropsType, StateType> {
                 No wallets found
               </Grid>
             ) : (
-              <Loader />
+              <PageCircularProgress />
             )}
           </Grid>
         )}

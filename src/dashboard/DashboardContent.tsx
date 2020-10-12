@@ -1,6 +1,13 @@
 import { Component } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { Observable, of, PartialObserver, Subscription, timer } from "rxjs";
+import {
+  EMPTY,
+  Observable,
+  of,
+  PartialObserver,
+  Subscription,
+  timer,
+} from "rxjs";
 import { mergeMap } from "rxjs/operators";
 import api from "../api";
 import { XUD_NOT_READY } from "../constants";
@@ -48,7 +55,7 @@ abstract class DashboardContent<
         mergeMap(() =>
           (this.state.xudLocked || this.state.xudNotReady) &&
           !data.isStatusQuery
-            ? of(undefined)
+            ? EMPTY
             : data.queryFn(this.props.settingsStore!.xudDockerUrl)
         )
       )
@@ -84,13 +91,12 @@ abstract class DashboardContent<
     isStatusQuery: boolean,
     onSuccessCb?: (value: T) => void,
     setInitialLoadCompleted = true
-  ): PartialObserver<T | undefined> {
+  ): PartialObserver<T> {
     return {
-      next: (data: T | undefined) => {
+      next: (data: T) => {
         if (
-          ((!this.state.xudLocked && !this.state.xudNotReady) ||
-            isStatusQuery) &&
-          data
+          (!this.state.xudLocked && !this.state.xudNotReady) ||
+          isStatusQuery
         ) {
           this.setState({ [stateProp]: data } as any);
           if (!this.state.initialLoadCompleted && setInitialLoadCompleted) {

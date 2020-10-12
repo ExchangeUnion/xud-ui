@@ -97,19 +97,27 @@ const OverviewItem = inject(SETTINGS_STORE)(
       const [detailsOpen, setDetailsOpen] = useState(false);
       const [errorMsgOpen, setErrorMsgOpen] = useState(false);
       const classes = useStyles();
+
+      const isServiceReady = (status: Status): boolean => {
+        return (
+          status.status.startsWith("Ready") ||
+          (status.service === "xud" &&
+            !XUD_NOT_READY.some((str) => status.status.startsWith(str))) ||
+          (status.service === "boltz" &&
+            new RegExp("[lndbtc|btc|lndltc|ltc] down").test(status.status))
+        );
+      };
+
       const statusDotClass = `${classes.statusDot} ${
-        status.status.startsWith("Ready") ||
-        (status.service === "xud" &&
-          !XUD_NOT_READY.some((str) => status.status.startsWith(str)))
-          ? classes.active
-          : classes.inactive
+        isServiceReady(status) ? classes.active : classes.inactive
       }`;
 
       const isDetailsIconVisible = (status: Status): boolean => {
         return (
           !xudLocked &&
           !xudNotReady &&
-          SERVICES_WITH_ADDITIONAL_INFO.includes(status.service)
+          SERVICES_WITH_ADDITIONAL_INFO.includes(status.service) &&
+          isServiceReady(status)
         );
       };
 
@@ -120,7 +128,7 @@ const OverviewItem = inject(SETTINGS_STORE)(
       };
 
       return (
-        <Grid item xs={12} lg={6} xl={4}>
+        <Grid item xs={12} md={6} xl={4}>
           <Card>
             <Grid
               container
@@ -140,9 +148,15 @@ const OverviewItem = inject(SETTINGS_STORE)(
                   </IconButton>
                 )}
               </Grid>
-              <Grid container item alignItems="center" justify="center">
+              <Grid
+                container
+                item
+                alignItems="center"
+                justify="center"
+                wrap="nowrap"
+              >
                 <span className={statusDotClass}></span>
-                <Typography component="span" variant="body1">
+                <Typography component="span" variant="body1" noWrap>
                   {props.status.service} info
                 </Typography>
               </Grid>
