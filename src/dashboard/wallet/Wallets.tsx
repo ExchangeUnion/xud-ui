@@ -12,6 +12,7 @@ import { inject, observer } from "mobx-react";
 import React, { ReactElement } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import api from "../../api";
+import Loader from "../../common/Loader";
 import { GetbalanceResponse } from "../../models/GetbalanceResponse";
 import { TradinglimitsResponse } from "../../models/TradinglimitsResponse";
 import { SETTINGS_STORE } from "../../stores/settingsStore";
@@ -64,6 +65,7 @@ class Wallets extends DashboardContent<PropsType, StateType> {
       {
         queryFn: api.tradinglimits$,
         stateProp: "limits",
+        doNotSetInitialLoadCompleted: true,
       }
     );
   }
@@ -81,7 +83,7 @@ class Wallets extends DashboardContent<PropsType, StateType> {
           />
         ) : (
           <Grid container spacing={5} className={classes.itemsContainer}>
-            {balances &&
+            {balances ? (
               Object.keys(balances!).map((currency) => (
                 <WalletItem
                   key={currency}
@@ -89,7 +91,14 @@ class Wallets extends DashboardContent<PropsType, StateType> {
                   balance={balances![currency]}
                   limits={this.state.limits?.limits[currency]}
                 ></WalletItem>
-              ))}
+              ))
+            ) : this.state.initialLoadCompleted ? (
+              <Grid item container justify="center">
+                No wallets found
+              </Grid>
+            ) : (
+              <Loader />
+            )}
           </Grid>
         )}
         <Card className={classes.footer}>

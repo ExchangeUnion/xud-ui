@@ -13,12 +13,14 @@ export type RefreshableData<T, S> = {
   stateProp: keyof S;
   onSuccessCb?: (value: T) => void;
   isStatusQuery?: boolean;
+  doNotSetInitialLoadCompleted?: boolean;
 };
 
 export type DashboardContentState = {
   xudLocked?: boolean;
   xudNotReady?: boolean;
   xudStatus?: string;
+  initialLoadCompleted?: boolean;
 };
 
 abstract class DashboardContent<
@@ -54,7 +56,8 @@ abstract class DashboardContent<
         this.handleResponse(
           data.stateProp,
           !!data.isStatusQuery,
-          data.onSuccessCb
+          data.onSuccessCb,
+          !data.doNotSetInitialLoadCompleted
         )
       );
   }
@@ -79,7 +82,8 @@ abstract class DashboardContent<
   handleResponse<T>(
     stateProp: keyof S,
     isStatusQuery: boolean,
-    onSuccessCb?: (value: T) => void
+    onSuccessCb?: (value: T) => void,
+    setInitialLoadCompleted = true
   ): PartialObserver<T | undefined> {
     return {
       next: (data: T | undefined) => {
@@ -89,6 +93,10 @@ abstract class DashboardContent<
           data
         ) {
           this.setState({ [stateProp]: data } as any);
+          if (!this.state.initialLoadCompleted && setInitialLoadCompleted) {
+            this.setState({ initialLoadCompleted: true });
+          }
+
           if (onSuccessCb) {
             onSuccessCb(data);
           }
