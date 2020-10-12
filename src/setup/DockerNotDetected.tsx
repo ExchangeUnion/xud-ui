@@ -4,8 +4,10 @@ import Typography from "@material-ui/core/Typography";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined";
 import { inject, observer } from "mobx-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { timer } from "rxjs";
+import { delay, mergeMap, retryWhen } from "rxjs/operators";
 import api from "../api";
 import RowsContainer from "../common/RowsContainer";
 import { Path } from "../router/Path";
@@ -20,10 +22,20 @@ const DockerNotDetected = inject(SETTINGS_STORE)(
     const history = useHistory();
     const [connectionFailed, setConnectionFailed] = useState(false);
 
-    api.getinfo$(settingsStore!.xudDockerUrl).subscribe({
-      next: () => history.push(Path.DASHBOARD),
-      error: () => setConnectionFailed(true),
-    });
+    useEffect(() => {
+      const subscription = timer(0, 5000)
+        .pipe(
+          mergeMap(() =>
+            api.statusByService$("xud", settingsStore!.xudDockerUrl)
+          ),
+          retryWhen((errors) => errors.pipe(delay(5000)))
+        )
+        .subscribe({
+          next: () => history.push(Path.DASHBOARD),
+          error: () => setConnectionFailed(true),
+        });
+      return () => subscription.unsubscribe();
+    }, [history, connectionFailed, settingsStore]);
 
     return (
       <RowsContainer>

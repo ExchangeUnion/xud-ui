@@ -17,14 +17,15 @@ import { TradinglimitsResponse } from "../../models/TradinglimitsResponse";
 import { SETTINGS_STORE } from "../../stores/settingsStore";
 import { WithStores } from "../../stores/WithStores";
 import { drawerWidth } from "../Dashboard";
-import DashboardContent from "../DashboardContent";
+import DashboardContent, { DashboardContentState } from "../DashboardContent";
+import ViewDisabled from "../ViewDisabled";
 import WalletItem from "./WalletItem";
 
 type PropsType = RouteComponentProps<{ param1: string }> &
   WithStores &
   WithStyles<typeof styles>;
 
-type StateType = {
+type StateType = DashboardContentState & {
   balances: GetbalanceResponse | undefined;
   limits: TradinglimitsResponse | undefined;
 };
@@ -73,17 +74,24 @@ class Wallets extends DashboardContent<PropsType, StateType> {
 
     return (
       <>
-        <Grid container spacing={5} className={classes.itemsContainer}>
-          {balances &&
-            Object.keys(balances!).map((currency) => (
-              <WalletItem
-                key={currency}
-                currency={currency}
-                balance={balances![currency]}
-                limits={this.state.limits?.limits[currency]}
-              ></WalletItem>
-            ))}
-        </Grid>
+        {this.state.xudLocked || this.state.xudNotReady ? (
+          <ViewDisabled
+            xudLocked={this.state.xudLocked}
+            xudStatus={this.state.xudStatus}
+          />
+        ) : (
+          <Grid container spacing={5} className={classes.itemsContainer}>
+            {balances &&
+              Object.keys(balances!).map((currency) => (
+                <WalletItem
+                  key={currency}
+                  currency={currency}
+                  balance={balances![currency]}
+                  limits={this.state.limits?.limits[currency]}
+                ></WalletItem>
+              ))}
+          </Grid>
+        )}
         <Card className={classes.footer}>
           <Grid container item alignItems="center" justify="center">
             <ReportProblemOutlinedIcon />

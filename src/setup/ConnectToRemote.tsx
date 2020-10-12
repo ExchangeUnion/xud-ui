@@ -97,7 +97,7 @@ const handleConnectClick = (
     : `http://${xudDockerUrl}`;
   setConnectionFailed(false);
   setConnecting(true);
-  api.getinfo$(address).subscribe({
+  api.statusByService$("xud", address).subscribe({
     next: () => {
       setConnecting(false);
       setXudDockerUrl(address);

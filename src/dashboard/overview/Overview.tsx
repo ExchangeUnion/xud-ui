@@ -6,12 +6,12 @@ import api from "../../api";
 import { Status } from "../../models/Status";
 import { SETTINGS_STORE } from "../../stores/settingsStore";
 import { WithStores } from "../../stores/WithStores";
-import DashboardContent from "../DashboardContent";
+import DashboardContent, { DashboardContentState } from "../DashboardContent";
 import OverviewItem from "./OverviewItem";
 
 type PropsType = RouteComponentProps<{ param1: string }> & WithStores;
 
-type StateType = {
+type StateType = DashboardContentState & {
   statuses?: Status[];
 };
 
@@ -24,6 +24,7 @@ class Overview extends DashboardContent<PropsType, StateType> {
     this.refreshableData.push({
       queryFn: api.status$,
       stateProp: "statuses",
+      isStatusQuery: true,
     });
   }
 
@@ -32,7 +33,12 @@ class Overview extends DashboardContent<PropsType, StateType> {
       <Grid container spacing={5}>
         {this.state.statuses &&
           this.state.statuses.map((status) => (
-            <OverviewItem status={status} key={status.service}></OverviewItem>
+            <OverviewItem
+              status={status}
+              key={status.service}
+              xudLocked={this.state.xudLocked}
+              xudNotReady={this.state.xudNotReady}
+            ></OverviewItem>
           ))}
       </Grid>
     );

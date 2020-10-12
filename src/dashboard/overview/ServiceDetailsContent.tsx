@@ -1,4 +1,5 @@
 import {
+  CircularProgress,
   createStyles,
   DialogContent,
   Divider,
@@ -9,21 +10,20 @@ import {
 } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
-import { History } from "history";
 import { inject, observer } from "mobx-react";
 import React, { ReactElement, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { Subscription } from "rxjs";
 import api from "../../api";
+import { SERVICES_WITH_ADDITIONAL_INFO } from "../../constants";
 import { Info } from "../../models/Info";
 import { LndInfo } from "../../models/LndInfo";
 import { Status } from "../../models/Status";
-import { Path } from "../../router/Path";
 import { SettingsStore, SETTINGS_STORE } from "../../stores/settingsStore";
 import { WithStores } from "../../stores/WithStores";
 
 export type ServiceDetailsContentProps = WithStores & {
   status: Status;
+  closeDetails: () => void;
 };
 
 type InfoRow = {
@@ -47,19 +47,22 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(3),
       textAlign: "center",
     },
+    loaderContainer: {
+      height: "100px",
+      justifyContent: "center",
+      alignItems: "center",
+    },
   })
 );
-
-const servicesWithAdditionalInfo = ["xud", "lndbtc", "lndltc", "connext"];
 
 const fetchInfo = (
   settingsStore: SettingsStore,
   onNext: (value: Info) => void,
-  history: History
+  closeDetails: () => void
 ): Subscription => {
   return api.getinfo$(settingsStore.xudDockerUrl).subscribe({
     next: onNext,
-    error: () => history.push(Path.DASHBOARD),
+    error: closeDetails,
   });
 };
 
@@ -135,54 +138,67 @@ const createLndRows = (lndInfo: LndInfo): InfoRow[] => [
 const ServiceDetailsContent = inject(SETTINGS_STORE)(
   observer(
     (props: ServiceDetailsContentProps): ReactElement => {
-      const { settingsStore, status } = props;
-      const history = useHistory();
+      const { settingsStore, status, closeDetails } = props;
       const classes = useStyles();
       const [rows, setRows] = useState<InfoRow[]>([]);
+      const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
       useEffect(() => {
-        if (!servicesWithAdditionalInfo.includes(status.service)) {
+        if (!SERVICES_WITH_ADDITIONAL_INFO.includes(status.service)) {
           return;
         }
         const onNextValue = (value: Info): void => {
           setRows(createRows(value, status));
+          if (!initialLoadComplete) {
+            setInitialLoadComplete(true);
+          }
         };
-        const subscription = fetchInfo(settingsStore!, onNextValue, history);
+        const subscription = fetchInfo(
+          settingsStore!,
+          onNextValue,
+          closeDetails
+        );
         return () => subscription.unsubscribe();
-      }, [history, settingsStore, status]);
+      }, [closeDetails, initialLoadComplete, settingsStore, status]);
 
       return (
         <DialogContent className={classes.content}>
-          {rows?.map((row) => (
-            <Grid
-              key={row.label}
-              container
-              item
-              justify="space-between"
-              alignItems="center"
-            >
-              <Grid item xs={3} md={2} className={classes.contentCell}>
-                <strong>{row.label}</strong>
+          {initialLoadComplete ? (
+            rows?.map((row) => (
+              <Grid
+                key={row.label}
+                container
+                item
+                justify="space-between"
+                alignItems="center"
+              >
+                <Grid item xs={3} md={2} className={classes.contentCell}>
+                  <strong>{row.label}</strong>
+                </Grid>
+                <Divider orientation="vertical" flexItem />
+                <Grid item xs={6} md={8} className={classes.contentCell}>
+                  {row.value}
+                </Grid>
+                <Grid item xs={2} md={1} className={classes.contentCell}>
+                  {row.copyIcon && (
+                    <IconButton
+                      onClick={() =>
+                        (window as any).electron.copyToClipboard(row.value)
+                      }
+                    >
+                      <FileCopyOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                </Grid>
               </Grid>
-              <Divider orientation="vertical" flexItem />
-              <Grid item xs={6} md={8} className={classes.contentCell}>
-                {row.value}
-              </Grid>
-              <Grid item xs={2} md={1} className={classes.contentCell}>
-                {row.copyIcon && (
-                  <IconButton
-                    onClick={() =>
-                      (window as any).electron.copyToClipboard(row.value)
-                    }
-                  >
-                    <FileCopyOutlinedIcon fontSize="small" />
-                  </IconButton>
-                )}
-              </Grid>
+            ))
+          ) : (
+            <Grid container className={classes.loaderContainer}>
+              <CircularProgress color="inherit" />
             </Grid>
-          ))}
+          )}
           {!rows?.length &&
-            !servicesWithAdditionalInfo.includes(status.service) && (
+            !SERVICES_WITH_ADDITIONAL_INFO.includes(status.service) && (
               <Typography
                 variant="body1"
                 component="p"
