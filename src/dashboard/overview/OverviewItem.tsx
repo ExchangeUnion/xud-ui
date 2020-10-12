@@ -18,6 +18,7 @@ import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { inject, observer } from "mobx-react";
 import React, { ReactElement, useState } from "react";
 import api from "../../api";
+import { formatDateTimeForFilename } from "../../common/dateUtil";
 import { SERVICES_WITH_ADDITIONAL_INFO, XUD_NOT_READY } from "../../constants";
 import { Status } from "../../models/Status";
 import { SettingsStore, SETTINGS_STORE } from "../../stores/settingsStore";
@@ -76,8 +77,11 @@ const downloadLogs = (
 ): void => {
   api.logs$(serviceName, settingsStore.xudDockerUrl).subscribe({
     next: (resp: string) => {
+      const blob = new Blob([resp]);
+      const url = URL.createObjectURL(blob);
       const anchor = Object.assign(document.createElement("a"), {
-        href: resp,
+        href: url,
+        download: `${serviceName}_${formatDateTimeForFilename(new Date())}.log`,
         style: { display: "none" },
       });
       anchor.click();

@@ -1,4 +1,5 @@
 import {
+  CircularProgress,
   createStyles,
   DialogContent,
   Divider,
@@ -45,6 +46,11 @@ const useStyles = makeStyles((theme: Theme) =>
     textRow: {
       padding: theme.spacing(3),
       textAlign: "center",
+    },
+    loaderContainer: {
+      height: "100px",
+      justifyContent: "center",
+      alignItems: "center",
     },
   })
 );
@@ -135,6 +141,7 @@ const ServiceDetailsContent = inject(SETTINGS_STORE)(
       const { settingsStore, status, closeDetails } = props;
       const classes = useStyles();
       const [rows, setRows] = useState<InfoRow[]>([]);
+      const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
       useEffect(() => {
         if (!SERVICES_WITH_ADDITIONAL_INFO.includes(status.service)) {
@@ -142,6 +149,9 @@ const ServiceDetailsContent = inject(SETTINGS_STORE)(
         }
         const onNextValue = (value: Info): void => {
           setRows(createRows(value, status));
+          if (!initialLoadComplete) {
+            setInitialLoadComplete(true);
+          }
         };
         const subscription = fetchInfo(
           settingsStore!,
@@ -149,38 +159,44 @@ const ServiceDetailsContent = inject(SETTINGS_STORE)(
           closeDetails
         );
         return () => subscription.unsubscribe();
-      }, [closeDetails, settingsStore, status]);
+      }, [closeDetails, initialLoadComplete, settingsStore, status]);
 
       return (
         <DialogContent className={classes.content}>
-          {rows?.map((row) => (
-            <Grid
-              key={row.label}
-              container
-              item
-              justify="space-between"
-              alignItems="center"
-            >
-              <Grid item xs={3} md={2} className={classes.contentCell}>
-                <strong>{row.label}</strong>
+          {initialLoadComplete ? (
+            rows?.map((row) => (
+              <Grid
+                key={row.label}
+                container
+                item
+                justify="space-between"
+                alignItems="center"
+              >
+                <Grid item xs={3} md={2} className={classes.contentCell}>
+                  <strong>{row.label}</strong>
+                </Grid>
+                <Divider orientation="vertical" flexItem />
+                <Grid item xs={6} md={8} className={classes.contentCell}>
+                  {row.value}
+                </Grid>
+                <Grid item xs={2} md={1} className={classes.contentCell}>
+                  {row.copyIcon && (
+                    <IconButton
+                      onClick={() =>
+                        (window as any).electron.copyToClipboard(row.value)
+                      }
+                    >
+                      <FileCopyOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                </Grid>
               </Grid>
-              <Divider orientation="vertical" flexItem />
-              <Grid item xs={6} md={8} className={classes.contentCell}>
-                {row.value}
-              </Grid>
-              <Grid item xs={2} md={1} className={classes.contentCell}>
-                {row.copyIcon && (
-                  <IconButton
-                    onClick={() =>
-                      (window as any).electron.copyToClipboard(row.value)
-                    }
-                  >
-                    <FileCopyOutlinedIcon fontSize="small" />
-                  </IconButton>
-                )}
-              </Grid>
+            ))
+          ) : (
+            <Grid container className={classes.loaderContainer}>
+              <CircularProgress color="inherit" />
             </Grid>
-          ))}
+          )}
           {!rows?.length &&
             !SERVICES_WITH_ADDITIONAL_INFO.includes(status.service) && (
               <Typography

@@ -18,6 +18,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import api from "../../api";
 import CenterEllipsis from "../../common/CenterEllipsis";
 import CSVLink from "../../common/csv/CsvLink";
+import { formatDateTimeForFilename } from "../../common/dateUtil";
 import TradesSortingOptions, {
   SortOption,
 } from "../../common/sorting/SortingOptions";
@@ -229,7 +230,9 @@ class Trades extends DashboardContent<PropsType, StateType> {
                 <CSVLink
                   data={this.state.rows}
                   headers={this.tableHeaders}
-                  filename={"trades.csv"}
+                  filename={`trades_${formatDateTimeForFilename(
+                    new Date()
+                  )}.csv`}
                   className={classes.downloadLink}
                 >
                   <Button

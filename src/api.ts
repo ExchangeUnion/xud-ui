@@ -1,6 +1,6 @@
 import axios from "axios";
-import { from, Observable, of } from "rxjs";
-import { mergeMapTo, pluck } from "rxjs/operators";
+import { from, Observable } from "rxjs";
+import { pluck } from "rxjs/operators";
 import { GetbalanceResponse } from "./models/GetbalanceResponse";
 import { Info } from "./models/Info";
 import { Status } from "./models/Status";
@@ -21,12 +21,9 @@ export default {
     );
   },
 
-  /**
-   * Returns the url for downloading the log file if the request is successful
-   */
   logs$(serviceName: string, url: string): Observable<string> {
     const requestUrl = `${url}/${path}/logs/${serviceName}`;
-    return from(axios.get(requestUrl)).pipe(mergeMapTo(of(requestUrl)));
+    return from(axios.get(requestUrl)).pipe(pluck("data"));
   },
 
   getinfo$(url: string): Observable<Info> {
