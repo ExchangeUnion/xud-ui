@@ -8,7 +8,7 @@ import {
   Subscription,
   timer,
 } from "rxjs";
-import { mergeMap } from "rxjs/operators";
+import { exhaustMap } from "rxjs/operators";
 import api from "../api";
 import { XUD_NOT_READY } from "../constants";
 import { Status } from "../models/Status";
@@ -51,8 +51,8 @@ abstract class DashboardContent<
   updateState<T>(data: RefreshableData<T, S>): Subscription {
     return this.dataRefreshTimer
       .pipe(
-        mergeMap(() => this.checkStatus()),
-        mergeMap(() =>
+        exhaustMap(() => this.checkStatus()),
+        exhaustMap(() =>
           (this.state.xudLocked || this.state.xudNotReady) &&
           !data.isStatusQuery
             ? EMPTY
@@ -73,7 +73,7 @@ abstract class DashboardContent<
     return api
       .statusByService$("xud", this.props.settingsStore!.xudDockerUrl)
       .pipe(
-        mergeMap((resp: Status) => {
+        exhaustMap((resp: Status) => {
           this.setState({
             xudLocked: resp.status.startsWith("Wallet locked"),
             xudNotReady: XUD_NOT_READY.some((status) =>
