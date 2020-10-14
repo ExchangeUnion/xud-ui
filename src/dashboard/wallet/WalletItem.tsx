@@ -36,13 +36,47 @@ function WalletItem(props: WalletItemProps): ReactElement {
   const { balance, currency, limits } = props;
   const offChainSubrows: WalletSubrow[] = [
     {
-      label: "free in channel",
+      label: "free",
       value: satsToCoinsStr(
-        Number(balance.channel_balance) - Number(balance.reserved_balance)
+        Math.max(
+          Number(balance.channel_balance) - Number(balance.reserved_balance),
+          0
+        )
       ),
     },
     { label: "in orders", value: satsToCoinsStr(balance.reserved_balance) },
   ];
+
+  const onChainSubrows: WalletSubrow[] = [];
+
+  const addToRowsIfNotZero = (
+    rows: WalletSubrow[],
+    value: string | number,
+    label: string
+  ): void => {
+    if (Number(value)) {
+      rows.push({
+        label: label,
+        value: satsToCoinsStr(value),
+      });
+    }
+  };
+
+  addToRowsIfNotZero(
+    offChainSubrows,
+    balance.pending_channel_balance,
+    "pending"
+  );
+  addToRowsIfNotZero(
+    offChainSubrows,
+    balance.inactive_channel_balance,
+    "inactive"
+  );
+  addToRowsIfNotZero(
+    onChainSubrows,
+    balance.unconfirmed_wallet_balance,
+    "unconfirmed"
+  );
 
   const getLimitsRow = (buy: boolean): ReactElement => {
     const label = `Max ${buy ? "buy" : "sell"}`;
@@ -76,6 +110,7 @@ function WalletItem(props: WalletItemProps): ReactElement {
               </Typography>
               <WalletRow
                 label="Wallet"
+                subrows={onChainSubrows}
                 value={satsToCoinsStr(balance.wallet_balance)}
                 labelItem={
                   <Tooltip title="on-chain, not tradable">

@@ -1,3 +1,4 @@
+import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import React, { ReactElement } from "react";
@@ -12,9 +13,19 @@ export type WalletRowProps = {
 
 export type WalletSubrow = Omit<WalletRowProps, "subrows">;
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    row: {
+      paddingTop: theme.spacing(1),
+    },
+  })
+);
+
 function WalletRow(props: WalletRowProps): ReactElement {
+  const classes = useStyles();
+
   return (
-    <Grid item container>
+    <Grid item container className={classes.row}>
       <Grid
         item
         container
