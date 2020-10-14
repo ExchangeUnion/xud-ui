@@ -34,19 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
 function WalletItem(props: WalletItemProps): ReactElement {
   const classes = useStyles();
   const { balance, currency, limits } = props;
-  const offChainSubrows: WalletSubrow[] = [
-    {
-      label: "free",
-      value: satsToCoinsStr(
-        Math.max(
-          Number(balance.channel_balance) - Number(balance.reserved_balance),
-          0
-        )
-      ),
-    },
-    { label: "in orders", value: satsToCoinsStr(balance.reserved_balance) },
-  ];
-
+  const offChainSubrows: WalletSubrow[] = [];
   const onChainSubrows: WalletSubrow[] = [];
 
   const addToRowsIfNotZero = (
@@ -120,6 +108,7 @@ function WalletItem(props: WalletItemProps): ReactElement {
               />
               <WalletRow
                 label="Channel"
+                value={satsToCoinsStr(balance.channel_balance)}
                 subrows={offChainSubrows}
                 labelItem={
                   <Tooltip title="off-chain, tradable">
