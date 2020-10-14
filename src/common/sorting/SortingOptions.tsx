@@ -19,7 +19,7 @@ import SortIcon from "@material-ui/icons/Sort";
 import React, { ReactElement, useState } from "react";
 import { SortingOrder } from "./SortingUtil";
 
-export type TradesSortingOptionsProps<T> = {
+export type SortingOptionsProps<T> = {
   sortOpts: SortOption<T>[];
   orderBy: SortOption<T>;
   sortingOrder: SortingOrder;
@@ -61,9 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function TradesSortingOptions<T>(
-  props: TradesSortingOptionsProps<T>
-): ReactElement {
+function SortingOptions<T>(props: SortingOptionsProps<T>): ReactElement {
   const classes = useStyles();
   const { sortOpts, orderBy, sortingOrder, onOptionSelected } = props;
   const [sortOptsOpen, setSortOptsOpen] = useState(false);
@@ -105,7 +103,7 @@ function TradesSortingOptions<T>(
     >
       <ClickAwayListener onClickAway={closeSortOptions}>
         <div>
-          <Tooltip title="Sort trades" placement="left">
+          <Tooltip title="Sort" placement="left">
             <IconButton onClick={handleSortIconClick}>
               {!sortOptsOpen ? <SortIcon /> : <CloseIcon />}
             </IconButton>
@@ -171,4 +169,4 @@ function TradesSortingOptions<T>(
   );
 }
 
-export default TradesSortingOptions;
+export default SortingOptions;

@@ -4,17 +4,17 @@ import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
-import AssessmentOutlinedIcon from "@material-ui/icons/AssessmentOutlined";
+import HistoryIcon from "@material-ui/icons/History";
 import RemoveRedEyeOutlinedIcon from "@material-ui/icons/RemoveRedEyeOutlined";
 import React, { ReactElement } from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 import { Path } from "../router/Path";
 import MenuItem, { MenuItemProps } from "./menu/MenuItem";
 import Overview from "./overview/Overview";
-import Trades from "./trade/Trades";
+import Tradehistory from "./tradehistory/Tradehistory";
 import Wallets from "./wallet/Wallets";
 
-export const drawerWidth = 150;
+export const drawerWidth = 200;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,10 +50,10 @@ function Dashboard(): ReactElement {
       icon: <AccountBalanceWalletOutlinedIcon />,
     },
     {
-      path: Path.TRADES,
-      text: "Trades",
-      component: Trades,
-      icon: <AssessmentOutlinedIcon />,
+      path: Path.TRADEHISTORY,
+      text: "Tradehistory",
+      component: Tradehistory,
+      icon: <HistoryIcon />,
     },
   ];
 

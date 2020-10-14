@@ -9,9 +9,9 @@ import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
 import React, { ReactElement } from "react";
 import CSVLink from "../../common/csv/CsvLink";
 import { formatDateTimeForFilename } from "../../common/dateUtil";
-import { TradeHeader, TradeRow } from "./Trades";
+import { TradeHeader, TradeRow } from "./Tradehistory";
 
-export type TradesDownloadProps = {
+export type TradehistoryDownloadProps = {
   rows: TradeRow[];
   headers: TradeHeader[];
 };
@@ -27,7 +27,9 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const TradesDownload = (props: TradesDownloadProps): ReactElement => {
+const TradehistoryDownload = (
+  props: TradehistoryDownloadProps
+): ReactElement => {
   const classes = useStyles();
   const { headers, rows } = props;
 
@@ -41,7 +43,7 @@ const TradesDownload = (props: TradesDownloadProps): ReactElement => {
       <CSVLink
         data={rows}
         headers={headers}
-        filename={`trades_${formatDateTimeForFilename(new Date())}.csv`}
+        filename={`tradehistory_${formatDateTimeForFilename(new Date())}.csv`}
         className={classes.downloadLink}
       >
         <Button variant="contained" startIcon={<GetAppOutlinedIcon />}>
@@ -52,4 +54,4 @@ const TradesDownload = (props: TradesDownloadProps): ReactElement => {
   );
 };
 
-export default TradesDownload;
+export default TradehistoryDownload;

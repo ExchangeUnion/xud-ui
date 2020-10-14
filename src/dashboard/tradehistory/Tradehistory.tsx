@@ -16,7 +16,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import api from "../../api";
 import CenterEllipsis from "../../common/CenterEllipsis";
 import PageCircularProgress from "../../common/PageCircularProgress";
-import TradesSortingOptions, {
+import SortingOptions, {
   SortOption,
 } from "../../common/sorting/SortingOptions";
 import {
@@ -31,7 +31,7 @@ import { SETTINGS_STORE } from "../../stores/settingsStore";
 import { WithStores } from "../../stores/WithStores";
 import DashboardContent, { DashboardContentState } from "../DashboardContent";
 import ViewDisabled from "../ViewDisabled";
-import TradesDownload from "./TradesDownload";
+import TradehistoryDownload from "./TradehistoryDownload";
 
 export type TradeRow = {
   swapHash: string;
@@ -79,7 +79,7 @@ const styles = (theme: Theme) => {
 
 @inject(SETTINGS_STORE)
 @observer
-class Trades extends DashboardContent<PropsType, StateType> {
+class Tradehistory extends DashboardContent<PropsType, StateType> {
   tableHeaders: TradeHeader[] = [
     { label: "Swap hash", key: "swapHash", copyIcon: true, gridsXl: 3 },
     { label: "Side", key: "side", gridsXs: 1 },
@@ -172,12 +172,12 @@ class Trades extends DashboardContent<PropsType, StateType> {
         ) : this.state.rows?.length ? (
           <>
             <Grid container component={Paper} direction="column">
-              <TradesSortingOptions
+              <SortingOptions
                 sortOpts={this.sortOpts}
                 orderBy={this.state.orderBy}
                 sortingOrder={this.state.sortingOrder}
                 onOptionSelected={this.onSortOptionSelect}
-              ></TradesSortingOptions>
+              ></SortingOptions>
               <Grid item container justify="space-between" wrap="nowrap">
                 {this.tableHeaders.map((header) => (
                   <Grid
@@ -255,7 +255,10 @@ class Trades extends DashboardContent<PropsType, StateType> {
                   ))}
               </Grid>
             </Grid>
-            <TradesDownload headers={this.csvHeaders} rows={this.state.rows} />
+            <TradehistoryDownload
+              headers={this.csvHeaders}
+              rows={this.state.rows}
+            />
           </>
         ) : this.state.initialLoadCompleted ? (
           <Grid item container justify="center">
@@ -269,4 +272,6 @@ class Trades extends DashboardContent<PropsType, StateType> {
   }
 }
 
-export default withRouter(withStyles(styles, { withTheme: true })(Trades));
+export default withRouter(
+  withStyles(styles, { withTheme: true })(Tradehistory)
+);
