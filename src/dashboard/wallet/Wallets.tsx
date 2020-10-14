@@ -71,7 +71,7 @@ class Wallets extends DashboardContent<PropsType, StateType> {
   }
 
   render(): ReactElement {
-    const balances = this.state.balances?.orders;
+    const balances = this.state.balances?.balances;
     const { classes } = this.props;
 
     return (

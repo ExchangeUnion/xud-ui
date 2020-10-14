@@ -37,9 +37,11 @@ function WalletItem(props: WalletItemProps): ReactElement {
   const offChainSubrows: WalletSubrow[] = [
     {
       label: "free in channel",
-      value: satsToCoinsStr(balance.channel_balance),
+      value: satsToCoinsStr(
+        Number(balance.channel_balance) - Number(balance.reserved_balance)
+      ),
     },
-    { label: "in orders", value: "X.XXXX" },
+    { label: "in orders", value: satsToCoinsStr(balance.reserved_balance) },
   ];
 
   const getLimitsRow = (buy: boolean): ReactElement => {
