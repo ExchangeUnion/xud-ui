@@ -222,7 +222,7 @@ class Tradehistory extends DashboardContent<PropsType, StateType> {
                           className={classes.tableCell}
                           key={`${row.swapHash}_${column.key}`}
                         >
-                          {column.copyIcon ? (
+                          {column.copyIcon && row[column.key] ? (
                             <Grid
                               container
                               item
@@ -230,19 +230,17 @@ class Tradehistory extends DashboardContent<PropsType, StateType> {
                               alignItems="flex-start"
                             >
                               <CenterEllipsis text={row[column.key] + ""} />
-                              {column.copyIcon && (
-                                <IconButton
-                                  size="small"
-                                  className={classes.tableCellIcon}
-                                  onClick={() =>
-                                    (window as any).electron.copyToClipboard(
-                                      row[column.key]
-                                    )
-                                  }
-                                >
-                                  <FileCopyOutlinedIcon fontSize="inherit" />
-                                </IconButton>
-                              )}
+                              <IconButton
+                                size="small"
+                                className={classes.tableCellIcon}
+                                onClick={() =>
+                                  (window as any).electron.copyToClipboard(
+                                    row[column.key]
+                                  )
+                                }
+                              >
+                                <FileCopyOutlinedIcon fontSize="inherit" />
+                              </IconButton>
                             </Grid>
                           ) : (
                             <Typography variant="body2" component="span">
