@@ -83,8 +83,8 @@ class Wallets extends DashboardContent<PropsType, StateType> {
           />
         ) : (
           <Grid container spacing={5} className={classes.itemsContainer}>
-            {balances ? (
-              Object.keys(balances!).map((currency) => (
+            {balances && Object.keys(balances).length ? (
+              Object.keys(balances).map((currency) => (
                 <WalletItem
                   key={currency}
                   currency={currency}

@@ -50,7 +50,7 @@ function WalletItem(props: WalletItemProps): ReactElement {
         label={label}
         value={satsToCoinsStr(buy ? limits!.max_buy : limits!.max_sell)}
         labelItem={
-          ["BTC", "LTC"].includes(currency) && (
+          !["BTC", "LTC"].includes(currency) && (
             <Tooltip title="auto-extended">
               <InfoIcon fontSize="inherit" />
             </Tooltip>
