@@ -104,7 +104,7 @@ const OverviewItem = inject(SETTINGS_STORE)(
           (status.service === "xud" &&
             !XUD_NOT_READY.some((str) => status.status.startsWith(str))) ||
           (status.service === "boltz" &&
-            new RegExp("[lndbtc|btc|lndltc|ltc] down").test(status.status))
+            [...status.status.matchAll(new RegExp("down", "g"))].length <= 1)
         );
       };
 
