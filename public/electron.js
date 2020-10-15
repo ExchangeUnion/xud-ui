@@ -9,6 +9,9 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
+    backgroundColor: "#303030",
+    show: false,
+    autoHideMenuBar: true,
     icon: path.join(__dirname, "./assets/512x512.png"),
     webPreferences: {
       preload: path.join(__dirname, "./preload.js"),
@@ -22,6 +25,9 @@ function createWindow() {
       : `file://${path.join(__dirname, "../build/index.html")}`
   );
   mainWindow.on("closed", () => (mainWindow = null));
+  mainWindow.once("ready-to-show", () => {
+    mainWindow.show();
+  });
 }
 
 app.on("ready", createWindow);
