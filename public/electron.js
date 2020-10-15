@@ -9,6 +9,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
     height: 680,
+    icon: path.join(__dirname, "./assets/512x512.png"),
     webPreferences: {
       preload: path.join(__dirname, "./preload.js"),
       worldSafeExecuteJavaScript: true,
