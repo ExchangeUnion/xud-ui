@@ -1,9 +1,9 @@
 {
-  "name": "xud-ui",
+  "name": "xud-explorer",
   "description": "For market makers who want to have a visual way to control their xud environment",
   "author": "Exchange Union",
   "build": {
-    "appId": "com.xud-ui"
+    "appId": "com.xud-explorer"
   },
   "main": "public/electron.js",
   "homepage": "./",
