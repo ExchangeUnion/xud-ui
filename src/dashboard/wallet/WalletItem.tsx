@@ -63,7 +63,7 @@ function WalletItem(props: WalletItemProps): ReactElement {
   addToRowsIfNotZero(
     onChainSubrows,
     balance.unconfirmed_wallet_balance,
-    "unconfirmed"
+    "pending"
   );
 
   const getLimitsRow = (buy: boolean): ReactElement => {
