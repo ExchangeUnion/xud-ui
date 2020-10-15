@@ -1,6 +1,5 @@
-import axios from "axios";
 import { from, Observable } from "rxjs";
-import { pluck } from "rxjs/operators";
+import { mergeMap } from "rxjs/operators";
 import { GetbalanceResponse } from "./models/GetbalanceResponse";
 import { Info } from "./models/Info";
 import { Status } from "./models/Status";
@@ -10,39 +9,38 @@ import { TradinglimitsResponse } from "./models/TradinglimitsResponse";
 const path = "api/v1";
 const xudPath = `${path}/xud`;
 
+const fetchJsonResponse = <T>(url: string): Observable<T> => {
+  return from(fetch(`${url}`)).pipe(mergeMap((resp: Response) => resp.json()));
+};
+
 export default {
   status$(url: string): Observable<Status[]> {
-    return from(axios.get(`${url}/${path}/status`)).pipe(pluck("data"));
+    return fetchJsonResponse(`${url}/${path}/status`);
   },
 
   statusByService$(serviceName: string, url: string): Observable<Status> {
-    return from(axios.get(`${url}/${path}/status/${serviceName}`)).pipe(
-      pluck("data")
-    );
+    return fetchJsonResponse(`${url}/${path}/status/${serviceName}`);
   },
 
   logs$(serviceName: string, url: string): Observable<string> {
-    const requestUrl = `${url}/${path}/logs/${serviceName}`;
-    return from(axios.get(requestUrl)).pipe(pluck("data"));
+    return from(fetch(`${url}/${path}/logs/${serviceName}`)).pipe(
+      mergeMap((resp) => resp.text())
+    );
   },
 
   getinfo$(url: string): Observable<Info> {
-    return from(axios.get(`${url}/${xudPath}/getinfo`)).pipe(pluck("data"));
+    return fetchJsonResponse(`${url}/${xudPath}/getinfo`);
   },
 
   getbalance$(url: string): Observable<GetbalanceResponse> {
-    return from(axios.get(`${url}/${xudPath}/getbalance`)).pipe(pluck("data"));
+    return fetchJsonResponse(`${url}/${xudPath}/getbalance`);
   },
 
   tradinglimits$(url: string): Observable<TradinglimitsResponse> {
-    return from(axios.get(`${url}/${xudPath}/tradinglimits`)).pipe(
-      pluck("data")
-    );
+    return fetchJsonResponse(`${url}/${xudPath}/tradinglimits`);
   },
 
   tradehistory$(url: string): Observable<TradehistoryResponse> {
-    return from(axios.get(`${url}/${xudPath}/tradehistory`)).pipe(
-      pluck("data")
-    );
+    return fetchJsonResponse(`${url}/${xudPath}/tradehistory`);
   },
 };
