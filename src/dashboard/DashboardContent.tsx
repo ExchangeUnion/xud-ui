@@ -1,7 +1,14 @@
 import { Component } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { Observable, of, PartialObserver, Subscription, timer } from "rxjs";
-import { mergeMap } from "rxjs/operators";
+import {
+  EMPTY,
+  Observable,
+  of,
+  PartialObserver,
+  Subscription,
+  timer,
+} from "rxjs";
+import { exhaustMap } from "rxjs/operators";
 import api from "../api";
 import { XUD_NOT_READY } from "../constants";
 import { Status } from "../models/Status";
@@ -13,12 +20,14 @@ export type RefreshableData<T, S> = {
   stateProp: keyof S;
   onSuccessCb?: (value: T) => void;
   isStatusQuery?: boolean;
+  doNotSetInitialLoadCompleted?: boolean;
 };
 
 export type DashboardContentState = {
   xudLocked?: boolean;
   xudNotReady?: boolean;
   xudStatus?: string;
+  initialLoadCompleted?: boolean;
 };
 
 abstract class DashboardContent<
@@ -42,11 +51,11 @@ abstract class DashboardContent<
   updateState<T>(data: RefreshableData<T, S>): Subscription {
     return this.dataRefreshTimer
       .pipe(
-        mergeMap(() => this.checkStatus()),
-        mergeMap(() =>
+        exhaustMap(() => this.checkStatus()),
+        exhaustMap(() =>
           (this.state.xudLocked || this.state.xudNotReady) &&
           !data.isStatusQuery
-            ? of(undefined)
+            ? EMPTY
             : data.queryFn(this.props.settingsStore!.xudDockerUrl)
         )
       )
@@ -54,7 +63,8 @@ abstract class DashboardContent<
         this.handleResponse(
           data.stateProp,
           !!data.isStatusQuery,
-          data.onSuccessCb
+          data.onSuccessCb,
+          !data.doNotSetInitialLoadCompleted
         )
       );
   }
@@ -63,7 +73,7 @@ abstract class DashboardContent<
     return api
       .statusByService$("xud", this.props.settingsStore!.xudDockerUrl)
       .pipe(
-        mergeMap((resp: Status) => {
+        exhaustMap((resp: Status) => {
           this.setState({
             xudLocked: resp.status.startsWith("Wallet locked"),
             xudNotReady: XUD_NOT_READY.some((status) =>
@@ -79,16 +89,20 @@ abstract class DashboardContent<
   handleResponse<T>(
     stateProp: keyof S,
     isStatusQuery: boolean,
-    onSuccessCb?: (value: T) => void
-  ): PartialObserver<T | undefined> {
+    onSuccessCb?: (value: T) => void,
+    setInitialLoadCompleted = true
+  ): PartialObserver<T> {
     return {
-      next: (data: T | undefined) => {
+      next: (data: T) => {
         if (
-          ((!this.state.xudLocked && !this.state.xudNotReady) ||
-            isStatusQuery) &&
-          data
+          (!this.state.xudLocked && !this.state.xudNotReady) ||
+          isStatusQuery
         ) {
           this.setState({ [stateProp]: data } as any);
+          if (!this.state.initialLoadCompleted && setInitialLoadCompleted) {
+            this.setState({ initialLoadCompleted: true });
+          }
+
           if (onSuccessCb) {
             onSuccessCb(data);
           }

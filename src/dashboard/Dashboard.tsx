@@ -3,15 +3,18 @@ import Box from "@material-ui/core/Box";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
+import HistoryIcon from "@material-ui/icons/History";
+import RemoveRedEyeOutlinedIcon from "@material-ui/icons/RemoveRedEyeOutlined";
 import React, { ReactElement } from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 import { Path } from "../router/Path";
 import MenuItem, { MenuItemProps } from "./menu/MenuItem";
 import Overview from "./overview/Overview";
-import Trades from "./trade/Trades";
+import Tradehistory from "./tradehistory/Tradehistory";
 import Wallets from "./wallet/Wallets";
 
-export const drawerWidth = 150;
+export const drawerWidth = 200;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,9 +36,25 @@ function Dashboard(): ReactElement {
   const classes = useStyles();
   const { path } = useRouteMatch();
   const menuItems: MenuItemProps[] = [
-    { path: Path.OVERVIEW, text: "Overview", component: Overview },
-    { path: Path.WALLETS, text: "Wallets", component: Wallets },
-    { path: Path.TRADES, text: "Trades", component: Trades },
+    {
+      path: Path.OVERVIEW,
+      text: "Overview",
+      component: Overview,
+      icon: <RemoveRedEyeOutlinedIcon />,
+      isFallback: true,
+    },
+    {
+      path: Path.WALLETS,
+      text: "Wallets",
+      component: Wallets,
+      icon: <AccountBalanceWalletOutlinedIcon />,
+    },
+    {
+      path: Path.TRADEHISTORY,
+      text: "Tradehistory",
+      component: Tradehistory,
+      icon: <HistoryIcon />,
+    },
   ];
 
   return (
@@ -62,6 +81,8 @@ function Dashboard(): ReactElement {
               text={item.text}
               component={item.component}
               key={item.text}
+              icon={item.icon}
+              isFallback={item.isFallback}
             />
           ))}
         </List>

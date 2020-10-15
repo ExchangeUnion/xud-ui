@@ -128,10 +128,10 @@ const createLndRows = (lndInfo: LndInfo): InfoRow[] => [
       .join("\n"),
   },
   { label: "Blockheight", value: lndInfo.blockheight },
-  { label: "Active channels", value: lndInfo.channels.active },
-  { label: "Inactive channels", value: lndInfo.channels.inactive },
-  { label: "Pending channels", value: lndInfo.channels.pending },
-  { label: "Closed channels", value: lndInfo.channels.closed },
+  { label: "Active channels", value: lndInfo.channels?.active },
+  { label: "Inactive channels", value: lndInfo.channels?.inactive },
+  { label: "Pending channels", value: lndInfo.channels?.pending },
+  { label: "Closed channels", value: lndInfo.channels?.closed },
   { label: "Version", value: lndInfo.version },
 ];
 

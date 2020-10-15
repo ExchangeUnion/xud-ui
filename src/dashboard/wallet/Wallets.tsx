@@ -12,6 +12,7 @@ import { inject, observer } from "mobx-react";
 import React, { ReactElement } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import api from "../../api";
+import PageCircularProgress from "../../common/PageCircularProgress";
 import { GetbalanceResponse } from "../../models/GetbalanceResponse";
 import { TradinglimitsResponse } from "../../models/TradinglimitsResponse";
 import { SETTINGS_STORE } from "../../stores/settingsStore";
@@ -64,12 +65,13 @@ class Wallets extends DashboardContent<PropsType, StateType> {
       {
         queryFn: api.tradinglimits$,
         stateProp: "limits",
+        doNotSetInitialLoadCompleted: true,
       }
     );
   }
 
   render(): ReactElement {
-    const balances = this.state.balances?.orders;
+    const balances = this.state.balances?.balances;
     const { classes } = this.props;
 
     return (
@@ -81,15 +83,22 @@ class Wallets extends DashboardContent<PropsType, StateType> {
           />
         ) : (
           <Grid container spacing={5} className={classes.itemsContainer}>
-            {balances &&
-              Object.keys(balances!).map((currency) => (
+            {balances && Object.keys(balances).length ? (
+              Object.keys(balances).map((currency) => (
                 <WalletItem
                   key={currency}
                   currency={currency}
                   balance={balances![currency]}
                   limits={this.state.limits?.limits[currency]}
                 ></WalletItem>
-              ))}
+              ))
+            ) : this.state.initialLoadCompleted ? (
+              <Grid item container justify="center">
+                No wallets found
+              </Grid>
+            ) : (
+              <PageCircularProgress />
+            )}
           </Grid>
         )}
         <Card className={classes.footer}>

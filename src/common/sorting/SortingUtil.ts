@@ -2,14 +2,15 @@ export type SortingOrder = "asc" | "desc";
 
 export const getComparator = <Key extends keyof any>(
   order: SortingOrder,
-  orderBy: Key
+  orderBy: Key,
+  groupBy?: Key
 ): ((
   a: { [key in Key]: number | string },
   b: { [key in Key]: number | string }
 ) => number) => {
   return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+    ? (a, b) => descendingComparator(a, b, orderBy, groupBy)
+    : (a, b) => -descendingComparator(a, b, orderBy, groupBy);
 };
 
 export const stableSort = <T>(
@@ -25,7 +26,17 @@ export const stableSort = <T>(
   return stabilizedThis.map((el) => el[0]);
 };
 
-const descendingComparator = <T>(a: T, b: T, orderBy: keyof T): number => {
+const descendingComparator = <T>(
+  a: T,
+  b: T,
+  orderBy: keyof T,
+  groupBy?: keyof T
+): number => {
+  if (groupBy) {
+    return (
+      descendingComparator(a, b, groupBy) || descendingComparator(a, b, orderBy)
+    );
+  }
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
