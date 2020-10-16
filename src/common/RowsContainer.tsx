@@ -1,15 +1,31 @@
-import Box from "@material-ui/core/Box";
+import { createStyles, makeStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import React, { ReactElement } from "react";
 
-function RowsContainer(props: { children: ReactElement[] }): ReactElement {
+const useStyles = makeStyles(() =>
+  createStyles({
+    gridContainer: {
+      height: "100vh",
+      padding: "10vh 10vw",
+    },
+  })
+);
+
+function RowsContainer(props: {
+  children: ReactElement | ReactElement[];
+}): ReactElement {
   const { children } = props;
+  const classes = useStyles();
+
   return (
-    <Box height="100vh" padding="10vh 10vw">
-      <Grid container direction="column" spacing={10}>
-        {children}
-      </Grid>
-    </Box>
+    <Grid
+      className={classes.gridContainer}
+      container
+      justify="space-between"
+      direction="column"
+    >
+      {children}
+    </Grid>
   );
 }
 export default RowsContainer;

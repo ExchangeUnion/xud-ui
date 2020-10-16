@@ -1,3 +1,9 @@
+import {
+  CircularProgress,
+  createStyles,
+  makeStyles,
+  Theme,
+} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -17,9 +23,18 @@ import LinkToSetupGuide from "./LinkToSetupGuide";
 
 type DockerNotDetectedProps = WithStores;
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    spinnerContainer: {
+      padding: theme.spacing(8),
+    },
+  })
+);
+
 const DockerNotDetected = inject(SETTINGS_STORE)(
   observer(({ settingsStore }: DockerNotDetectedProps) => {
     const history = useHistory();
+    const classes = useStyles();
     const [connectionFailed, setConnectionFailed] = useState(false);
 
     useEffect(() => {
@@ -39,24 +54,46 @@ const DockerNotDetected = inject(SETTINGS_STORE)(
 
     return (
       <RowsContainer>
-        <Grid container item alignItems="center" justify="center">
-          <ReportProblemOutlinedIcon fontSize="large" />
-          &nbsp;
-          <Typography variant="h4" component="h1">
-            {connectionFailed
-              ? "XUD Docker not detected"
-              : "Connecting to XUD Docker"}
-          </Typography>
-        </Grid>
-        <Grid container item alignItems="center" justify="center">
-          <Button
-            component={RouterLink}
-            to={Path.CONNECT_TO_REMOTE}
-            variant="outlined"
-            endIcon={<ArrowForwardIcon />}
+        <Grid container item direction="column">
+          <Grid
+            container
+            item
+            alignItems="center"
+            justify="center"
+            wrap="nowrap"
+            spacing={2}
           >
-            Connect remote XUD Docker
-          </Button>
+            <Grid item>
+              <ReportProblemOutlinedIcon fontSize="large" />
+            </Grid>
+            <Grid item>
+              <Typography variant="h4" component="h1">
+                {connectionFailed
+                  ? "Unable to connect to XUD Docker"
+                  : "Waiting for XUD Docker"}
+              </Typography>
+            </Grid>
+          </Grid>
+          {!connectionFailed && (
+            <Grid
+              container
+              item
+              justify="center"
+              className={classes.spinnerContainer}
+            >
+              <CircularProgress color="inherit" />
+            </Grid>
+          )}
+          <Grid container item alignItems="center" justify="center">
+            <Button
+              component={RouterLink}
+              to={Path.CONNECT_TO_REMOTE}
+              variant="outlined"
+              endIcon={<ArrowForwardIcon />}
+            >
+              Connect remote XUD Docker
+            </Button>
+          </Grid>
         </Grid>
         <Grid container item alignItems="center">
           <LinkToSetupGuide />
