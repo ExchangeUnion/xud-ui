@@ -1,5 +1,5 @@
 import { from, Observable } from "rxjs";
-import { mergeMap } from "rxjs/operators";
+import { catchError, mergeMap } from "rxjs/operators";
 import { GetbalanceResponse } from "./models/GetbalanceResponse";
 import { Info } from "./models/Info";
 import { Status } from "./models/Status";
@@ -9,8 +9,16 @@ import { TradinglimitsResponse } from "./models/TradinglimitsResponse";
 const path = "api/v1";
 const xudPath = `${path}/xud`;
 
+const logAndThrow = (url: string, err: string) => {
+  (window as any).electron.logError(`requestUrl: ${url}; error: ${err}`);
+  throw err;
+};
+
 const fetchJsonResponse = <T>(url: string): Observable<T> => {
-  return from(fetch(`${url}`)).pipe(mergeMap((resp: Response) => resp.json()));
+  return from(fetch(`${url}`)).pipe(
+    mergeMap((resp: Response) => resp.json()),
+    catchError((err) => logAndThrow(url, err))
+  );
 };
 
 export default {
@@ -23,8 +31,10 @@ export default {
   },
 
   logs$(serviceName: string, url: string): Observable<string> {
-    return from(fetch(`${url}/${path}/logs/${serviceName}`)).pipe(
-      mergeMap((resp) => resp.text())
+    const requestUrl = `${url}/${path}/logs/${serviceName}`;
+    return from(fetch(requestUrl)).pipe(
+      mergeMap((resp) => resp.text()),
+      catchError((err) => logAndThrow(requestUrl, err))
     );
   },
 
