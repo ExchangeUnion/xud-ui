@@ -1,20 +1,31 @@
 {
-  "name": "xud-ui",
+  "name": "xud-explorer",
   "description": "For market makers who want to have a visual way to control their xud environment",
   "author": "Exchange Union",
   "build": {
-    "appId": "com.xud-ui"
+    "appId": "com.xud-explorer",
+    "linux": {
+      "category": "Finance",
+      "icon": "public/assets/512x512.png"
+    },
+    "mac": {
+      "category": "public.app-category.finance",
+      "icon": "public/assets/512x512.png"
+    },
+    "win": {
+      "icon": "public/assets/512x512.png"
+    }
   },
   "main": "public/electron.js",
   "homepage": "./",
-  "version": "1.0.0-alpha.6",
+  "version": "1.0.0-alpha.7",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "axios": "^0.20.0",
     "cross-env": "^7.0.2",
     "electron-is-dev": "^1.2.0",
+    "electron-log": "^4.2.4",
     "mobx": "^5.15.7",
     "mobx-react": "^6.3.0",
     "react": "^16.13.1",
@@ -31,6 +42,7 @@
     "electron-build": "electron-builder",
     "release": "yarn react-build && electron-builder --publish=always",
     "build": "yarn lint && yarn react-build && yarn electron-build",
+    "build-all": "yarn lint && yarn react-build && yarn electron-build -mwl",
     "start": "concurrently --kill-others \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
     "test": "prettier --check src/ && yarn react-test",
     "lint": "eslint . --ext .js,.ts,.tsx",

@@ -1,5 +1,5 @@
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createMuiTheme, Theme, withStyles } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import { Provider } from "mobx-react";
 import React, { ReactElement } from "react";
@@ -17,6 +17,29 @@ const darkTheme = createMuiTheme({
   },
 });
 
+const GlobalCss = withStyles((theme: Theme) => {
+  return {
+    "@global": {
+      "::-webkit-scrollbar": {
+        width: 8,
+      },
+      "::-webkit-scrollbar-track": {
+        background: theme.palette.background.default,
+      },
+      "::-webkit-scrollbar-thumb": {
+        borderRadius: "4px",
+        background: theme.palette.background.paper,
+      },
+      "::-webkit-scrollbar-thumb:hover": {
+        background: theme.palette.grey[700],
+      },
+      "::-webkit-scrollbar-corner": {
+        backgroundColor: "transparent",
+      },
+    },
+  };
+})(() => null);
+
 const settingsStore = useSettingsStore({
   xudDockerUrl: XUD_DOCKER_LOCAL_MAINNET_URL,
 });
@@ -25,6 +48,7 @@ function App(): ReactElement {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
+      <GlobalCss />
       <Provider settingsStore={settingsStore}>
         <Router>
           <Switch>

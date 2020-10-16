@@ -1,4 +1,4 @@
-# XUD UI
+# XUD EXPLORER
 
 ## Development
 
