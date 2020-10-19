@@ -5,7 +5,6 @@ type Balance = {
   inactive_channel_balance: string;
   wallet_balance: string;
   unconfirmed_wallet_balance: string;
-  reserved_balance: string;
 };
 
 export default Balance;

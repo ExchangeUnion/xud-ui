@@ -128,6 +128,14 @@ function WalletItem(props: WalletItemProps): ReactElement {
                 </Typography>
                 {getLimitsRow(true)}
                 {getLimitsRow(false)}
+                <WalletRow
+                  label="Reserved outbound"
+                  value={satsToCoinsStr(limits!.reserved_outbound)}
+                />
+                <WalletRow
+                  label="Reserved inbound"
+                  value={satsToCoinsStr(limits!.reserved_inbound)}
+                />
               </Grid>
             )}
           </Grid>
