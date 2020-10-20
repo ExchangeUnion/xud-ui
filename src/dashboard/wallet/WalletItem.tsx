@@ -68,14 +68,28 @@ function WalletItem(props: WalletItemProps): ReactElement {
 
   const getLimitsRow = (buy: boolean): ReactElement => {
     const label = `Max ${buy ? "buy" : "sell"}`;
+    const hints = [];
+    if (buy && !["BTC", "LTC"].includes(currency)) {
+      hints.push("auto-extended");
+    }
+    const reserved = Number(
+      buy ? limits!.reserved_inbound : limits!.reserved_outbound
+    );
+    if (reserved) {
+      hints.push(`in orders total: ${satsToCoinsStr(reserved)}`);
+    }
 
     return (
       <WalletRow
         label={label}
         value={satsToCoinsStr(buy ? limits!.max_buy : limits!.max_sell)}
         labelItem={
-          !["BTC", "LTC"].includes(currency) && (
-            <Tooltip title="auto-extended">
+          !!hints.length && (
+            <Tooltip
+              title={hints.map((hint) => (
+                <div>{hint}</div>
+              ))}
+            >
               <InfoIcon fontSize="inherit" />
             </Tooltip>
           )
@@ -128,14 +142,6 @@ function WalletItem(props: WalletItemProps): ReactElement {
                 </Typography>
                 {getLimitsRow(true)}
                 {getLimitsRow(false)}
-                <WalletRow
-                  label="Reserved outbound"
-                  value={satsToCoinsStr(limits!.reserved_outbound)}
-                />
-                <WalletRow
-                  label="Reserved inbound"
-                  value={satsToCoinsStr(limits!.reserved_inbound)}
-                />
               </Grid>
             )}
           </Grid>
