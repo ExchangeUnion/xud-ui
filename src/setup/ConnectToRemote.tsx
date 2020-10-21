@@ -44,7 +44,7 @@ const ConnectToRemote = inject(SETTINGS_STORE)(
   observer(({ settingsStore }: ConnectToRemoteProps) => {
     const history = useHistory();
     const classes = useStyles();
-    const [ipAndPort, setIpAndPort] = useState("");
+    const [ipAndPort, setIpAndPort] = useState(settingsStore!.xudDockerUrl);
     const [connectionFailed, setConnectionFailed] = useState(false);
     const [connecting, setConnecting] = useState(false);
 

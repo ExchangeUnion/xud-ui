@@ -1,13 +1,14 @@
-import { Typography } from "@material-ui/core";
+import { Button, Grid, Typography } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
+import CachedIcon from "@material-ui/icons/Cached";
 import HistoryIcon from "@material-ui/icons/History";
 import RemoveRedEyeOutlinedIcon from "@material-ui/icons/RemoveRedEyeOutlined";
 import React, { ReactElement } from "react";
-import { Route, Switch, useRouteMatch } from "react-router-dom";
+import { Route, Switch, useHistory, useRouteMatch } from "react-router-dom";
 import { Path } from "../router/Path";
 import MenuItem, { MenuItemProps } from "./menu/MenuItem";
 import Overview from "./overview/Overview";
@@ -20,9 +21,16 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     drawerPaper: {
       width: drawerWidth,
+      justifyContent: "space-between",
+    },
+    menuContainer: {
+      width: "100%",
     },
     header: {
       padding: "16px",
+    },
+    drawerButton: {
+      margin: theme.spacing(2),
     },
     content: {
       marginLeft: drawerWidth,
@@ -32,7 +40,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function Dashboard(): ReactElement {
+const Dashboard = (): ReactElement => {
+  const history = useHistory();
   const classes = useStyles();
   const { path } = useRouteMatch();
   const menuItems: MenuItemProps[] = [
@@ -57,6 +66,10 @@ function Dashboard(): ReactElement {
     },
   ];
 
+  const disconnect = (): void => {
+    history.push(Path.CONNECT_TO_REMOTE);
+  };
+
   return (
     <Box>
       <Drawer
@@ -66,26 +79,38 @@ function Dashboard(): ReactElement {
         }}
         anchor="left"
       >
-        <Typography
-          className={classes.header}
-          variant="overline"
-          component="p"
-          color="textSecondary"
+        <Grid container item>
+          <Typography
+            className={classes.header}
+            variant="overline"
+            component="p"
+            color="textSecondary"
+          >
+            XUD Explorer
+          </Typography>
+          <List className={classes.menuContainer}>
+            {menuItems.map((item) => (
+              <MenuItem
+                path={item.path}
+                text={item.text}
+                component={item.component}
+                key={item.text}
+                icon={item.icon}
+                isFallback={item.isFallback}
+              />
+            ))}
+          </List>
+        </Grid>
+        <Button
+          size="small"
+          startIcon={<CachedIcon />}
+          variant="outlined"
+          title="Disconnect from xud-docker"
+          className={classes.drawerButton}
+          onClick={disconnect}
         >
-          XUD Explorer
-        </Typography>
-        <List>
-          {menuItems.map((item) => (
-            <MenuItem
-              path={item.path}
-              text={item.text}
-              component={item.component}
-              key={item.text}
-              icon={item.icon}
-              isFallback={item.isFallback}
-            />
-          ))}
-        </List>
+          Disconnect
+        </Button>
       </Drawer>
       <main className={classes.content}>
         <Switch>
@@ -101,6 +126,6 @@ function Dashboard(): ReactElement {
       </main>
     </Box>
   );
-}
+};
 
 export default Dashboard;
