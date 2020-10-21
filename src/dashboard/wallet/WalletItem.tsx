@@ -3,7 +3,6 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import React, { ReactElement } from "react";
 import { satsToCoinsStr } from "../../common/currencyUtil";
@@ -68,14 +67,28 @@ function WalletItem(props: WalletItemProps): ReactElement {
 
   const getLimitsRow = (buy: boolean): ReactElement => {
     const label = `Max ${buy ? "buy" : "sell"}`;
+    const hints = [];
+    const reserved = Number(
+      buy ? limits!.reserved_inbound : limits!.reserved_outbound
+    );
+    if (reserved) {
+      hints.push(`in orders: ${satsToCoinsStr(reserved)}`);
+    }
+    if (buy && !["BTC", "LTC"].includes(currency)) {
+      hints.push("auto-extended");
+    }
 
     return (
       <WalletRow
         label={label}
         value={satsToCoinsStr(buy ? limits!.max_buy : limits!.max_sell)}
         labelItem={
-          !["BTC", "LTC"].includes(currency) && (
-            <Tooltip title="auto-extended">
+          !!hints.length && (
+            <Tooltip
+              title={hints.map((hint) => (
+                <div>{hint}</div>
+              ))}
+            >
               <InfoIcon fontSize="inherit" />
             </Tooltip>
           )
@@ -102,7 +115,7 @@ function WalletItem(props: WalletItemProps): ReactElement {
                 value={satsToCoinsStr(balance.wallet_balance)}
                 labelItem={
                   <Tooltip title="on-chain, not tradable">
-                    <HelpOutlineIcon fontSize="inherit" />
+                    <InfoIcon fontSize="inherit" />
                   </Tooltip>
                 }
               />
@@ -112,7 +125,7 @@ function WalletItem(props: WalletItemProps): ReactElement {
                 subrows={offChainSubrows}
                 labelItem={
                   <Tooltip title="off-chain, tradable">
-                    <HelpOutlineIcon fontSize="inherit" />
+                    <InfoIcon fontSize="inherit" />
                   </Tooltip>
                 }
               />

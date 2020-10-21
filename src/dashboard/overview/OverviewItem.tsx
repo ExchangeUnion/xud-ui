@@ -2,6 +2,7 @@ import {
   Button,
   createStyles,
   Divider,
+  Icon,
   IconButton,
   makeStyles,
   Snackbar,
@@ -14,7 +15,6 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
-import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { inject, observer } from "mobx-react";
 import React, { ReactElement, useState } from "react";
 import api from "../../api";
@@ -144,7 +144,7 @@ const OverviewItem = inject(SETTINGS_STORE)(
                     title="details"
                     onClick={() => setDetailsOpen(true)}
                   >
-                    <InfoIcon fontSize="small" />
+                    <Icon fontSize="small">open_in_full</Icon>
                   </IconButton>
                 )}
               </Grid>
