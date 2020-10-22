@@ -58,6 +58,14 @@ expose-ports = ["8889"]
   - simnet: 28889 (`localhost:28889`)
 - If you are running xud-docker mainnet locally, XUD Explorer connects automatically to this instance
 
+## Application logs
+
+Logs are written to the following locations
+
+- on Linux: ~/.config/xud-explorer/logs/
+- on macOS: ~/Library/Logs/xud-explorer/
+- on Windows: %USERPROFILE%\AppData\Roaming\xud-explorer\logs\
+
 ## Development
 
 ### Requirements
