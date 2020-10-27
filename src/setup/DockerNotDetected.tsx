@@ -49,6 +49,15 @@ const DockerNotDetected = inject(SETTINGS_STORE)(
           next: () => history.push(Path.DASHBOARD),
           error: () => setConnectionFailed(true),
         });
+      (window as any).electron.send("is-docker-installed");
+      (window as any).electron.receive(
+        "is-docker-installed",
+        (isDockerInstalled: boolean) => {
+          console.log(
+            `Docker install status is: ${isDockerInstalled} ${typeof isDockerInstalled}`
+          );
+        }
+      );
       return () => subscription.unsubscribe();
     }, [history, connectionFailed, settingsStore]);
 
