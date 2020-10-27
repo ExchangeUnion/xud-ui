@@ -23,7 +23,7 @@ function createWindow() {
   });
   mainWindow.loadURL(
     isDev
-      ? "http://localhost:3000"
+      ? "https://localhost:3000"
       : `file://${path.join(__dirname, "../build/index.html")}`
   );
   mainWindow.on("closed", () => (mainWindow = null));
@@ -46,3 +46,12 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+// SSL/TSL: self signed certificate support
+app.on(
+  "certificate-error",
+  (event, _webContents, _url, _error, _certificate, callback) => {
+    event.preventDefault();
+    callback(true);
+  }
+);

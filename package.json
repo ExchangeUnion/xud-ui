@@ -18,7 +18,7 @@
   },
   "main": "public/electron.js",
   "homepage": "./",
-  "version": "1.0.0-test.7",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",
@@ -35,7 +35,7 @@
     "rxjs": "^6.6.3"
   },
   "scripts": {
-    "react-start": "react-scripts start",
+    "react-start": "HTTPS=true react-scripts start",
     "react-build": "react-scripts build",
     "react-test": "react-scripts test --env=jsdom",
     "react-eject": "react-scripts eject",
@@ -44,7 +44,7 @@
     "build": "yarn lint && yarn react-build && yarn electron-build --publish never",
     "build-all": "yarn lint && yarn react-build && yarn electron-build --publish never -mwl",
     "build-wl": "yarn lint && yarn react-build && yarn electron-build --publish never --win --linux",
-    "start": "concurrently --kill-others \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
+    "start": "concurrently --kill-others \"cross-env BROWSER=none yarn react-start\" \"wait-on https://localhost:3000 && electron .\"",
     "test": "prettier --check src/ && yarn react-test",
     "lint": "eslint . --ext .js,.ts,.tsx",
     "prettier": "prettier --write src/"
