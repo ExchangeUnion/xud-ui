@@ -15,8 +15,10 @@ import { Link as RouterLink, useHistory } from "react-router-dom";
 import { timer } from "rxjs";
 import { delay, mergeMap, retryWhen } from "rxjs/operators";
 import api from "../api";
+import { isDockerInstalled$ } from "../common/dockerUtil";
 import RowsContainer from "../common/RowsContainer";
 import { Path } from "../router/Path";
+import { DOCKER_STORE } from "../stores/dockerStore";
 import { SETTINGS_STORE } from "../stores/settingsStore";
 import { WithStores } from "../stores/WithStores";
 import LinkToSetupGuide from "./LinkToSetupGuide";
@@ -31,8 +33,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const DockerNotDetected = inject(SETTINGS_STORE)(
-  observer(({ settingsStore }: DockerNotDetectedProps) => {
+const DockerNotDetected = inject(
+  SETTINGS_STORE,
+  DOCKER_STORE
+)(
+  observer(({ settingsStore, dockerStore }: DockerNotDetectedProps) => {
     const history = useHistory();
     const classes = useStyles();
     const [connectionFailed, setConnectionFailed] = useState(false);
@@ -49,17 +54,23 @@ const DockerNotDetected = inject(SETTINGS_STORE)(
           next: () => history.push(Path.DASHBOARD),
           error: () => setConnectionFailed(true),
         });
-      (window as any).electron.send("is-docker-installed");
-      (window as any).electron.receive(
-        "is-docker-installed",
-        (isDockerInstalled: boolean) => {
-          console.log(
-            `Docker install status is: ${isDockerInstalled} ${typeof isDockerInstalled}`
-          );
-        }
+      // TODO: move this logic to a better place
+      console.log(
+        "TODO: here we can get the docker install status from the store",
+        dockerStore!.isInstalled
       );
+      isDockerInstalled$().subscribe({
+        next: (isInstalled) => {
+          dockerStore!.setIsInstalled(isInstalled);
+          console.log(
+            "new store isInstalled status is",
+            dockerStore!.isInstalled
+          );
+        },
+        error: () => dockerStore!.setIsInstalled(false),
+      });
       return () => subscription.unsubscribe();
-    }, [history, connectionFailed, settingsStore]);
+    }, [history, connectionFailed, settingsStore, dockerStore]);
 
     return (
       <RowsContainer>
