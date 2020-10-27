@@ -3,7 +3,7 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const isDev = require("electron-is-dev");
-const { setupDockerHelper } = require("./docker");
+const { ipcHandler } = require("./ipc");
 
 let mainWindow;
 
@@ -30,7 +30,7 @@ function createWindow() {
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
   });
-  setupDockerHelper(mainWindow);
+  ipcHandler(mainWindow);
 }
 
 app.on("ready", createWindow);

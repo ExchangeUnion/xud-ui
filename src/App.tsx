@@ -9,6 +9,7 @@ import Dashboard from "./dashboard/Dashboard";
 import { Path } from "./router/Path";
 import ConnectToRemote from "./setup/ConnectToRemote";
 import DockerNotDetected from "./setup/DockerNotDetected";
+import { useDockerStore } from "./stores/dockerStore";
 import { useSettingsStore } from "./stores/settingsStore";
 
 const darkTheme = createMuiTheme({
@@ -44,12 +45,16 @@ const settingsStore = useSettingsStore({
   xudDockerUrl: XUD_DOCKER_LOCAL_MAINNET_URL,
 });
 
+const dockerStore = useDockerStore({
+  isInstalled: false,
+});
+
 function App(): ReactElement {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <GlobalCss />
-      <Provider settingsStore={settingsStore}>
+      <Provider settingsStore={settingsStore} dockerStore={dockerStore}>
         <Router>
           <Switch>
             <Route path={Path.CONNECT_TO_REMOTE}>
