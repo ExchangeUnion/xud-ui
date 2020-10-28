@@ -26,12 +26,14 @@ const execCommand$ = (command: string): Observable<string> => {
 };
 
 const AVAILABLE_COMMANDS = {
-  DOCKER_VERSION: "docker version",
-  DOCKER_PS: "docker ps",
+  IS_INSTALLED: "docker version",
+  IS_RUNNING: "docker ps",
+  DOWNLOAD:
+    "curl https://desktop.docker.com/win/stable/Docker%20Desktop%20Installer.exe > docker-installer.exe",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
-  return execCommand$(AVAILABLE_COMMANDS.DOCKER_VERSION).pipe(
+  return execCommand$(AVAILABLE_COMMANDS.IS_INSTALLED).pipe(
     map((output) => {
       if (output.includes("Docker Engine")) {
         return true;
@@ -43,7 +45,7 @@ const isDockerInstalled$ = (): Observable<boolean> => {
 };
 
 const isDockerRunning$ = (): Observable<boolean> => {
-  return execCommand$(AVAILABLE_COMMANDS.DOCKER_PS).pipe(
+  return execCommand$(AVAILABLE_COMMANDS.IS_RUNNING).pipe(
     map((output) => {
       if (output.includes("CONTAINER ID")) {
         return true;
@@ -54,4 +56,18 @@ const isDockerRunning$ = (): Observable<boolean> => {
   );
 };
 
-export { isDockerInstalled$, isDockerRunning$ };
+const downloadDocker$ = (): Observable<boolean> => {
+  console.log("starting docker download");
+  return execCommand$(AVAILABLE_COMMANDS.DOWNLOAD).pipe(
+    map((output) => {
+      console.log("output from downloadDocker$", output);
+      return true;
+    }),
+    catchError((e) => {
+      console.log("error is", e);
+      of(false);
+    })
+  );
+};
+
+export { isDockerInstalled$, isDockerRunning$, downloadDocker$ };

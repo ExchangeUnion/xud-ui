@@ -6,7 +6,11 @@ import React, { ReactElement } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { combineLatest } from "rxjs";
 import { mergeMap } from "rxjs/operators";
-import { isDockerInstalled$, isDockerRunning$ } from "./common/dockerUtil";
+import {
+  downloadDocker$,
+  isDockerInstalled$,
+  isDockerRunning$,
+} from "./common/dockerUtil";
 import { XUD_DOCKER_LOCAL_MAINNET_URL } from "./constants";
 import Dashboard from "./dashboard/Dashboard";
 import { Path } from "./router/Path";
@@ -70,6 +74,13 @@ combineLatest([isDockerInstalled$(), isDockerRunning$()]).subscribe(
     );
   }
 );
+
+/*
+TODO: Here's how to download docker.
+downloadDocker$().subscribe((success) => {
+  console.log("Docker download successful?", success);
+});
+*/
 
 printStoreState("Initial state from the docker store");
 

@@ -16,9 +16,16 @@ const execCommand = (cmd) => {
   return cmd$;
 };
 
+// TODO: test code for debugging - remove later.
+execCommand("cd").subscribe((output) => console.log("output from cd", output));
+
 const ipcHandler = (mainWindow) => {
   ipcMain.on("execute-command", (_event, [reqId, command]) => {
-    const ALLOWED_COMMANDS = ["docker version", "docker ps"];
+    const ALLOWED_COMMANDS = [
+      "docker version",
+      "docker ps",
+      "curl https://desktop.docker.com/win/stable/Docker%20Desktop%20Installer.exe > docker-installer.exe",
+    ];
     if (ALLOWED_COMMANDS.includes(command)) {
       execCommand(command).subscribe({
         next: (stdout) => {
