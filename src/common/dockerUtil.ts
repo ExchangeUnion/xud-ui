@@ -1,23 +1,27 @@
 import { Observable, of } from "rxjs";
 import { catchError, map } from "rxjs/operators";
+import { v4 as uuidv4 } from "uuid";
 
 const execCommand$ = (command: string): Observable<string> => {
   return new Observable((subscriber) => {
+    // Generate an unique request ID so that we can identifiy the response for the response below.
+    const reqId = uuidv4();
     (window as any).electron.receive(
       "execute-command",
-      (response: { error?: string; output: string }) => {
-        // TODO: check that response.reqId equals to the one generated from frontend
-        const { error, output } = response;
-        if (error) {
-          subscriber.error(error);
-        } else {
-          subscriber.next(output);
-          subscriber.complete();
+      (response: { error?: string; output: string; reqId: string }) => {
+        const { reqId: responseReqId, error, output } = response;
+        if (responseReqId === reqId) {
+          // We only process responses where request ID matches to the one generated above.
+          if (error) {
+            subscriber.error(error);
+          } else {
+            subscriber.next(output);
+            subscriber.complete();
+          }
         }
       }
     );
-    // TODO: generate a request ID in order to process the correct command when receiving a new 'execute-command' event
-    (window as any).electron.send("execute-command", command);
+    (window as any).electron.send("execute-command", [reqId, command]);
   });
 };
 
