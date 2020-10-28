@@ -26,10 +26,9 @@ const execCommand$ = (command: string): Observable<string> => {
 };
 
 const AVAILABLE_COMMANDS = {
-  IS_INSTALLED: "docker version",
-  IS_RUNNING: "docker ps",
-  DOWNLOAD:
-    "curl https://desktop.docker.com/win/stable/Docker%20Desktop%20Installer.exe > docker-installer.exe",
+  IS_INSTALLED: "docker_version",
+  IS_RUNNING: "docker_ps",
+  DOWNLOAD: "docker_download",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
