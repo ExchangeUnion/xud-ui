@@ -40,7 +40,10 @@ const isDockerInstalled$ = (): Observable<boolean> => {
       }
       return false;
     }),
-    catchError(() => of(false))
+    catchError((e: any) => {
+      console.error("Error checking Docker installed status:", e);
+      return of(false);
+    })
   );
 };
 
@@ -52,7 +55,10 @@ const isDockerRunning$ = (): Observable<boolean> => {
       }
       return false;
     }),
-    catchError(() => of(false))
+    catchError((e: any) => {
+      console.error("Error checking Docker running status:", e);
+      return of(false);
+    })
   );
 };
 
@@ -63,9 +69,9 @@ const downloadDocker$ = (): Observable<boolean> => {
       console.log("output from downloadDocker$", output);
       return true;
     }),
-    catchError((e) => {
-      console.log("error is", e);
-      of(false);
+    catchError((e: any) => {
+      console.error("Error downloading Docker:", e);
+      return of(false);
     })
   );
 };
