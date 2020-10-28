@@ -27,6 +27,7 @@ const execCommand$ = (command: string): Observable<string> => {
 
 const AVAILABLE_COMMANDS = {
   DOCKER_VERSION: "docker version",
+  DOCKER_PS: "docker ps",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
@@ -41,4 +42,16 @@ const isDockerInstalled$ = (): Observable<boolean> => {
   );
 };
 
-export { isDockerInstalled$ };
+const isDockerRunning$ = (): Observable<boolean> => {
+  return execCommand$(AVAILABLE_COMMANDS.DOCKER_PS).pipe(
+    map((output) => {
+      if (output.includes("CONTAINER ID")) {
+        return true;
+      }
+      return false;
+    }),
+    catchError(() => of(false))
+  );
+};
+
+export { isDockerInstalled$, isDockerRunning$ };

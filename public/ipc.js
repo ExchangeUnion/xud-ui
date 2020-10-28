@@ -18,7 +18,7 @@ const execCommand = (cmd) => {
 
 const ipcHandler = (mainWindow) => {
   ipcMain.on("execute-command", (_event, [reqId, command]) => {
-    const ALLOWED_COMMANDS = ["docker version"];
+    const ALLOWED_COMMANDS = ["docker version", "docker ps"];
     if (ALLOWED_COMMANDS.includes(command)) {
       execCommand(command).subscribe({
         next: (stdout) => {

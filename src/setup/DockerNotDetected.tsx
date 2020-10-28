@@ -15,7 +15,7 @@ import { Link as RouterLink, useHistory } from "react-router-dom";
 import { timer } from "rxjs";
 import { delay, mergeMap, retryWhen } from "rxjs/operators";
 import api from "../api";
-import { isDockerInstalled$ } from "../common/dockerUtil";
+import { isDockerInstalled$, isDockerRunning$ } from "../common/dockerUtil";
 import RowsContainer from "../common/RowsContainer";
 import { Path } from "../router/Path";
 import { DOCKER_STORE } from "../stores/dockerStore";
@@ -59,16 +59,22 @@ const DockerNotDetected = inject(
         "TODO: here we can get the docker install status from the store",
         dockerStore!.isInstalled
       );
-      isDockerInstalled$().subscribe({
-        next: (isInstalled) => {
-          dockerStore!.setIsInstalled(isInstalled);
-          console.log(
-            "new store isInstalled status is",
-            dockerStore!.isInstalled
-          );
-        },
-        error: () => dockerStore!.setIsInstalled(false),
-      });
+      isDockerInstalled$()
+        .pipe(
+          mergeMap((isInstalled) => {
+            // TODO: extract store.set side effects into observables
+            dockerStore!.setIsInstalled(isInstalled);
+            return isDockerRunning$();
+          })
+        )
+        .subscribe({
+          next: (isRunning) => {
+            console.log("response from isRunning", isRunning);
+          },
+          error: () => () => {
+            console.log("error from isRunning");
+          },
+        });
       return () => subscription.unsubscribe();
     }, [history, connectionFailed, settingsStore, dockerStore]);
 
