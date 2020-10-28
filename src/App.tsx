@@ -4,6 +4,9 @@ import { ThemeProvider } from "@material-ui/styles";
 import { Provider } from "mobx-react";
 import React, { ReactElement } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { combineLatest } from "rxjs";
+import { mergeMap } from "rxjs/operators";
+import { isDockerInstalled$, isDockerRunning$ } from "./common/dockerUtil";
 import { XUD_DOCKER_LOCAL_MAINNET_URL } from "./constants";
 import Dashboard from "./dashboard/Dashboard";
 import { Path } from "./router/Path";
@@ -47,7 +50,28 @@ const settingsStore = useSettingsStore({
 
 const dockerStore = useDockerStore({
   isInstalled: false,
+  isRunning: false,
 });
+
+// TODO: temporary helper function for debugging - remove later.
+const printStoreState = (msg: string) => {
+  console.log(`${msg}:
+isInstalled: ${dockerStore!.isInstalled}
+isRunning: ${dockerStore!.isRunning}
+    `);
+};
+
+combineLatest([isDockerInstalled$(), isDockerRunning$()]).subscribe(
+  ([isInstalled, isRunning]) => {
+    dockerStore!.setIsInstalled(isInstalled);
+    dockerStore!.setIsRunning(isRunning);
+    printStoreState(
+      "After getting isInstalled and isRunning from the operating system"
+    );
+  }
+);
+
+printStoreState("Initial state from the docker store");
 
 function App(): ReactElement {
   return (
