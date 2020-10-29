@@ -29,6 +29,7 @@ const AVAILABLE_COMMANDS = {
   IS_INSTALLED: "docker_version",
   IS_RUNNING: "docker_ps",
   DOWNLOAD: "docker_download",
+  DOWNLOAD_STATUS: "docker_download_status",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
@@ -75,4 +76,38 @@ const downloadDocker$ = (): Observable<boolean> => {
   );
 };
 
-export { isDockerInstalled$, isDockerRunning$, downloadDocker$ };
+const dockerDownloadStatus$ = (): Observable<number> => {
+  return execCommand$(AVAILABLE_COMMANDS.DOWNLOAD_STATUS).pipe(
+    map((output) => {
+      console.log("output from isDockerDownloaded$", output);
+      const downloadSize = output.split(" ").filter((o) => o.includes(","));
+      if (downloadSize.length === 1) {
+        const sizeString = downloadSize[0];
+        const size = parseInt(
+          sizeString.split(",").reduce((acc, curr) => acc + curr)
+        );
+        const downloadPercentage = parseFloat(
+          ((size / 426302672) * 100).toFixed(2)
+        );
+        console.log("downloadPercentage", downloadPercentage);
+        return downloadPercentage;
+      }
+      const EXPECTED_DOCKER_INSTALLER_SIZE = "426,302,672";
+      if (output.includes(EXPECTED_DOCKER_INSTALLER_SIZE)) {
+        return 100;
+      }
+      return 0;
+    }),
+    catchError((e: any) => {
+      console.error("Error checking if Docker is downloaded:", e);
+      return of(0);
+    })
+  );
+};
+
+export {
+  isDockerInstalled$,
+  isDockerRunning$,
+  downloadDocker$,
+  dockerDownloadStatus$,
+};
