@@ -2,6 +2,7 @@ import { observable } from "mobx";
 
 export type DockerInfo = {
   isInstalled: boolean;
+  isRunning: boolean;
 };
 
 export type DockerStore = ReturnType<typeof useDockerStore>;
@@ -17,6 +18,12 @@ export const useDockerStore = (defaultDockerInfo: DockerInfo) => {
     },
     setIsInstalled(isInstalled: boolean): void {
       store.docker.isInstalled = isInstalled;
+    },
+    get isRunning(): boolean {
+      return store.docker.isRunning;
+    },
+    setIsRunning(isRunning: boolean): void {
+      store.docker.isRunning = isRunning;
     },
   });
 
