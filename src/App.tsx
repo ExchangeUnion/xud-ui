@@ -4,10 +4,12 @@ import { ThemeProvider } from "@material-ui/styles";
 import { Provider } from "mobx-react";
 import React, { ReactElement } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { combineLatest } from "rxjs";
-import { mergeMap } from "rxjs/operators";
+import { combineLatest, of } from "rxjs";
+import { mergeMap, tap } from "rxjs/operators";
 import {
+  dockerDownloadStatus$,
   downloadDocker$,
+  isDockerDownloaded$,
   isDockerInstalled$,
   isDockerRunning$,
 } from "./common/dockerUtil";
@@ -65,22 +67,48 @@ isRunning: ${dockerStore!.isRunning}
     `);
 };
 
-combineLatest([isDockerInstalled$(), isDockerRunning$()]).subscribe(
-  ([isInstalled, isRunning]) => {
-    dockerStore!.setIsInstalled(isInstalled);
-    dockerStore!.setIsRunning(isRunning);
-    printStoreState(
-      "After getting isInstalled and isRunning from the operating system"
-    );
-  }
-);
-
-/*
-TODO: Here's how to download docker.
-downloadDocker$().subscribe((success) => {
-  console.log("Docker download successful?", success);
-});
+/* readyToInstallDocker$
+combineLatest([isDockerInstalled$(), isDockerRunning$()])
+  .pipe(
+    tap(([isInstalled, isRunning]) => {
+      dockerStore!.setIsInstalled(isInstalled);
+      dockerStore!.setIsRunning(isRunning);
+      printStoreState(
+        "After getting isInstalled and isRunning from the operating system"
+      );
+    }),
+    mergeMap(([isInstalled, isRunning]) => {
+      if (isInstalled && isRunning) {
+        return of("ready to bring up containers");
+      }
+      if (isInstalled && !isRunning) {
+        return of("waiting for docker to start");
+      } else {
+        // Docker is not installed. Check if docker is downloaded.
+        return dockerDownloadStatus$().pipe(
+          mergeMap((downloadStatus) => {
+            if (downloadStatus === 100) {
+              return of("docker is downloaded - starting to install");
+            } else {
+              return downloadDocker$().pipe(
+                mergeMap(() => {
+                  return of("docker has been downloaded");
+                })
+              );
+            }
+          })
+        );
+      }
+    })
+  )
+  .subscribe((v) => {
+    console.log("next from createFlow$", v);
+  });
 */
+
+dockerDownloadStatus$().subscribe((downloadStatus) => {
+  console.log("Docker download status", downloadStatus);
+});
 
 printStoreState("Initial state from the docker store");
 
