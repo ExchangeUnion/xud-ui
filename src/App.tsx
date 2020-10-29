@@ -4,20 +4,12 @@ import { ThemeProvider } from "@material-ui/styles";
 import { Provider } from "mobx-react";
 import React, { ReactElement } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { combineLatest, of } from "rxjs";
-import { mergeMap, tap } from "rxjs/operators";
-import {
-  dockerDownloadStatus$,
-  downloadDocker$,
-  isDockerDownloaded$,
-  isDockerInstalled$,
-  isDockerRunning$,
-} from "./common/dockerUtil";
 import { XUD_DOCKER_LOCAL_MAINNET_URL } from "./constants";
 import Dashboard from "./dashboard/Dashboard";
 import { Path } from "./router/Path";
 import ConnectToRemote from "./setup/ConnectToRemote";
 import DockerNotDetected from "./setup/DockerNotDetected";
+import Landing from "./setup/Landing";
 import { useDockerStore } from "./stores/dockerStore";
 import { useSettingsStore } from "./stores/settingsStore";
 
@@ -59,59 +51,6 @@ const dockerStore = useDockerStore({
   isRunning: false,
 });
 
-// TODO: temporary helper function for debugging - remove later.
-const printStoreState = (msg: string) => {
-  console.log(`${msg}:
-isInstalled: ${dockerStore!.isInstalled}
-isRunning: ${dockerStore!.isRunning}
-    `);
-};
-
-/* readyToInstallDocker$
-combineLatest([isDockerInstalled$(), isDockerRunning$()])
-  .pipe(
-    tap(([isInstalled, isRunning]) => {
-      dockerStore!.setIsInstalled(isInstalled);
-      dockerStore!.setIsRunning(isRunning);
-      printStoreState(
-        "After getting isInstalled and isRunning from the operating system"
-      );
-    }),
-    mergeMap(([isInstalled, isRunning]) => {
-      if (isInstalled && isRunning) {
-        return of("ready to bring up containers");
-      }
-      if (isInstalled && !isRunning) {
-        return of("waiting for docker to start");
-      } else {
-        // Docker is not installed. Check if docker is downloaded.
-        return dockerDownloadStatus$().pipe(
-          mergeMap((downloadStatus) => {
-            if (downloadStatus === 100) {
-              return of("docker is downloaded - starting to install");
-            } else {
-              return downloadDocker$().pipe(
-                mergeMap(() => {
-                  return of("docker has been downloaded");
-                })
-              );
-            }
-          })
-        );
-      }
-    })
-  )
-  .subscribe((v) => {
-    console.log("next from createFlow$", v);
-  });
-*/
-
-dockerDownloadStatus$().subscribe((downloadStatus) => {
-  console.log("Docker download status", downloadStatus);
-});
-
-printStoreState("Initial state from the docker store");
-
 function App(): ReactElement {
   return (
     <ThemeProvider theme={darkTheme}>
@@ -127,7 +66,11 @@ function App(): ReactElement {
               <Dashboard />
             </Route>
             <Route path={Path.HOME}>
-              <DockerNotDetected />
+              {(window as any).electron.platform() === "win32" ? (
+                <Landing />
+              ) : (
+                <DockerNotDetected />
+              )}
             </Route>
           </Switch>
         </Router>

@@ -3,6 +3,9 @@ const log = require("electron-log");
 const { ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electron", {
+  platform: () => {
+    return process.platform;
+  },
   send: (channel, data) => {
     ipcRenderer.send(channel, data);
   },
