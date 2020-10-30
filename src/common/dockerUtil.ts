@@ -41,6 +41,13 @@ const isDockerInstalled$ = (): Observable<boolean> => {
       return false;
     }),
     catchError((e: any) => {
+      if (
+        e.message?.includes(
+          "'docker' is not recognized as an internal or external command"
+        )
+      ) {
+        return of(false);
+      }
       console.error("Error checking Docker installed status:", e);
       return of(false);
     })
@@ -56,6 +63,13 @@ const isDockerRunning$ = (): Observable<boolean> => {
       return false;
     }),
     catchError((e: any) => {
+      if (
+        e.message?.includes(
+          "'docker' is not recognized as an internal or external command"
+        )
+      ) {
+        return of(false);
+      }
       console.error("Error checking Docker running status:", e);
       return of(false);
     })
