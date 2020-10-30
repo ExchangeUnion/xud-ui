@@ -5,10 +5,7 @@ import React, { ReactElement, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { combineLatest, of } from "rxjs";
 import { mergeMap, tap } from "rxjs/operators";
-import {
-  dockerDownloadStatus$,
-  downloadDocker$,
-} from "../common/dockerUtil";
+import { dockerDownloadStatus$, downloadDocker$ } from "../common/dockerUtil";
 import RowsContainer from "../common/RowsContainer";
 import { Path } from "../router/Path";
 import { DOCKER_STORE } from "../stores/dockerStore";
@@ -89,7 +86,20 @@ const Landing = inject(
             color="primary"
             disableElevation
             endIcon={<ArrowRightAltIcon />}
-            onClick={() => history.push(selectedItem.path)}
+            onClick={() => {
+              // TODO: move this logic inside a CreateEnvironment component that will show a
+              // spinner until we have all the necesessary information fetched.
+              // Afterwards it will decide which route to push the user.
+              dockerDownloadStatus$().subscribe((downloadStatus) => {
+                if (downloadStatus === 100) {
+                  // If docker is 100% downloaded, we'll move straight to install route.
+                  history.push(Path.INSTALL_DOCKER);
+                } else {
+                  // Otherwise we'll start by attempting to download docker again.
+                  history.push(selectedItem.path);
+                }
+              });
+            }}
           >
             Next
           </Button>
