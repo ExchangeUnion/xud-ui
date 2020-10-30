@@ -39,27 +39,11 @@ const Landing = inject(
   DOCKER_STORE
 )(
   observer(({ settingsStore, dockerStore }: LandingProps) => {
+    // TODO: remove settingsStore and dockerStore?
     const items: Item[] = createItems();
 
     const history = useHistory();
     const [selectedItem, setSelectedItem] = useState(items[0]);
-
-    useEffect(() => {
-      // TODO: move to better place
-      // Get docker download percentage
-      dockerDownloadStatus$().subscribe((dockerDownloadPercentage) => {
-        console.log("docker download percentage is", dockerDownloadPercentage);
-      });
-      // Download docker binary
-      /*
-      downloadDocker$().subscribe((downloadSuccessful) => {
-        downloadSuccessful
-          ? console.log("docker download successful")
-          : console.log("docker download failed");
-      });
-      */
-      return () => {};
-    }, [history, settingsStore, dockerStore]);
 
     return (
       <RowsContainer>

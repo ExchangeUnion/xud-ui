@@ -113,6 +113,9 @@ const dockerDownloadStatus$ = (): Observable<number> => {
       return 0;
     }),
     catchError((e: any) => {
+      if (e.message?.includes("Command failed: dir | findstr /R")) {
+        return of(0);
+      }
       console.error("Error checking if Docker is downloaded:", e);
       return of(0);
     })
