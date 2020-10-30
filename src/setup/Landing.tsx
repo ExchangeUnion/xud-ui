@@ -8,8 +8,6 @@ import { mergeMap, tap } from "rxjs/operators";
 import {
   dockerDownloadStatus$,
   downloadDocker$,
-  isDockerInstalled$,
-  isDockerRunning$,
 } from "../common/dockerUtil";
 import RowsContainer from "../common/RowsContainer";
 import { Path } from "../router/Path";
@@ -50,54 +48,20 @@ const Landing = inject(
     const [selectedItem, setSelectedItem] = useState(items[0]);
 
     useEffect(() => {
-      // TODO: temporary helper function for debugging - remove later.
-      const printStoreState = (msg: string) => {
-        console.log(`${msg}:
-isInstalled: ${dockerStore!.isInstalled}
-isRunning: ${dockerStore!.isRunning}
-    `);
-      };
-      const dockerDownloadedSubscription = combineLatest([
-        isDockerInstalled$(),
-        isDockerRunning$(),
-      ])
-        .pipe(
-          tap(([isInstalled, isRunning]) => {
-            dockerStore!.setIsInstalled(isInstalled);
-            dockerStore!.setIsRunning(isRunning);
-            printStoreState(
-              "After getting isInstalled and isRunning from the operating system"
-            );
-          }),
-          mergeMap(([isInstalled, isRunning]) => {
-            if (isInstalled && isRunning) {
-              return of("ready to bring up containers");
-            }
-            if (isInstalled && !isRunning) {
-              return of("waiting for docker to start");
-            } else {
-              // Docker is not installed. Check if docker is downloaded.
-              return dockerDownloadStatus$().pipe(
-                mergeMap((downloadStatus) => {
-                  if (downloadStatus === 100) {
-                    return of("docker is downloaded - starting to install");
-                  } else {
-                    return downloadDocker$().pipe(
-                      mergeMap(() => {
-                        return of("docker has been downloaded");
-                      })
-                    );
-                  }
-                })
-              );
-            }
-          })
-        )
-        .subscribe((v) => {
-          console.log("next from createFlow$", v);
-        });
-
-      return () => dockerDownloadedSubscription.unsubscribe();
+      // TODO: move to better place
+      // Get docker download percentage
+      dockerDownloadStatus$().subscribe((dockerDownloadPercentage) => {
+        console.log("docker download percentage is", dockerDownloadPercentage);
+      });
+      // Download docker binary
+      /*
+      downloadDocker$().subscribe((downloadSuccessful) => {
+        downloadSuccessful
+          ? console.log("docker download successful")
+          : console.log("docker download failed");
+      });
+      */
+      return () => {};
     }, [history, settingsStore, dockerStore]);
 
     return (
