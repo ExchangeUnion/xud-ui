@@ -1,28 +1,53 @@
-import Typography from "@material-ui/core/Typography";
+import { Button, Grid } from "@material-ui/core";
+import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
 import { inject, observer } from "mobx-react";
-import React, { useEffect } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import RowsContainer from "../common/RowsContainer";
-import { DOCKER_STORE } from "../stores/dockerStore";
-import { SETTINGS_STORE } from "../stores/settingsStore";
-import { WithStores } from "../stores/WithStores";
+import { combineLatest, of } from "rxjs";
+import { mergeMap, tap } from "rxjs/operators";
 import {
   dockerDownloadStatus$,
   downloadDocker$,
   isDockerInstalled$,
   isDockerRunning$,
 } from "../common/dockerUtil";
-import { combineLatest, of } from "rxjs";
-import { mergeMap, tap } from "rxjs/operators";
+import RowsContainer from "../common/RowsContainer";
+import { Path } from "../router/Path";
+import { DOCKER_STORE } from "../stores/dockerStore";
+import { SETTINGS_STORE } from "../stores/settingsStore";
+import { WithStores } from "../stores/WithStores";
 
 type LandingProps = WithStores;
 
-const DockerNotDetected = inject(
+type Item = {
+  icon?: ReactElement;
+  title: string;
+  additionalInfo: string;
+  path: Path;
+};
+
+const createItems = (): Item[] => [
+  {
+    title: "Create",
+    additionalInfo: "Create new xud environment",
+    path: Path.DOWNLOAD_DOCKER,
+  },
+  {
+    title: "Connect",
+    additionalInfo: "Connect to remote xud environment",
+    path: Path.CONNECT_TO_REMOTE,
+  },
+];
+
+const Landing = inject(
   SETTINGS_STORE,
   DOCKER_STORE
 )(
   observer(({ settingsStore, dockerStore }: LandingProps) => {
+    const items: Item[] = createItems();
+
     const history = useHistory();
+    const [selectedItem, setSelectedItem] = useState(items[0]);
 
     useEffect(() => {
       // TODO: temporary helper function for debugging - remove later.
@@ -77,12 +102,37 @@ isRunning: ${dockerStore!.isRunning}
 
     return (
       <RowsContainer>
-        <Typography variant="h4" component="h1">
-          Landing Screens Start Here!
-        </Typography>
+        {/* TODO: add xud logo */}
+        <Grid item container>
+          XUD logo here
+        </Grid>
+        <Grid item container justify="space-between">
+          {/* TODO: add icon and additional info */}
+          {items.map((item) => {
+            return (
+              <Button
+                key={item.title}
+                onClick={() => setSelectedItem(items.find((i) => i === item)!)}
+              >
+                {item.title}
+              </Button>
+            );
+          })}
+        </Grid>
+        <Grid item container justify="flex-end">
+          <Button
+            variant="contained"
+            color="primary"
+            disableElevation
+            endIcon={<ArrowRightAltIcon />}
+            onClick={() => history.push(selectedItem.path)}
+          >
+            Next
+          </Button>
+        </Grid>
       </RowsContainer>
     );
   })
 );
 
-export default DockerNotDetected;
+export default Landing;
