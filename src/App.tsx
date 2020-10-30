@@ -8,6 +8,9 @@ import { XUD_DOCKER_LOCAL_MAINNET_URL } from "./constants";
 import Dashboard from "./dashboard/Dashboard";
 import { Path } from "./router/Path";
 import ConnectToRemote from "./setup/ConnectToRemote";
+import DownloadDocker from "./setup/create/DownloadDocker";
+import InstallDocker from "./setup/create/InstallDocker";
+import StartingXud from "./setup/create/StartingXud";
 import DockerNotDetected from "./setup/DockerNotDetected";
 import Landing from "./setup/Landing";
 import { useDockerStore } from "./stores/dockerStore";
@@ -64,6 +67,15 @@ function App(): ReactElement {
             </Route>
             <Route path={Path.DASHBOARD}>
               <Dashboard />
+            </Route>
+            <Route path={Path.DOWNLOAD_DOCKER}>
+              <DownloadDocker />
+            </Route>
+            <Route path={Path.INSTALL_DOCKER}>
+              <InstallDocker />
+            </Route>
+            <Route path={Path.STARTING_XUD}>
+              <StartingXud />
             </Route>
             <Route path={Path.HOME}>
               {(window as any).electron.platform() === "win32" ? (
