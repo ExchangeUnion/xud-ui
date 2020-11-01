@@ -4,12 +4,11 @@ import { ThemeProvider } from "@material-ui/styles";
 import { Provider } from "mobx-react";
 import React, { ReactElement } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { combineLatest } from "rxjs";
-import { isDockerInstalled$, isDockerRunning$ } from "./common/dockerUtil";
 import { XUD_DOCKER_LOCAL_MAINNET_URL } from "./constants";
 import Dashboard from "./dashboard/Dashboard";
 import { Path } from "./router/Path";
 import ConnectToRemote from "./setup/ConnectToRemote";
+import Create from "./setup/create/Create";
 import DownloadDocker from "./setup/create/DownloadDocker";
 import InstallDocker from "./setup/create/InstallDocker";
 import StartingXud from "./setup/create/StartingXud";
@@ -56,14 +55,6 @@ const dockerStore = useDockerStore({
   isRunning: false,
 });
 
-const dockerStatus$ = combineLatest([isDockerInstalled$(), isDockerRunning$()]);
-
-// Get the state of docker when launching the application
-dockerStatus$.subscribe(([isInstalled, isRunning]) => {
-  dockerStore.setIsInstalled(isInstalled);
-  dockerStore.setIsRunning(isRunning);
-});
-
 function App(): ReactElement {
   return (
     <ThemeProvider theme={darkTheme}>
@@ -86,6 +77,9 @@ function App(): ReactElement {
             </Route>
             <Route path={Path.STARTING_XUD}>
               <StartingXud />
+            </Route>
+            <Route path={Path.CREATE_ENVIRONMENT}>
+              <Create />
             </Route>
             <Route path={Path.HOME}>
               {(window as any).electron.platform() === "win32" ? (
