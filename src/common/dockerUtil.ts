@@ -30,6 +30,7 @@ const AVAILABLE_COMMANDS = {
   IS_RUNNING: "docker_ps",
   DOWNLOAD: "docker_download",
   DOWNLOAD_STATUS: "docker_download_status",
+  INSTALL: "docker_install",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
@@ -90,6 +91,20 @@ const downloadDocker$ = (): Observable<boolean> => {
   );
 };
 
+const installDocker$ = (): Observable<boolean> => {
+  console.log("starting docker install");
+  return execCommand$(AVAILABLE_COMMANDS.INSTALL).pipe(
+    map((output) => {
+      console.log("output from installDocker$", output);
+      return true;
+    }),
+    catchError((e: any) => {
+      console.error("Error installing Docker:", e);
+      return of(false);
+    })
+  );
+};
+
 const dockerDownloadStatus$ = (): Observable<number> => {
   return execCommand$(AVAILABLE_COMMANDS.DOWNLOAD_STATUS).pipe(
     map((output) => {
@@ -127,4 +142,5 @@ export {
   isDockerRunning$,
   downloadDocker$,
   dockerDownloadStatus$,
+  installDocker$,
 };
