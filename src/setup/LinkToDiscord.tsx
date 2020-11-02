@@ -2,6 +2,7 @@ import { createStyles, Grid, makeStyles, Theme } from "@material-ui/core";
 import Link from "@material-ui/core/Link";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import React, { ReactElement } from "react";
+import { XUD_DISCORD_URL } from "../constants";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,7 +29,7 @@ function LinkToDiscord(): ReactElement {
         <Link
           component="button"
           color="textSecondary"
-          /*  onClick={() => (window as any).electron.openExternal(XUD_DISCORD_URL)} */
+          onClick={() => (window as any).electron.openExternal(XUD_DISCORD_URL)}
         >
           Issues? Hit us up on Discord
         </Link>
