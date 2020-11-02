@@ -2,6 +2,7 @@ import { Button, Grid, Typography } from "@material-ui/core";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
 import React, { ReactElement, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { installDocker$ } from "../../common/dockerUtil";
 import RowsContainer from "../../common/RowsContainer";
 import { Path } from "../../router/Path";
 import LinkToDiscord from "../LinkToDiscord";
@@ -14,11 +15,19 @@ const InstallDocker = (): ReactElement => {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsInstalling(false);
-      setIsInstalled(true);
-    }, 4000);
-  }, [history, isInstalling, isInstalled]);
+    const installDockerSubscription = installDocker$().subscribe(
+      (installSuccessful) => {
+        setIsInstalling(false);
+        if (installSuccessful) {
+          setIsInstalled(true);
+        } else {
+          console.error("Docker install unsuccessful");
+          // TODO: retry
+        }
+      }
+    );
+    return () => installDockerSubscription.unsubscribe();
+  }, []);
 
   return (
     <RowsContainer>
