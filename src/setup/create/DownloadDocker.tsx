@@ -30,7 +30,6 @@ const useStyles = makeStyles(() =>
 const DownloadDocker = (): ReactElement => {
   const history = useHistory();
   const classes = useStyles();
-  const [downloadPercentage, setDownloadPercentage] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
 
   return (
@@ -40,7 +39,6 @@ const DownloadDocker = (): ReactElement => {
           <InfoBar
             text="Downloading Docker"
             showCircularProgress={true}
-            progress={downloadPercentage}
           />
         )}
       </Grid>
@@ -75,22 +73,7 @@ const DownloadDocker = (): ReactElement => {
                 endIcon={<ArrowRightAltIcon />}
                 onClick={() => {
                   setIsDownloading(true);
-                  const dockerDownloaded$ = downloadDocker$().pipe(
-                    // Multicast docker downloaded stream so that only 1 download is active at a time
-                    share()
-                  );
-                  interval(1000)
-                    // We check the status every 1000ms
-                    .pipe(
-                      mergeMap(() => dockerDownloadStatus$()),
-                      // unsubscribe when docker is downloaded
-                      takeUntil(dockerDownloaded$)
-                    )
-                    .subscribe((downloadPercentage) => {
-                      // Update component internal state.
-                      setDownloadPercentage(downloadPercentage);
-                    });
-                  dockerDownloaded$.subscribe(() =>
+                  downloadDocker$().subscribe(() =>
                     history.push(Path.CREATE_ENVIRONMENT)
                   );
                 }}
