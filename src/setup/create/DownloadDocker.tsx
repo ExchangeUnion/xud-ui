@@ -1,7 +1,13 @@
 import { Button, Grid, Typography } from "@material-ui/core";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { interval } from "rxjs";
+import { mergeMap, share, takeUntil } from "rxjs/operators";
+import {
+  dockerDownloadStatus$,
+  downloadDocker$,
+} from "../../common/dockerUtil";
 import RowsContainer from "../../common/RowsContainer";
 import { Path } from "../../router/Path";
 import LinkToDiscord from "../LinkToDiscord";
@@ -10,6 +16,7 @@ import LinkToDiscord from "../LinkToDiscord";
 // TODO: implement actions
 const DownloadDocker = (): ReactElement => {
   const history = useHistory();
+  const [downloadPercentage, setDownloadPercentage] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloaded, setIsDownloaded] = useState(false);
 
@@ -25,7 +32,7 @@ const DownloadDocker = (): ReactElement => {
             </Typography>
             {/* TODO: add percentage value */}
             <Typography variant="body2" component="span">
-              (percentage)
+              {downloadPercentage}%
             </Typography>
           </Grid>
         )}
@@ -71,13 +78,33 @@ const DownloadDocker = (): ReactElement => {
                 endIcon={<ArrowRightAltIcon />}
                 onClick={() => {
                   setIsDownloading(true);
-                  setTimeout(() => {
-                    setIsDownloading(false);
-                    setIsDownloaded(true);
-                  }, 4000);
+                  const dockerDownloaded$ = downloadDocker$().pipe(
+                    // Multicast docker downloaded stream so that only 1 download is active at a time
+                    share()
+                  );
+                  interval(1000)
+                    // We check the status every 1000ms
+                    .pipe(
+                      mergeMap(() => dockerDownloadStatus$()),
+                      // unsubscribe when docker is downloaded
+                      takeUntil(dockerDownloaded$)
+                    )
+                    .subscribe((downloadPercentage) => {
+                      // Update component internal state.
+                      setDownloadPercentage(downloadPercentage);
+                    });
+                  dockerDownloaded$.subscribe((downloadSuccessful) => {
+                    if (downloadSuccessful) {
+                      setIsDownloaded(true);
+                      setDownloadPercentage(100);
+                    } else {
+                      // TODO: what happens when the download call fails?
+                      // Notify user and retry?
+                    }
+                  });
                 }}
               >
-                Download now
+                Download Now
               </Button>
             </>
           </Grid>

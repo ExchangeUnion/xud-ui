@@ -5,12 +5,7 @@ import React, { ReactElement, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { combineLatest, of } from "rxjs";
 import { mergeMap, tap } from "rxjs/operators";
-import {
-  dockerDownloadStatus$,
-  downloadDocker$,
-  isDockerInstalled$,
-  isDockerRunning$,
-} from "../common/dockerUtil";
+import { dockerDownloadStatus$, downloadDocker$ } from "../common/dockerUtil";
 import RowsContainer from "../common/RowsContainer";
 import { Path } from "../router/Path";
 import { DOCKER_STORE } from "../stores/dockerStore";
@@ -44,61 +39,11 @@ const Landing = inject(
   DOCKER_STORE
 )(
   observer(({ settingsStore, dockerStore }: LandingProps) => {
+    // TODO: remove settingsStore and dockerStore?
     const items: Item[] = createItems();
 
     const history = useHistory();
     const [selectedItem, setSelectedItem] = useState(items[0]);
-
-    useEffect(() => {
-      // TODO: temporary helper function for debugging - remove later.
-      const printStoreState = (msg: string) => {
-        console.log(`${msg}:
-isInstalled: ${dockerStore!.isInstalled}
-isRunning: ${dockerStore!.isRunning}
-    `);
-      };
-      const dockerDownloadedSubscription = combineLatest([
-        isDockerInstalled$(),
-        isDockerRunning$(),
-      ])
-        .pipe(
-          tap(([isInstalled, isRunning]) => {
-            dockerStore!.setIsInstalled(isInstalled);
-            dockerStore!.setIsRunning(isRunning);
-            printStoreState(
-              "After getting isInstalled and isRunning from the operating system"
-            );
-          }),
-          mergeMap(([isInstalled, isRunning]) => {
-            if (isInstalled && isRunning) {
-              return of("ready to bring up containers");
-            }
-            if (isInstalled && !isRunning) {
-              return of("waiting for docker to start");
-            } else {
-              // Docker is not installed. Check if docker is downloaded.
-              return dockerDownloadStatus$().pipe(
-                mergeMap((downloadStatus) => {
-                  if (downloadStatus === 100) {
-                    return of("docker is downloaded - starting to install");
-                  } else {
-                    return downloadDocker$().pipe(
-                      mergeMap(() => {
-                        return of("docker has been downloaded");
-                      })
-                    );
-                  }
-                })
-              );
-            }
-          })
-        )
-        .subscribe((v) => {
-          console.log("next from createFlow$", v);
-        });
-
-      return () => dockerDownloadedSubscription.unsubscribe();
-    }, [history, settingsStore, dockerStore]);
 
     return (
       <RowsContainer>
@@ -125,7 +70,20 @@ isRunning: ${dockerStore!.isRunning}
             color="primary"
             disableElevation
             endIcon={<ArrowRightAltIcon />}
-            onClick={() => history.push(selectedItem.path)}
+            onClick={() => {
+              // TODO: move this logic inside a CreateEnvironment component that will show a
+              // spinner until we have all the necesessary information fetched.
+              // Afterwards it will decide which route to push the user.
+              dockerDownloadStatus$().subscribe((downloadStatus) => {
+                if (downloadStatus === 100) {
+                  // If docker is 100% downloaded, we'll move straight to install route.
+                  history.push(Path.INSTALL_DOCKER);
+                } else {
+                  // Otherwise we'll start by attempting to download docker again.
+                  history.push(selectedItem.path);
+                }
+              });
+            }}
           >
             Next
           </Button>
