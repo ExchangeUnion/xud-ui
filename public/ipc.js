@@ -29,7 +29,6 @@ const execCommand = (cmd) => {
         os.homedir(),
         "AppData/Roaming/Docker/settings.json"
       );
-      console.log("filepath is", dockerSettingsPath);
       fs.readFile(dockerSettingsPath, { encoding: "utf-8" }, function (
         err,
         settings

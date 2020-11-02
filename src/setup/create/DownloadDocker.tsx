@@ -8,12 +8,7 @@ import {
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
 import React, { ReactElement, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { interval } from "rxjs";
-import { mergeMap, share, takeUntil } from "rxjs/operators";
-import {
-  dockerDownloadStatus$,
-  downloadDocker$,
-} from "../../common/dockerUtil";
+import { downloadDocker$ } from "../../common/dockerUtil";
 import { Path } from "../../router/Path";
 import LinkToDiscord from "../LinkToDiscord";
 import RowsContainer from "../RowsContainer";
@@ -36,10 +31,7 @@ const DownloadDocker = (): ReactElement => {
     <RowsContainer>
       <Grid item container>
         {isDownloading && (
-          <InfoBar
-            text="Downloading Docker"
-            showCircularProgress={true}
-          />
+          <InfoBar text="Downloading Docker" showCircularProgress={true} />
         )}
       </Grid>
       <Grid item container justify="center">

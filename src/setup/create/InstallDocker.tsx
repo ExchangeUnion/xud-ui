@@ -1,14 +1,14 @@
 import { Button, Grid, Typography } from "@material-ui/core";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
 import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { installDocker$ } from "../../common/dockerUtil";
 import { Path } from "../../router/Path";
+import { DockerInstallPromptScreenshot } from "../DockerInstallPromptScreenshot";
 import LinkToDiscord from "../LinkToDiscord";
 import RowsContainer from "../RowsContainer";
 import InfoBar from "./InfoBar";
-import { DockerInstallPromptScreenshot } from "../DockerInstallPromptScreenshot";
 
 const InstallDocker = (): ReactElement => {
   const history = useHistory();
