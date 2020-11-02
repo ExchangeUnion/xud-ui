@@ -98,4 +98,15 @@ describe("nextStep$", () => {
     };
     assertNextStep(expectedPath, dockerInfo);
   });
+
+  it("directs to waiting docker start", () => {
+    const expectedPath = Path.WAITING_DOCKER_START;
+    const dockerInfo = {
+      isDownloaded: false,
+      isInstalled: true,
+      isRunning: false,
+      rebootRequired: false,
+    };
+    assertNextStep(expectedPath, dockerInfo);
+  });
 });

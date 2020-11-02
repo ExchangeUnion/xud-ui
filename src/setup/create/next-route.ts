@@ -28,6 +28,9 @@ const getNextRoute = (
       if (isRunning) {
         return Path.STARTING_XUD;
       }
+      if (isInstalled && !isRunning) {
+        return Path.WAITING_DOCKER_START;
+      }
       if (!isDownloaded) {
         return Path.DOWNLOAD_DOCKER;
       }
