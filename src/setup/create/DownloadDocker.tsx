@@ -1,6 +1,6 @@
 import { Button, Grid, Typography } from "@material-ui/core";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { interval } from "rxjs";
 import { mergeMap, share, takeUntil } from "rxjs/operators";
@@ -18,7 +18,7 @@ const DownloadDocker = (): ReactElement => {
   const history = useHistory();
   const [downloadPercentage, setDownloadPercentage] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isDownloaded, setIsDownloaded] = useState(false);
+  const [isDownloaded] = useState(false);
 
   return (
     <RowsContainer>
@@ -93,15 +93,9 @@ const DownloadDocker = (): ReactElement => {
                       // Update component internal state.
                       setDownloadPercentage(downloadPercentage);
                     });
-                  dockerDownloaded$.subscribe((downloadSuccessful) => {
-                    if (downloadSuccessful) {
-                      setIsDownloaded(true);
-                      setDownloadPercentage(100);
-                    } else {
-                      // TODO: what happens when the download call fails?
-                      // Notify user and retry?
-                    }
-                  });
+                  dockerDownloaded$.subscribe(() =>
+                    history.push(Path.CREATE_ENVIRONMENT)
+                  );
                 }}
               >
                 Download Now

@@ -121,10 +121,6 @@ const dockerDownloadStatus$ = (): Observable<number> => {
         console.log("downloadPercentage", downloadPercentage);
         return downloadPercentage;
       }
-      const EXPECTED_DOCKER_INSTALLER_SIZE = "426,302,672";
-      if (output.includes(EXPECTED_DOCKER_INSTALLER_SIZE)) {
-        return 100;
-      }
       return 0;
     }),
     catchError((e: any) => {
@@ -137,10 +133,34 @@ const dockerDownloadStatus$ = (): Observable<number> => {
   );
 };
 
+const isDockerDownloaded$ = (): Observable<boolean> => {
+  return dockerDownloadStatus$().pipe(
+    map((downloadPercentage) => {
+      if (downloadPercentage === 100) {
+        return true;
+      }
+      return false;
+    })
+  );
+};
+
+const rebootRequired$ = (): Observable<boolean> => {
+  return new Observable((subscriber) => {
+    if (localStorage.getItem("rebootRequired")) {
+      subscriber.next(true);
+    } else {
+      subscriber.next(false);
+    }
+    subscriber.complete();
+  });
+};
+
 export {
   isDockerInstalled$,
   isDockerRunning$,
   downloadDocker$,
   dockerDownloadStatus$,
+  isDockerDownloaded$,
   installDocker$,
+  rebootRequired$,
 };

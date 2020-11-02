@@ -9,4 +9,5 @@ export enum Path {
   STARTING_XUD = "/starting_xud",
   TRADEHISTORY = "/tradehistory",
   WALLETS = "/wallets",
+  RESTART_REQUIRED = "/restart_required",
 }

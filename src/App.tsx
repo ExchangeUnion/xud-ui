@@ -55,6 +55,8 @@ const dockerStore = useDockerStore({
   isRunning: false,
 });
 
+localStorage.removeItem("rebootRequired");
+
 function App(): ReactElement {
   return (
     <ThemeProvider theme={darkTheme}>
