@@ -11,23 +11,20 @@ import LinkToDiscord from "../LinkToDiscord";
 // TODO: implement actions
 const InstallDocker = (): ReactElement => {
   const history = useHistory();
-  const [isInstalling, setIsInstalling] = useState(true);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [isInstalling] = useState(true);
+  const [isInstalled] = useState(false);
 
   useEffect(() => {
     const installDockerSubscription = installDocker$().subscribe(
       (installSuccessful) => {
-        setIsInstalling(false);
         if (installSuccessful) {
-          setIsInstalled(true);
-        } else {
-          console.error("Docker install unsuccessful");
-          // TODO: retry
+          localStorage.setItem("rebootRequired", "true");
         }
+        history.push(Path.CREATE_ENVIRONMENT);
       }
     );
     return () => installDockerSubscription.unsubscribe();
-  }, []);
+  });
 
   return (
     <RowsContainer>
