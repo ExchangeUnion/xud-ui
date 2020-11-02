@@ -3,7 +3,7 @@ import React from "react";
 import App from "../App";
 
 test("renders 'Waiting for XUD Docker' text when promise is pending", () => {
-  window.electron = {
+  (window as any).electron = {
     send: () => {},
     receive: () => {},
     platform: () => "linux",
