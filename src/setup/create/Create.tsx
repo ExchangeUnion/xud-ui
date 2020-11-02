@@ -3,9 +3,11 @@ import { useHistory } from "react-router-dom";
 import { timer } from "rxjs";
 import { take } from "rxjs/operators";
 import {
+  dockerSettings$,
   isDockerDownloaded$,
   isDockerInstalled$,
   isDockerRunning$,
+  isWSL2$,
   rebootRequired$,
 } from "../../common/dockerUtil";
 import PageCircularProgress from "../../common/PageCircularProgress";
@@ -23,7 +25,9 @@ const Create = (): ReactElement => {
       isDockerInstalled$,
       isDockerRunning$,
       isDockerDownloaded$,
-      rebootRequired$
+      rebootRequired$,
+      isWSL2$,
+      dockerSettings$
     )
       .pipe(take(1))
       .subscribe((nextRoute) => history.push(nextRoute));

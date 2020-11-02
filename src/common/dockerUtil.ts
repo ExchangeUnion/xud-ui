@@ -33,6 +33,7 @@ const AVAILABLE_COMMANDS = {
   INSTALL: "docker_install",
   RESTART: "restart",
   WINDOWS_VERSION: "windows_version",
+  SETTINGS: "docker_settings",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
@@ -171,6 +172,22 @@ const windowsVersion$ = (): Observable<number> => {
   );
 };
 
+export type DockerSettings = {
+  wslEngineEnabled?: boolean;
+};
+
+const dockerSettings$ = (): Observable<DockerSettings> => {
+  return execCommand$(AVAILABLE_COMMANDS.SETTINGS).pipe(
+    map((output) => {
+      return (JSON.parse(output) as unknown) as DockerSettings;
+    }),
+    catchError((e: any) => {
+      console.error("Error detecting Docker settings:", e);
+      return of({});
+    })
+  );
+};
+
 const isWSL2$ = (): Observable<boolean> => {
   return windowsVersion$().pipe(
     map((version) => {
@@ -194,4 +211,5 @@ export {
   restart$,
   windowsVersion$,
   isWSL2$,
+  dockerSettings$,
 };

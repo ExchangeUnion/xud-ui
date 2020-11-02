@@ -2,6 +2,7 @@ import { getNextRoute } from "./next-route";
 import { TestScheduler } from "rxjs/testing";
 import { Path } from "../../router/Path";
 import { Observable } from "rxjs";
+import { DockerSettings } from "../../common/dockerUtil";
 
 let testScheduler: TestScheduler;
 
@@ -11,6 +12,7 @@ type CreateFlowState = {
   isRunning: boolean;
   rebootRequired: boolean;
   isWSL2: boolean;
+  dockerSettings: DockerSettings;
 };
 
 const assertNextStep = (expectedPath: Path, dockerInfo: CreateFlowState) => {
@@ -39,6 +41,10 @@ const assertNextStep = (expectedPath: Path, dockerInfo: CreateFlowState) => {
       (cold("1s a", { a: dockerInfo.isWSL2 }) as unknown) as Observable<
         boolean
       >;
+    const dockerSettings = () =>
+      (cold("1s a", { a: dockerInfo.dockerSettings }) as unknown) as Observable<
+        DockerSettings
+      >;
     expectObservable(
       getNextRoute(
         minimumRuntime,
@@ -47,6 +53,7 @@ const assertNextStep = (expectedPath: Path, dockerInfo: CreateFlowState) => {
         isDownloaded,
         rebootRequired,
         isWSL2,
+        dockerSettings
       )
     ).toBe(expected, {
       a: expectedPath,
@@ -69,6 +76,7 @@ describe("nextStep$", () => {
       isRunning: false,
       rebootRequired: false,
       isWSL2: false,
+      dockerSettings: {},
     };
     assertNextStep(expectedPath, dockerInfo);
   });
@@ -81,6 +89,7 @@ describe("nextStep$", () => {
       isRunning: false,
       rebootRequired: false,
       isWSL2: false,
+      dockerSettings: {},
     };
     assertNextStep(expectedPath, dockerInfo);
   });
@@ -93,6 +102,7 @@ describe("nextStep$", () => {
       isRunning: false,
       rebootRequired: true,
       isWSL2: false,
+      dockerSettings: {},
     };
     assertNextStep(expectedPath, dockerInfo);
   });
@@ -105,6 +115,7 @@ describe("nextStep$", () => {
       isRunning: true,
       rebootRequired: false,
       isWSL2: false,
+      dockerSettings: {},
     };
     assertNextStep(expectedPath, dockerInfo);
   });
@@ -117,6 +128,7 @@ describe("nextStep$", () => {
       isRunning: false,
       rebootRequired: false,
       isWSL2: false,
+      dockerSettings: {},
     };
     assertNextStep(expectedPath, dockerInfo);
   });
