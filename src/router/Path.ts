@@ -3,6 +3,7 @@ export enum Path {
   CREATE_ENVIRONMENT = "/create_environment",
   DASHBOARD = "/dashboard",
   DOWNLOAD_DOCKER = "/download_docker",
+  WAITING_DOCKER_START = "/waiting_docker_start",
   HOME = "/",
   INSTALL_DOCKER = "/install_docker",
   OVERVIEW = "/overview",
