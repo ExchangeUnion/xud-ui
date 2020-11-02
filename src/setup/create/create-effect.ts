@@ -2,6 +2,7 @@
 // spinner until we have all the necesessary information fetched.
 // Afterwards it will decide which route to push the user.
 
+import { History } from "history";
 import { Observable, of } from "rxjs";
 
 /*

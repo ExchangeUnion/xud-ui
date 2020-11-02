@@ -1,4 +1,4 @@
-export const XUD_DISCORD_URL = "discord.gg/YgDhMSn";
+export const XUD_DISCORD_URL = "https://discord.com/invite/YgDhMSn";
 
 export const XUD_DOCKER_DOCS_URL =
   "https://docs.exchangeunion.com/start-earning/market-maker-guide";
