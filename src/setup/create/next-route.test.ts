@@ -10,6 +10,7 @@ type CreateFlowState = {
   isInstalled: boolean;
   isRunning: boolean;
   rebootRequired: boolean;
+  isWSL2: boolean;
 };
 
 const assertNextStep = (expectedPath: Path, dockerInfo: CreateFlowState) => {
@@ -34,13 +35,18 @@ const assertNextStep = (expectedPath: Path, dockerInfo: CreateFlowState) => {
       (cold("1s a", { a: dockerInfo.rebootRequired }) as unknown) as Observable<
         boolean
       >;
+    const isWSL2 = () =>
+      (cold("1s a", { a: dockerInfo.isWSL2 }) as unknown) as Observable<
+        boolean
+      >;
     expectObservable(
       getNextRoute(
         minimumRuntime,
         isInstalled,
         isRunning,
         isDownloaded,
-        rebootRequired
+        rebootRequired,
+        isWSL2,
       )
     ).toBe(expected, {
       a: expectedPath,
@@ -62,6 +68,7 @@ describe("nextStep$", () => {
       isInstalled: false,
       isRunning: false,
       rebootRequired: false,
+      isWSL2: false,
     };
     assertNextStep(expectedPath, dockerInfo);
   });
@@ -73,6 +80,7 @@ describe("nextStep$", () => {
       isInstalled: false,
       isRunning: false,
       rebootRequired: false,
+      isWSL2: false,
     };
     assertNextStep(expectedPath, dockerInfo);
   });
@@ -84,6 +92,7 @@ describe("nextStep$", () => {
       isInstalled: false,
       isRunning: false,
       rebootRequired: true,
+      isWSL2: false,
     };
     assertNextStep(expectedPath, dockerInfo);
   });
@@ -95,6 +104,7 @@ describe("nextStep$", () => {
       isInstalled: true,
       isRunning: true,
       rebootRequired: false,
+      isWSL2: false,
     };
     assertNextStep(expectedPath, dockerInfo);
   });
@@ -106,6 +116,7 @@ describe("nextStep$", () => {
       isInstalled: true,
       isRunning: false,
       rebootRequired: false,
+      isWSL2: false,
     };
     assertNextStep(expectedPath, dockerInfo);
   });

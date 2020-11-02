@@ -32,6 +32,7 @@ const AVAILABLE_COMMANDS = {
   DOWNLOAD_STATUS: "docker_download_status",
   INSTALL: "docker_install",
   RESTART: "restart",
+  WINDOWS_VERSION: "windows_version",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
@@ -127,7 +128,7 @@ const dockerDownloadStatus$ = (): Observable<number> => {
   );
 };
 
-const restart$ = (): Observable<number> => {
+const restart$ = (): Observable<string> => {
   return execCommand$(AVAILABLE_COMMANDS.RESTART);
 };
 
@@ -153,6 +154,35 @@ const rebootRequired$ = (): Observable<boolean> => {
   });
 };
 
+const windowsVersion$ = (): Observable<number> => {
+  return execCommand$(AVAILABLE_COMMANDS.WINDOWS_VERSION).pipe(
+    map((output) => {
+      console.log("version output", output);
+      const splitOutput = output.split(" ");
+      const versionString = splitOutput.filter((split) => {
+        return split.startsWith("10");
+      });
+      return parseInt(versionString[0].split(".")[2]);
+    }),
+    catchError((e: any) => {
+      console.error("Error detecting Windows version:", e);
+      return of(10);
+    })
+  );
+};
+
+const isWSL2$ = (): Observable<boolean> => {
+  return windowsVersion$().pipe(
+    map((version) => {
+      const MINIMUM_WSL2_VERSION = 18917;
+      if (version >= MINIMUM_WSL2_VERSION) {
+        return true;
+      }
+      return false;
+    })
+  );
+};
+
 export {
   isDockerInstalled$,
   isDockerRunning$,
@@ -162,4 +192,6 @@ export {
   installDocker$,
   rebootRequired$,
   restart$,
+  windowsVersion$,
+  isWSL2$,
 };

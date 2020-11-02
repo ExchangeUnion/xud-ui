@@ -7,7 +7,8 @@ const getNextRoute = (
   isInstalled: () => Observable<boolean>,
   isRunning: () => Observable<boolean>,
   isDownloaded: () => Observable<boolean>,
-  rebootRequired: () => Observable<boolean>
+  rebootRequired: () => Observable<boolean>,
+  isWSL2: () => Observable<boolean>
 ): Observable<Path> => {
   return combineLatest([
     minimumRuntime(),
@@ -15,13 +16,15 @@ const getNextRoute = (
     isRunning(),
     isDownloaded(),
     rebootRequired(),
+    isWSL2(),
   ]).pipe(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    map(([_, isInstalled, isRunning, isDownloaded, rebootRequired]) => {
+    map(([_, isInstalled, isRunning, isDownloaded, rebootRequired, isWSL2]) => {
       console.log("isInstalled", isInstalled);
       console.log("isRunning", isRunning);
       console.log("isDownloaded", isDownloaded);
       console.log("rebootRequired", rebootRequired);
+      console.log("isWSL2", isWSL2);
       if (rebootRequired) {
         return Path.RESTART_REQUIRED;
       }
