@@ -11,6 +11,7 @@ import ConnectToRemote from "./setup/ConnectToRemote";
 import Create from "./setup/create/Create";
 import DownloadDocker from "./setup/create/DownloadDocker";
 import InstallDocker from "./setup/create/InstallDocker";
+import RestartRequired from "./setup/create/RestartRequired";
 import StartingXud from "./setup/create/StartingXud";
 import DockerNotDetected from "./setup/DockerNotDetected";
 import Landing from "./setup/Landing";
@@ -79,6 +80,9 @@ function App(): ReactElement {
             </Route>
             <Route path={Path.STARTING_XUD}>
               <StartingXud />
+            </Route>
+            <Route path={Path.RESTART_REQUIRED}>
+              <RestartRequired />
             </Route>
             <Route path={Path.CREATE_ENVIRONMENT}>
               <Create />

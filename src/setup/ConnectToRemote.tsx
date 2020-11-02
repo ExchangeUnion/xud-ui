@@ -14,10 +14,10 @@ import { inject, observer } from "mobx-react";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import api from "../api";
-import RowsContainer from "../common/RowsContainer";
 import { Path } from "../router/Path";
 import { SETTINGS_STORE } from "../stores/settingsStore";
 import { WithStores } from "../stores/WithStores";
+import RowsContainer from "./RowsContainer";
 
 type ConnectToRemoteProps = WithStores;
 

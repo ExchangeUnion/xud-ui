@@ -15,10 +15,11 @@ import PowerTwoToneIcon from "@material-ui/icons/PowerTwoTone";
 import { inject, observer } from "mobx-react";
 import React, { ElementType, useState } from "react";
 import { useHistory } from "react-router-dom";
-import RowsContainer from "../common/RowsContainer";
+import RowsContainer from "./RowsContainer";
 import { Path } from "../router/Path";
 import { DOCKER_STORE } from "../stores/dockerStore";
 import { SETTINGS_STORE } from "../stores/settingsStore";
+import XudLogo from "./XudLogo";
 
 type Item = {
   icon: ElementType;
@@ -60,15 +61,6 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: 80,
       margin: theme.spacing(3),
     },
-    logoWrapper: {
-      width: 250,
-    },
-    logo: {
-      margin: "auto",
-      display: "block",
-      maxWidth: "100%",
-      maxHeight: "100%",
-    },
   })
 );
 
@@ -91,13 +83,7 @@ const Landing = inject(
     return (
       <RowsContainer>
         <Grid item container justify="center">
-          <div className={classes.logoWrapper}>
-            <img
-              className={classes.logo}
-              src={require("../assets/logo-grey.png")}
-              alt="xud logo"
-            />
-          </div>
+          <XudLogo />
         </Grid>
         <Grid item container justify="center" alignItems="center" spacing={9}>
           {items.map((item) => {
