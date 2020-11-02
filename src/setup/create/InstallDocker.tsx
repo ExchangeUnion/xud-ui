@@ -14,19 +14,6 @@ const InstallDocker = (): ReactElement => {
   const history = useHistory();
   const [isInstalling, setIsInstalling] = useState(false);
 
-  // TODO: move logic to "Install Now" button
-  useEffect(() => {
-    /* const installDockerSubscription = installDocker$().subscribe(
-      (installSuccessful) => {
-        if (installSuccessful) {
-          localStorage.setItem("rebootRequired", "true");
-        }
-        history.push(Path.CREATE_ENVIRONMENT);
-      }
-    );
-    return () => installDockerSubscription.unsubscribe(); */
-  });
-
   return (
     <RowsContainer>
       <Grid item container>
@@ -59,7 +46,15 @@ const InstallDocker = (): ReactElement => {
               color="primary"
               disableElevation
               endIcon={<ArrowRightAltIcon />}
-              onClick={() => setIsInstalling(true)}
+              onClick={() => {
+                setIsInstalling(true);
+                installDocker$().subscribe((installSuccessful) => {
+                  if (installSuccessful) {
+                    localStorage.setItem("rebootRequired", "true");
+                  }
+                  history.push(Path.CREATE_ENVIRONMENT);
+                });
+              }}
             >
               Install Now
             </Button>
