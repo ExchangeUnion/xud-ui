@@ -1,5 +1,5 @@
 import { Observable, of } from "rxjs";
-import { catchError, map } from "rxjs/operators";
+import { catchError, map, take } from "rxjs/operators";
 import { v4 as uuidv4 } from "uuid";
 
 const execCommand$ = (command: string): Observable<string> => {
@@ -102,7 +102,8 @@ const installDocker$ = (): Observable<boolean> => {
     catchError((e: any) => {
       console.error("Error installing Docker:", e);
       return of(false);
-    })
+    }),
+    take(1)
   );
 };
 
@@ -110,17 +111,9 @@ const dockerDownloadStatus$ = (): Observable<number> => {
   return execCommand$(AVAILABLE_COMMANDS.DOWNLOAD_STATUS).pipe(
     map((output) => {
       console.log("output from isDockerDownloaded$", output);
-      const downloadSize = output.split(" ").filter((o) => o.includes(","));
-      if (downloadSize.length === 1) {
-        const sizeString = downloadSize[0];
-        const size = parseInt(
-          sizeString.split(",").reduce((acc, curr) => acc + curr)
-        );
-        const downloadPercentage = parseFloat(
-          ((size / 426302672) * 100).toFixed(2)
-        );
-        console.log("downloadPercentage", downloadPercentage);
-        return downloadPercentage;
+      const isDownloaded = output.includes("docker-installer.exe");
+      if (isDownloaded) {
+        return 100;
       }
       return 0;
     }),
