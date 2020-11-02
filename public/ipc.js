@@ -33,6 +33,7 @@ const ipcHandler = (mainWindow) => {
       docker_download: `curl ${DOCKER_BINARY_DOWNLOAD_URL} > ${DOCKER_INSTALLER_FILE_NAME}`,
       docker_download_status: `dir | findstr /R "${DOCKER_INSTALLER_FILE_NAME}"`,
       docker_install: `${DOCKER_INSTALLER_FILE_NAME} install --quiet`,
+      restart: "shutdown /r",
     };
     const command = AVAILABLE_COMMANDS[clientCommand];
     if (command) {

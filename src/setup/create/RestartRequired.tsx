@@ -2,15 +2,12 @@ import { Button, Grid, Typography } from "@material-ui/core";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
 import CheckIcon from "@material-ui/icons/Check";
 import React, { ReactElement } from "react";
-import { useHistory } from "react-router-dom";
-import { Path } from "../../router/Path";
+import { restart$ } from "../../common/dockerUtil";
 import LinkToDiscord from "../LinkToDiscord";
 import RowsContainer from "../RowsContainer";
 import InfoBar from "./InfoBar";
 
 const RestartRequired = (): ReactElement => {
-  const history = useHistory();
-
   return (
     <RowsContainer>
       <Grid item container>
@@ -28,7 +25,11 @@ const RestartRequired = (): ReactElement => {
             color="primary"
             disableElevation
             endIcon={<ArrowRightAltIcon />}
-            onClick={() => history.push(Path.STARTING_XUD)}
+            onClick={() => {
+              restart$().subscribe(() => {
+                window.close();
+              });
+            }}
           >
             Reboot Now
           </Button>

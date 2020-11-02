@@ -31,6 +31,7 @@ const AVAILABLE_COMMANDS = {
   DOWNLOAD: "docker_download",
   DOWNLOAD_STATUS: "docker_download_status",
   INSTALL: "docker_install",
+  RESTART: "restart",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
@@ -133,6 +134,10 @@ const dockerDownloadStatus$ = (): Observable<number> => {
   );
 };
 
+const restart$ = (): Observable<number> => {
+  return execCommand$(AVAILABLE_COMMANDS.RESTART);
+};
+
 const isDockerDownloaded$ = (): Observable<boolean> => {
   return dockerDownloadStatus$().pipe(
     map((downloadPercentage) => {
@@ -163,4 +168,5 @@ export {
   isDockerDownloaded$,
   installDocker$,
   rebootRequired$,
+  restart$,
 };
