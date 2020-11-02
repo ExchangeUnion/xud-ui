@@ -3,9 +3,12 @@ import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
 import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
 import React, { ReactElement, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { installDocker$ } from "../../common/dockerUtil";
+import { Path } from "../../router/Path";
 import LinkToDiscord from "../LinkToDiscord";
 import RowsContainer from "../RowsContainer";
 import InfoBar from "./InfoBar";
+import { DockerInstallPromptScreenshot } from "../DockerInstallPromptScreenshot";
 
 const InstallDocker = (): ReactElement => {
   const history = useHistory();
@@ -39,11 +42,13 @@ const InstallDocker = (): ReactElement => {
             Docker install in progress. Please wait.
           </Typography>
         ) : (
-          /* TODO: add screenshot */
-          <Typography variant="h6" component="h2">
-            Click on Install now and allow XUD installer to install Docker by
-            providing user credentials.
-          </Typography>
+          <>
+            <DockerInstallPromptScreenshot />
+            <Typography variant="h6" component="h2">
+              Click on Install now and allow XUD installer to install Docker by
+              providing user credentials.
+            </Typography>
+          </>
         )}
       </Grid>
       <Grid item container justify="flex-end" direction="column">
