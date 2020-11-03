@@ -196,7 +196,7 @@ const dockerSettings$ = (): Observable<DockerSettings> => {
 const isWSL2$ = (): Observable<boolean> => {
   return execCommand$(AVAILABLE_COMMANDS.WSL_VERSION).pipe(
     map((output) => {
-      const cleanedOutput = output.replace(/[^\w\s]/gi, '').trim()
+      const cleanedOutput = output.replace(/[^\w\s]/gi, "").trim();
       console.log("output for isWSL2", cleanedOutput);
       return !cleanedOutput.includes("requires an update");
     }),
