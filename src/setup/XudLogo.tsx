@@ -4,7 +4,7 @@ import React, { ReactElement } from "react";
 const useStyles = makeStyles(() =>
   createStyles({
     logoWrapper: {
-      width: 250,
+      width: 200,
     },
     logo: {
       margin: "auto",

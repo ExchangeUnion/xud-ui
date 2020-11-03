@@ -42,12 +42,12 @@ const InfoBar = (props: InfoBarProps): ReactElement => {
         <Grid item container spacing={1} wrap="nowrap">
           {props.showCircularProgress && (
             <Grid item className={classes.itemContainer}>
-              <CircularProgress color="inherit" size={15} />
+              <CircularProgress color="inherit" size={18} />
             </Grid>
           )}
           {!!props.icon && (
             <Grid item className={classes.itemContainer}>
-              <props.icon />
+              <props.icon fontSize="small" />
             </Grid>
           )}
           <Grid item className={classes.itemContainer}>

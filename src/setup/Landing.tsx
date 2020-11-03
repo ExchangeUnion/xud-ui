@@ -61,6 +61,9 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: 80,
       margin: theme.spacing(3),
     },
+    buttonContainer: {
+      marginTop: theme.spacing(3),
+    },
   })
 );
 
@@ -114,7 +117,12 @@ const Landing = inject(
             );
           })}
         </Grid>
-        <Grid item container justify="flex-end">
+        <Grid
+          item
+          container
+          justify="flex-end"
+          className={classes.buttonContainer}
+        >
           <Button
             variant="contained"
             color="primary"
