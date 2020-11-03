@@ -35,7 +35,7 @@ const DownloadDocker = (): ReactElement => {
         )}
       </Grid>
       <Grid item container justify="center">
-        <Typography variant="h6" component="h2">
+        <Typography variant="h6" component="h2" align="center">
           Docker not detected. In order to create a new xud environment, you
           need to get Docker.
         </Typography>
@@ -51,8 +51,7 @@ const DownloadDocker = (): ReactElement => {
           <Grid item container justify="space-between">
             <>
               <Button
-                variant="contained"
-                color="primary"
+                variant="outlined"
                 disableElevation
                 onClick={() => history.push(Path.HOME)}
               >
