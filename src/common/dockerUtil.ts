@@ -159,6 +159,10 @@ const windowsVersion$ = (): Observable<number> => {
   return execCommand$(AVAILABLE_COMMANDS.WINDOWS_VERSION).pipe(
     map((output) => {
       console.log("version output", output);
+      // We parse the output of "ver" command and determine if
+      // the next-to-last numeric group version 18917 or higher?
+      // 1. LOWER => WSL1
+      // 2. HIGHER => WSL2
       const splitOutput = output.split(" ");
       const versionString = splitOutput.filter((split) => {
         return split.startsWith("10");
