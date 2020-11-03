@@ -107,6 +107,21 @@ describe("nextStep$", () => {
     assertNextStep(expectedPath, dockerInfo);
   });
 
+  it("directs to reboot when docker settings change required", () => {
+    const expectedPath = Path.RESTART_REQUIRED;
+    const dockerInfo = {
+      isDownloaded: false,
+      isInstalled: false,
+      isRunning: false,
+      rebootRequired: false,
+      isWSL2: false,
+      dockerSettings: {
+        wslEngineEnabled: true,
+      },
+    };
+    assertNextStep(expectedPath, dockerInfo);
+  });
+
   it("directs to starting xud", () => {
     const expectedPath = Path.STARTING_XUD;
     const dockerInfo = {
