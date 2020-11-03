@@ -20,6 +20,7 @@ const AVAILABLE_COMMANDS = {
   restart: "shutdown /r",
   windows_version: "ver",
   docker_settings: "settings",
+  wsl_version: "wsl --set-default-version 2",
 };
 
 const execCommand = (cmd) => {
