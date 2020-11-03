@@ -37,11 +37,12 @@ const getNextRoute = (
         console.log("isDownloaded", isDownloaded);
         console.log("rebootRequired", rebootRequired);
         console.log("isWSL2", isWSL2);
-        console.log(
-          "dockerSettings",
-          (dockerSettings as DockerSettings).wslEngineEnabled
-        );
+        const { wslEngineEnabled } = dockerSettings as DockerSettings;
+        console.log("wslEngineEnabled", wslEngineEnabled);
         if (rebootRequired) {
+          return Path.RESTART_REQUIRED;
+        }
+        if (wslEngineEnabled && !isWSL2) {
           return Path.RESTART_REQUIRED;
         }
         if (isRunning) {

@@ -34,6 +34,7 @@ const AVAILABLE_COMMANDS = {
   RESTART: "restart",
   WINDOWS_VERSION: "windows_version",
   SETTINGS: "docker_settings",
+  WSL_VERSION: "wsl_version",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
@@ -193,13 +194,15 @@ const dockerSettings$ = (): Observable<DockerSettings> => {
 };
 
 const isWSL2$ = (): Observable<boolean> => {
-  return windowsVersion$().pipe(
-    map((version) => {
-      const MINIMUM_WSL2_VERSION = 18917;
-      if (version >= MINIMUM_WSL2_VERSION) {
-        return true;
-      }
-      return false;
+  return execCommand$(AVAILABLE_COMMANDS.WSL_VERSION).pipe(
+    map((output) => {
+      const cleanedOutput = output.replace(/[^\w\s]/gi, "").trim();
+      console.log("output for isWSL2", cleanedOutput);
+      return !cleanedOutput.includes("requires an update");
+    }),
+    catchError((e: any) => {
+      console.error("Error detecting WSL version:", e);
+      return of(false);
     })
   );
 };
