@@ -1,5 +1,6 @@
 import { createStyles, makeStyles } from "@material-ui/core";
 import React, { ReactElement } from "react";
+import InstallDockerPromptImg from "../assets/install-docker-prompt.png";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -17,7 +18,7 @@ const DockerInstallPromptScreenshot = (): ReactElement => {
   return (
     <img
       className={classes.image}
-      src={require("../assets/install-docker-prompt.png")}
+      src={InstallDockerPromptImg}
       alt="Click yes when prompted to install Docker"
     />
   );

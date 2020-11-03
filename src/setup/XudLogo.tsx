@@ -1,5 +1,6 @@
 import { createStyles, makeStyles } from "@material-ui/core";
 import React, { ReactElement } from "react";
+import LogoImg from "../assets/logo-grey.png";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -20,11 +21,7 @@ const XudLogo = (): ReactElement => {
 
   return (
     <div className={classes.logoWrapper}>
-      <img
-        className={classes.logo}
-        src={require("../assets/logo-grey.png")}
-        alt="xud logo"
-      />
+      <img className={classes.logo} src={LogoImg} alt="xud logo" />
     </div>
   );
 };
