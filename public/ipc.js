@@ -21,6 +21,9 @@ const AVAILABLE_COMMANDS = {
   windows_version: "ver",
   docker_settings: "settings",
   wsl_version: "wsl --set-default-version 2",
+  pull_exp: "docker pull exchangeunion/exp",
+  start_xud_docker:
+    "docker run --rm -e PASSWORD=12345678 -e BACKUPDIR=/tmp -e HOSTFS=/ -e HOSTPWD=/root -e HOSTHOME=/root -e DOCKER_SOCK=//var/run/docker.sock -e NETWORK=mainnet -v //var/run/docker.sock:/var/run/docker.sock exchangeunion/exp -b fix-windows-path --proxy.disabled false",
 };
 
 const execCommand = (cmd) => {
@@ -83,4 +86,4 @@ const ipcHandler = (mainWindow) => {
   });
 };
 
-module.exports = { ipcHandler };
+module.exports = { ipcHandler, execCommand };

@@ -1,48 +1,83 @@
 import { Grid, LinearProgress, Typography } from "@material-ui/core";
+import { inject, observer } from "mobx-react";
 import React, { ReactElement, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { interval, timer } from "rxjs";
+import { catchError, mergeMap, take, takeUntil } from "rxjs/operators";
+import api from "../../api";
+import { pullExp$, startXudDocker$ } from "../../common/dockerUtil";
+import { Path } from "../../router/Path";
+import { SETTINGS_STORE } from "../../stores/settingsStore";
+import { WithStores } from "../../stores/WithStores";
 import LinkToDiscord from "../LinkToDiscord";
 import RowsContainer from "../RowsContainer";
 import XudLogo from "../XudLogo";
 
-// TODO: implement actions
-const StartingXud = (): ReactElement => {
-  const [progress, setProgress] = useState(0);
+type StartingXudProps = WithStores;
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((oldProgress) => {
-        if (oldProgress === 100) {
-          return 0;
-        }
-        const diff = Math.random() * 10;
-        return Math.min(oldProgress + diff, 100);
+const StartingXud = inject(SETTINGS_STORE)(
+  observer(({ settingsStore }: StartingXudProps) => {
+    const [progress, setProgress] = useState(0);
+    const history = useHistory();
+
+    useEffect(() => {
+      const fakeLoading$ = interval(5000);
+      const fakeLoadingSub = fakeLoading$.subscribe(() => {
+        setProgress(progress + 1);
       });
-    }, 500);
 
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
-  return (
-    <RowsContainer>
-      <Grid
-        item
-        container
-        justify="center"
-        alignItems="center"
-        direction="column"
-      >
-        <XudLogo />
-        <Typography variant="h6" component="h2">
-          Powering OpenDEX
-        </Typography>
-      </Grid>
-      <Grid>
-        <LinearProgress variant="determinate" value={progress} />
-      </Grid>
-      <LinkToDiscord />
-    </RowsContainer>
-  );
-};
+      return () => {
+        fakeLoadingSub.unsubscribe();
+      };
+    }, []);
+
+    useEffect(() => {
+      const apiResponsive$ = interval(1000).pipe(
+        mergeMap(() => api.status$(settingsStore!.xudDockerUrl)),
+        catchError((e, caught) => caught),
+        take(1)
+      );
+      apiResponsive$.subscribe(() => {
+        history.push(Path.DASHBOARD);
+      });
+      pullExp$()
+        .pipe(
+          mergeMap(() => startXudDocker$()),
+          takeUntil(apiResponsive$),
+          catchError((e, caught) => {
+            console.error(
+              "Failed to start xud-docker. Retrying in 1 second",
+              e
+            );
+            return timer(1000).pipe(mergeMap(() => caught));
+          })
+        )
+        .subscribe((output) => {
+          console.log("XUD DOCKER HAS BEEN STARTED", output);
+        });
+    }, []);
+
+    return (
+      <RowsContainer>
+        <Grid
+          item
+          container
+          justify="center"
+          alignItems="center"
+          direction="column"
+        >
+          <XudLogo />
+          <Typography variant="h6" component="h2">
+            Powering OpenDEX
+          </Typography>
+        </Grid>
+        <Grid>
+          <LinearProgress variant="determinate" value={progress} />
+        </Grid>
+        <LinkToDiscord />
+      </RowsContainer>
+    );
+  })
+);
 
 export default StartingXud;
