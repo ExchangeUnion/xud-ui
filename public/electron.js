@@ -3,7 +3,9 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const isDev = require("electron-is-dev");
-const { ipcHandler } = require("./ipc");
+const { ipcHandler, execCommand } = require("./ipc");
+const { combineLatest } = require("rxjs");
+const { take } = require("rxjs/operators");
 
 let mainWindow;
 
@@ -36,6 +38,17 @@ function createWindow() {
 app.on("ready", createWindow);
 
 app.on("window-all-closed", () => {
+  combineLatest([
+    execCommand("docker stop mainnet_xud_1"),
+    execCommand("docker stop mainnet_connext_1"),
+    execCommand("docker stop mainnet_lndbtc_1"),
+    execCommand("docker stop mainnet_lndltc_1"),
+    execCommand("docker stop mainnet_utils_1"),
+    execCommand("docker stop mainnet_proxy_1"),
+    execCommand("docker stop mainnet_boltz_1"),
+  ])
+    .pipe(take(1))
+    .subscribe(() => {});
   if (process.platform !== "darwin") {
     app.quit();
   }
