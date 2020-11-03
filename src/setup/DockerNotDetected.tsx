@@ -15,12 +15,12 @@ import { Link as RouterLink, useHistory } from "react-router-dom";
 import { timer } from "rxjs";
 import { delay, mergeMap, retryWhen } from "rxjs/operators";
 import api from "../api";
-import RowsContainer from "../common/RowsContainer";
 import { Path } from "../router/Path";
 import { DOCKER_STORE } from "../stores/dockerStore";
 import { SETTINGS_STORE } from "../stores/settingsStore";
 import { WithStores } from "../stores/WithStores";
 import LinkToSetupGuide from "./LinkToSetupGuide";
+import RowsContainer from "./RowsContainer";
 
 type DockerNotDetectedProps = WithStores;
 

@@ -1,75 +1,62 @@
 import { Button, Grid, Typography } from "@material-ui/core";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
-import React, { ReactElement, useEffect, useState } from "react";
+import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
+import React, { ReactElement, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { installDocker$ } from "../../common/dockerUtil";
-import RowsContainer from "../../common/RowsContainer";
 import { Path } from "../../router/Path";
+import { DockerInstallPromptScreenshot } from "../DockerInstallPromptScreenshot";
 import LinkToDiscord from "../LinkToDiscord";
+import RowsContainer from "../RowsContainer";
+import InfoBar from "./InfoBar";
 
-// TODO: refactor & split into multiple components
-// TODO: implement actions
 const InstallDocker = (): ReactElement => {
   const history = useHistory();
-  const [isInstalling] = useState(true);
-  const [isInstalled] = useState(false);
-
-  useEffect(() => {
-    const installDockerSubscription = installDocker$().subscribe(
-      (installSuccessful) => {
-        if (installSuccessful) {
-          localStorage.setItem("rebootRequired", "true");
-        }
-        history.push(Path.CREATE_ENVIRONMENT);
-      }
-    );
-    return () => installDockerSubscription.unsubscribe();
-  });
+  const [isInstalling, setIsInstalling] = useState(false);
 
   return (
     <RowsContainer>
-      {/* TODO: add background to header */}
       <Grid item container>
-        {isInstalling && (
-          <Grid item container justify="space-between">
-            {/* TODO: add spinner */}
-            <Typography variant="body2" component="span">
-              Installing Docker
-            </Typography>
-          </Grid>
-        )}
-        {isInstalled && (
-          <Grid item container>
-            {/* TODO: add icon */}
-            <Typography variant="body2" component="span">
-              Docker Installed!
-            </Typography>
-          </Grid>
+        {isInstalling ? (
+          <InfoBar text="Installing Docker" showCircularProgress={true} />
+        ) : (
+          <InfoBar text="Docker Downloaded" icon={GetAppOutlinedIcon} />
         )}
       </Grid>
       <Grid item container justify="center">
-        {isInstalling && (
+        {isInstalling ? (
           <Typography variant="h6" component="h2">
             Docker install in progress. Please wait.
           </Typography>
-        )}
-        {isInstalled && (
-          <Typography variant="h6" component="h2">
-            Reboot required to continue.
-          </Typography>
+        ) : (
+          <>
+            <DockerInstallPromptScreenshot />
+            <Typography variant="h6" component="h2">
+              Click on Install now and allow XUD installer to install Docker by
+              providing user credentials.
+            </Typography>
+          </>
         )}
       </Grid>
-      <Grid item container justify="flex-end">
-        {isInstalled && (
+      <Grid item container justify="flex-end" direction="column">
+        {!isInstalling && (
           <Grid item container justify="flex-end">
             <Button
               variant="contained"
               color="primary"
               disableElevation
               endIcon={<ArrowRightAltIcon />}
-              onClick={() => history.push(Path.STARTING_XUD)}
+              onClick={() => {
+                setIsInstalling(true);
+                installDocker$().subscribe((installSuccessful) => {
+                  if (installSuccessful) {
+                    localStorage.setItem("rebootRequired", "true");
+                  }
+                  history.push(Path.CREATE_ENVIRONMENT);
+                });
+              }}
             >
-              Reboot now
+              Install Now
             </Button>
           </Grid>
         )}

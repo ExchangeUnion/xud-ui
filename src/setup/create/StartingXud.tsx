@@ -1,7 +1,8 @@
 import { Grid, LinearProgress, Typography } from "@material-ui/core";
 import React, { ReactElement, useEffect, useState } from "react";
-import RowsContainer from "../../common/RowsContainer";
 import LinkToDiscord from "../LinkToDiscord";
+import RowsContainer from "../RowsContainer";
+import XudLogo from "../XudLogo";
 
 // TODO: implement actions
 const StartingXud = (): ReactElement => {
@@ -24,8 +25,14 @@ const StartingXud = (): ReactElement => {
   }, []);
   return (
     <RowsContainer>
-      <Grid item container justify="center">
-        {/* TODO: add logo */}
+      <Grid
+        item
+        container
+        justify="center"
+        alignItems="center"
+        direction="column"
+      >
+        <XudLogo />
         <Typography variant="h6" component="h2">
           Powering OpenDEX
         </Typography>

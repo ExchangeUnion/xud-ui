@@ -11,9 +11,11 @@ import ConnectToRemote from "./setup/ConnectToRemote";
 import Create from "./setup/create/Create";
 import DownloadDocker from "./setup/create/DownloadDocker";
 import InstallDocker from "./setup/create/InstallDocker";
+import RestartRequired from "./setup/create/RestartRequired";
 import StartingXud from "./setup/create/StartingXud";
 import DockerNotDetected from "./setup/DockerNotDetected";
 import Landing from "./setup/Landing";
+import WaitingDockerStart from "./setup/WaitingDockerStart";
 import { useDockerStore } from "./stores/dockerStore";
 import { useSettingsStore } from "./stores/settingsStore";
 
@@ -80,8 +82,14 @@ function App(): ReactElement {
             <Route path={Path.STARTING_XUD}>
               <StartingXud />
             </Route>
+            <Route path={Path.RESTART_REQUIRED}>
+              <RestartRequired />
+            </Route>
             <Route path={Path.CREATE_ENVIRONMENT}>
               <Create />
+            </Route>
+            <Route path={Path.WAITING_DOCKER_START}>
+              <WaitingDockerStart />
             </Route>
             <Route path={Path.HOME}>
               {(window as any).electron.platform() === "win32" ? (

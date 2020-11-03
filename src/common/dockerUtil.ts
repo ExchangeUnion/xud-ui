@@ -1,5 +1,5 @@
 import { Observable, of } from "rxjs";
-import { catchError, map } from "rxjs/operators";
+import { catchError, map, take } from "rxjs/operators";
 import { v4 as uuidv4 } from "uuid";
 
 const execCommand$ = (command: string): Observable<string> => {
@@ -31,6 +31,9 @@ const AVAILABLE_COMMANDS = {
   DOWNLOAD: "docker_download",
   DOWNLOAD_STATUS: "docker_download_status",
   INSTALL: "docker_install",
+  RESTART: "restart",
+  WINDOWS_VERSION: "windows_version",
+  SETTINGS: "docker_settings",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
@@ -101,7 +104,8 @@ const installDocker$ = (): Observable<boolean> => {
     catchError((e: any) => {
       console.error("Error installing Docker:", e);
       return of(false);
-    })
+    }),
+    take(1)
   );
 };
 
@@ -109,17 +113,9 @@ const dockerDownloadStatus$ = (): Observable<number> => {
   return execCommand$(AVAILABLE_COMMANDS.DOWNLOAD_STATUS).pipe(
     map((output) => {
       console.log("output from isDockerDownloaded$", output);
-      const downloadSize = output.split(" ").filter((o) => o.includes(","));
-      if (downloadSize.length === 1) {
-        const sizeString = downloadSize[0];
-        const size = parseInt(
-          sizeString.split(",").reduce((acc, curr) => acc + curr)
-        );
-        const downloadPercentage = parseFloat(
-          ((size / 426302672) * 100).toFixed(2)
-        );
-        console.log("downloadPercentage", downloadPercentage);
-        return downloadPercentage;
+      const isDownloaded = output.includes("docker-installer.exe");
+      if (isDownloaded) {
+        return 100;
       }
       return 0;
     }),
@@ -131,6 +127,10 @@ const dockerDownloadStatus$ = (): Observable<number> => {
       return of(0);
     })
   );
+};
+
+const restart$ = (): Observable<string> => {
+  return execCommand$(AVAILABLE_COMMANDS.RESTART);
 };
 
 const isDockerDownloaded$ = (): Observable<boolean> => {
@@ -155,6 +155,51 @@ const rebootRequired$ = (): Observable<boolean> => {
   });
 };
 
+const windowsVersion$ = (): Observable<number> => {
+  return execCommand$(AVAILABLE_COMMANDS.WINDOWS_VERSION).pipe(
+    map((output) => {
+      console.log("version output", output);
+      const splitOutput = output.split(" ");
+      const versionString = splitOutput.filter((split) => {
+        return split.startsWith("10");
+      });
+      return parseInt(versionString[0].split(".")[2]);
+    }),
+    catchError((e: any) => {
+      console.error("Error detecting Windows version:", e);
+      return of(10);
+    })
+  );
+};
+
+export type DockerSettings = {
+  wslEngineEnabled?: boolean;
+};
+
+const dockerSettings$ = (): Observable<DockerSettings> => {
+  return execCommand$(AVAILABLE_COMMANDS.SETTINGS).pipe(
+    map((output) => {
+      return (JSON.parse(output) as unknown) as DockerSettings;
+    }),
+    catchError((e: any) => {
+      console.error("Error detecting Docker settings:", e);
+      return of({});
+    })
+  );
+};
+
+const isWSL2$ = (): Observable<boolean> => {
+  return windowsVersion$().pipe(
+    map((version) => {
+      const MINIMUM_WSL2_VERSION = 18917;
+      if (version >= MINIMUM_WSL2_VERSION) {
+        return true;
+      }
+      return false;
+    })
+  );
+};
+
 export {
   isDockerInstalled$,
   isDockerRunning$,
@@ -163,4 +208,8 @@ export {
   isDockerDownloaded$,
   installDocker$,
   rebootRequired$,
+  restart$,
+  windowsVersion$,
+  isWSL2$,
+  dockerSettings$,
 };
