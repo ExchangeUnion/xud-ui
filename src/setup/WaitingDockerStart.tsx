@@ -5,14 +5,19 @@ import { Path } from "../router/Path";
 import LinkToDiscord from "./LinkToDiscord";
 import RowsContainer from "./RowsContainer";
 import InfoBar from "./create/InfoBar";
-import { timer } from "rxjs";
-import { take } from "rxjs/operators";
+import { interval } from "rxjs";
+import { filter, mergeMap, take } from "rxjs/operators";
+import { isDockerRunning$ } from "../common/dockerUtil";
 
 const WaitingDockerStart = (): ReactElement => {
   const history = useHistory();
   useEffect(() => {
-    timer(10000)
-      .pipe(take(1))
+    interval(1000)
+      .pipe(
+        mergeMap(() => isDockerRunning$()),
+        filter((isRunning) => isRunning),
+        take(1)
+      )
       .subscribe(() => {
         history.push(Path.CREATE_ENVIRONMENT);
       });
