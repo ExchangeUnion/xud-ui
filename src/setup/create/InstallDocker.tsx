@@ -23,18 +23,38 @@ const InstallDocker = (): ReactElement => {
           <InfoBar text="Docker Downloaded" icon={GetAppOutlinedIcon} />
         )}
       </Grid>
-      <Grid item container justify="center">
+      <Grid
+        item
+        container
+        justify="center"
+        alignItems="center"
+        direction="column"
+      >
         {isInstalling ? (
-          <Typography variant="h6" component="h2">
-            Docker install in progress. Please wait.
-          </Typography>
+          <>
+            <Typography variant="h6" component="h2" align="center">
+              Docker install in progress. Please wait.
+            </Typography>
+            <Typography
+              variant="overline"
+              component="p"
+              color="textSecondary"
+              align="center"
+            >
+              This usually takes ~3 minutes.
+            </Typography>
+          </>
         ) : (
           <>
-            <DockerInstallPromptScreenshot />
-            <Typography variant="h6" component="h2">
-              Click on Install now and allow XUD installer to install Docker by
-              providing user credentials.
-            </Typography>
+            <Grid item>
+              <DockerInstallPromptScreenshot />
+            </Grid>
+            <Grid item>
+              <Typography variant="h6" component="h2" align="center">
+                Click on Install now and allow XUD installer to install Docker
+                by providing user credentials.
+              </Typography>
+            </Grid>
           </>
         )}
       </Grid>

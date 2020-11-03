@@ -40,7 +40,7 @@ const RestartRequired = (): ReactElement => {
         <InfoBar text="Docker Installed!" icon={CheckIcon} />
       </Grid>
       <Grid item container justify="center">
-        <Typography variant="h6" component="h2">
+        <Typography variant="h6" component="h2" align="center">
           Reboot required to continue.
         </Typography>
       </Grid>

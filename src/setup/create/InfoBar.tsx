@@ -22,8 +22,8 @@ const useStyles = makeStyles((theme: Theme) =>
     card: {
       position: "fixed",
       width: `calc(100% - ${SIDE_PADDING * 2}${SIDE_PADDING_UNIT})`,
-      backgroundColor: theme.palette.primary.light,
-      color: theme.palette.primary.contrastText,
+      backgroundColor: theme.palette.info.dark,
+      color: theme.palette.info.contrastText,
       padding: theme.spacing(2),
     },
     itemContainer: {

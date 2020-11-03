@@ -1,6 +1,6 @@
 import { Grid, LinearProgress, Typography } from "@material-ui/core";
 import { inject, observer } from "mobx-react";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { interval, timer } from "rxjs";
 import { catchError, mergeMap, take, takeUntil } from "rxjs/operators";
@@ -67,7 +67,7 @@ const StartingXud = inject(SETTINGS_STORE)(
           direction="column"
         >
           <XudLogo />
-          <Typography variant="h6" component="h2">
+          <Typography variant="h6" component="h2" align="center">
             Powering OpenDEX
           </Typography>
         </Grid>
