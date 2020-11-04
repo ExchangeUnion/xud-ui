@@ -72,7 +72,7 @@ const InstallDocker = (): ReactElement => {
                   if (installSuccessful) {
                     localStorage.setItem("rebootRequired", "true");
                   }
-                  history.push(Path.CREATE_ENVIRONMENT);
+                  history.push(Path.START_ENVIRONMENT);
                 });
               }}
             >

@@ -85,7 +85,7 @@ function App(): ReactElement {
             <Route path={Path.RESTART_REQUIRED}>
               <RestartRequired />
             </Route>
-            <Route path={Path.CREATE_ENVIRONMENT}>
+            <Route path={Path.START_ENVIRONMENT}>
               <Create />
             </Route>
             <Route path={Path.WAITING_DOCKER_START}>
