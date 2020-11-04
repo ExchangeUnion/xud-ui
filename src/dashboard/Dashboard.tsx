@@ -67,7 +67,11 @@ const Dashboard = (): ReactElement => {
   ];
 
   const disconnect = (): void => {
-    history.push(Path.CONNECT_TO_REMOTE);
+    const nextPath =
+      (window as any).electron.platform() === "win32"
+        ? Path.HOME
+        : Path.CONNECT_TO_REMOTE;
+    history.push(nextPath);
   };
 
   return (
