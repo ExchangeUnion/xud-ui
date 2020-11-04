@@ -22,8 +22,8 @@ const StartingXud = inject(SETTINGS_STORE)(
 
     useEffect(() => {
       const fakeLoading$ = interval(5000);
-      const fakeLoadingSub = fakeLoading$.subscribe(() => {
-        setProgress(progress + 1);
+      const fakeLoadingSub = fakeLoading$.pipe(take(1)).subscribe(() => {
+        setProgress((oldProgress) => oldProgress + 1);
       });
 
       return () => {
@@ -53,9 +53,9 @@ const StartingXud = inject(SETTINGS_STORE)(
           })
         )
         .subscribe((output) => {
-          console.log("XUD DOCKER HAS BEEN STARTED", output);
+          console.log("Containers have been started", output);
         });
-    }, []);
+    }, [settingsStore, history]);
 
     return (
       <RowsContainer>
