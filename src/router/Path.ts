@@ -11,4 +11,5 @@ export enum Path {
   STARTING_XUD = "/starting_xud",
   TRADEHISTORY = "/tradehistory",
   WALLETS = "/wallets",
+  INCOMPATIBLE_WSL_SETTINGS = "/incompatible_wsl_settings",
 }

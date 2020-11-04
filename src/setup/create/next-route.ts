@@ -45,7 +45,7 @@ const getNextRoute = (
           return Path.RESTART_REQUIRED;
         }
         if (wslEngineEnabled && !isWSL2) {
-          return Path.RESTART_REQUIRED;
+          return Path.INCOMPATIBLE_WSL_SETTINGS;
         }
         if (isRunning) {
           return Path.STARTING_XUD;
