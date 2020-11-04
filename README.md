@@ -4,7 +4,7 @@ A graphical user interface for interacting with a [xud-docker](https://github.co
 
 ## Features
 
-### Current version (v1.0.0)
+### Current version ([v1.0.0](https://github.com/ExchangeUnion/xud-ui/releases/tag/v1.0.0))
 
 - Connect to an existing [xud-docker](https://github.com/ExchangeUnion/xud-docker) environment, local or remote
 - Provides read-only views & downloads for
@@ -16,7 +16,8 @@ A graphical user interface for interacting with a [xud-docker](https://github.co
 
 #### v1.1.0
 
-- Encrypted and authenticated connection to [xud-docker](https://github.com/ExchangeUnion/xud-docker)
+- Create new [xud-docker](https://github.com/ExchangeUnion/xud-docker) environment from the application (Windows only)
+- Encrypted connection to [xud-docker](https://github.com/ExchangeUnion/xud-docker)
 
 #### v1.2.0
 
@@ -42,7 +43,7 @@ A graphical user interface for interacting with a [xud-docker](https://github.co
 
 ## Getting started
 
-- Download and run the XUD Explorer executable. The latest release can be found [here](https://github.com/ExchangeUnion/xud-ui/releases).
+- Download and run the XUD Explorer executable. The latest release can be found [here](https://github.com/ExchangeUnion/xud-ui/releases/latest).
 
 - Make sure to have a [xud-docker](https://github.com/ExchangeUnion/xud-docker) environment running with API enabled. You can do that by either entering the environment with `bash xud.sh --proxy.disabled=false` or enabling the API permanently in `mainnet.conf`:
 
@@ -65,6 +66,14 @@ Logs are written to the following locations
 - on Linux: ~/.config/xud-explorer/logs/
 - on macOS: ~/Library/Logs/xud-explorer/
 - on Windows: %USERPROFILE%\AppData\Roaming\xud-explorer\logs\
+
+## Application data
+
+Application data is stored in the following locations
+
+- on Linux: ~/.config/xud-explorer/
+- on macOS: ~/Library/Application\ Support/xud-explorer/
+- on Windows: %USERPROFILE%\AppData\Roaming\xud-explorer\
 
 ## Development
 
