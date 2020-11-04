@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import AddCircleTwoToneIcon from "@material-ui/icons/AddCircleTwoTone";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
+import PlayArrowTwoToneIcon from "@material-ui/icons/PlayArrowTwoTone";
 import PowerTwoToneIcon from "@material-ui/icons/PowerTwoTone";
 import { inject, observer } from "mobx-react";
 import React, { ElementType, useState } from "react";
@@ -28,12 +29,14 @@ type Item = {
   path: Path;
 };
 
-const createItems = (): Item[] => [
+const createItems = (envExists?: boolean): Item[] => [
   {
-    title: "Create",
-    additionalInfo: "Create new xud environment",
-    icon: AddCircleTwoToneIcon,
-    path: Path.CREATE_ENVIRONMENT,
+    title: envExists ? "Start" : "Create",
+    additionalInfo: envExists
+      ? "xud environment detected"
+      : "Create new xud environment",
+    icon: envExists ? PlayArrowTwoToneIcon : AddCircleTwoToneIcon,
+    path: Path.START_ENVIRONMENT,
   },
   {
     title: "Connect",
@@ -72,6 +75,7 @@ const Landing = inject(
   DOCKER_STORE
 )(
   observer(() => {
+    // TODO: pass in `true` as argument if environment is created
     const items: Item[] = createItems();
     const classes = useStyles();
     const history = useHistory();

@@ -19,7 +19,7 @@ const WaitingDockerStart = (): ReactElement => {
         take(1)
       )
       .subscribe(() => {
-        history.push(Path.CREATE_ENVIRONMENT);
+        history.push(Path.START_ENVIRONMENT);
       });
   });
   return (

@@ -65,7 +65,7 @@ const DownloadDocker = (): ReactElement => {
                 onClick={() => {
                   setIsDownloading(true);
                   downloadDocker$().subscribe(() =>
-                    history.push(Path.CREATE_ENVIRONMENT)
+                    history.push(Path.START_ENVIRONMENT)
                   );
                 }}
               >
