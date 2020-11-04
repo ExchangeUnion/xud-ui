@@ -107,8 +107,8 @@ describe("nextStep$", () => {
     assertNextStep(expectedPath, dockerInfo);
   });
 
-  it("directs to reboot when docker settings change required", () => {
-    const expectedPath = Path.RESTART_REQUIRED;
+  it("directs to incorrect WSL settings when docker settings change required", () => {
+    const expectedPath = Path.INCOMPATIBLE_WSL_SETTINGS;
     const dockerInfo = {
       isDownloaded: false,
       isInstalled: false,

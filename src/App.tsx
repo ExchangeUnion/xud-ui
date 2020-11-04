@@ -10,6 +10,7 @@ import { Path } from "./router/Path";
 import ConnectToRemote from "./setup/ConnectToRemote";
 import Create from "./setup/create/Create";
 import DownloadDocker from "./setup/create/DownloadDocker";
+import IncorrectWslSettings from "./setup/create/IncorrectWslSettings";
 import InstallDocker from "./setup/create/InstallDocker";
 import RestartRequired from "./setup/create/RestartRequired";
 import StartingXud from "./setup/create/StartingXud";
@@ -90,6 +91,9 @@ function App(): ReactElement {
             </Route>
             <Route path={Path.WAITING_DOCKER_START}>
               <WaitingDockerStart />
+            </Route>
+            <Route path={Path.INCOMPATIBLE_WSL_SETTINGS}>
+              <IncorrectWslSettings />
             </Route>
             <Route path={Path.HOME}>
               {(window as any).electron.platform() === "win32" ? (

@@ -11,4 +11,5 @@ export enum Path {
   TRADEHISTORY = "/tradehistory",
   WAITING_DOCKER_START = "/waiting_docker_start",
   WALLETS = "/wallets",
+  INCOMPATIBLE_WSL_SETTINGS = "/incompatible_wsl_settings",
 }
