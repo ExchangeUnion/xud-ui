@@ -39,6 +39,8 @@ const getNextRoute = (
         console.log("isWSL2", isWSL2);
         const { wslEngineEnabled } = dockerSettings as DockerSettings;
         console.log("wslEngineEnabled", wslEngineEnabled);
+        const dockerSettingsExist = wslEngineEnabled !== undefined;
+        console.log("dockerSettingsExist", dockerSettingsExist);
         if (rebootRequired) {
           return Path.RESTART_REQUIRED;
         }
@@ -49,6 +51,9 @@ const getNextRoute = (
           return Path.STARTING_XUD;
         }
         if (isInstalled && !isRunning) {
+          return Path.WAITING_DOCKER_START;
+        }
+        if (!isInstalled && !isRunning && dockerSettingsExist) {
           return Path.WAITING_DOCKER_START;
         }
         if (!isDownloaded) {
