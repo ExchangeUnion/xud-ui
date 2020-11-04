@@ -147,4 +147,19 @@ describe("nextStep$", () => {
     };
     assertNextStep(expectedPath, dockerInfo);
   });
+
+  it("directs to waiting docker when unknown command, but settings file exists", () => {
+    const expectedPath = Path.WAITING_DOCKER_START;
+    const dockerInfo = {
+      isDownloaded: false,
+      isInstalled: false,
+      isRunning: false,
+      rebootRequired: false,
+      isWSL2: false,
+      dockerSettings: {
+        wslEngineEnabled: false,
+      },
+    };
+    assertNextStep(expectedPath, dockerInfo);
+  });
 });
