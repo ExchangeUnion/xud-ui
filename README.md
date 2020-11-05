@@ -4,7 +4,7 @@ A graphical user interface for interacting with a [xud-docker](https://github.co
 
 ## Features
 
-### Current version ([v1.0.0](https://github.com/ExchangeUnion/xud-ui/releases/tag/v1.0.0))
+### [v1.0.0](https://github.com/ExchangeUnion/xud-ui/releases/tag/v1.0.0)
 
 - Connect to an existing [xud-docker](https://github.com/ExchangeUnion/xud-docker) environment, local or remote
 - Provides read-only views & downloads for
@@ -12,34 +12,17 @@ A graphical user interface for interacting with a [xud-docker](https://github.co
   - wallets
   - trade history
 
-### In future versions
+#### [v1.1.0](https://github.com/ExchangeUnion/xud-ui/milestone/1)
 
-#### v1.1.0
+#### [v1.2.0](https://github.com/ExchangeUnion/xud-ui/milestone/2)
 
-- Create new [xud-docker](https://github.com/ExchangeUnion/xud-docker) environment from the application (Windows only)
-- Encrypted connection to [xud-docker](https://github.com/ExchangeUnion/xud-docker)
+#### [v1.3.0](https://github.com/ExchangeUnion/xud-ui/milestone/3)
 
-#### v1.2.0
+#### [v1.4.0](https://github.com/ExchangeUnion/xud-ui/milestone/4)
 
-- Orderbook view
-- Console view to use the full functionality of [xud-docker](https://github.com/ExchangeUnion/xud-docker)
-- Learn view
+#### [v1.5.0](https://github.com/ExchangeUnion/xud-ui/milestone/5)
 
-#### v1.3.0
-
-- Market Maker Bot view
-
-#### v1.4.0
-
-- Trades view with graph, possibility to enter new order, and orderbook
-
-#### v1.5.0
-
-- Wallet activity
-
-#### v2.0.0
-
-- Live notifications
+#### [v2.0.0](https://github.com/ExchangeUnion/xud-ui/milestone/6)
 
 ## Getting started
 
