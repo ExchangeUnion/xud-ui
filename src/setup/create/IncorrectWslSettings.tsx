@@ -60,8 +60,7 @@ const IncorrectWslSettings = (): ReactElement => {
             color="textSecondary"
             align="center"
           >
-            Please install WSL 2 or uncheck "Use the WSL 2 based engine" in
-            Docker settings.
+            WSL 2 is required to run Docker. Please install WSL 2.
           </Typography>
         </Grid>
         <Grid item container justify="center">
