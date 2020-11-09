@@ -19,7 +19,7 @@ const InstallWslWarningScreenshot = (): ReactElement => {
     <img
       className={classes.image}
       src={InstallWslImg}
-      alt="Docker is currently configured to run on WSL2 backend, but WSL2 is not installed. Please install WSL2 or changed the Docker backend setting to WSL1."
+      alt="WSL 2 is required to run Docker. Please install WSL 2."
     />
   );
 };
