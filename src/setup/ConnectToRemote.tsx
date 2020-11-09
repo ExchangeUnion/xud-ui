@@ -154,7 +154,7 @@ const handleConnectClick = (
 ): void => {
   const address = xudDockerUrl.startsWith("http")
     ? xudDockerUrl
-    : `http://${xudDockerUrl}`;
+    : `https://${xudDockerUrl}`;
   setConnecting(true);
   api.statusByService$("xud", address).subscribe({
     next: () => {
