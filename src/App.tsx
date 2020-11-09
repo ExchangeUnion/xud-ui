@@ -45,6 +45,11 @@ const GlobalCss = withStyles((theme: Theme) => {
       "::-webkit-scrollbar-corner": {
         backgroundColor: "transparent",
       },
+      "#root": {
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+      },
     },
   };
 })(() => null);
