@@ -23,7 +23,7 @@ const AVAILABLE_COMMANDS = {
   wsl_version: "wsl --set-default-version 2",
   pull_exp: "docker pull exchangeunion/exp",
   start_xud_docker:
-    "docker run --rm -e PASSWORD=12345678 -e BACKUPDIR=/tmp -e HOSTFS=/ -e HOSTPWD=/root -e HOSTHOME=/root -e DOCKER_SOCK=//var/run/docker.sock -e NETWORK=mainnet -v //var/run/docker.sock:/var/run/docker.sock exchangeunion/exp -b fix-windows-path --proxy.disabled false",
+    "docker run --rm -e PASSWORD=12345678 -e BACKUPDIR=/tmp -e HOSTFS=/ -e HOSTPWD=/root -e HOSTHOME=/root -e DOCKER_SOCK=//var/run/docker.sock -e NETWORK=mainnet -v //var/run/docker.sock:/var/run/docker.sock exchangeunion/exp --proxy.disabled false",
 };
 
 const execCommand = (cmd) => {

@@ -33,7 +33,7 @@ const StartingXud = inject(SETTINGS_STORE)(
 
     useEffect(() => {
       const apiResponsive$ = interval(1000).pipe(
-        mergeMap(() => api.status$(settingsStore!.xudDockerUrl)),
+        mergeMap(() => api.setupStatus$(settingsStore!.xudDockerUrl)),
         catchError((e, caught) => caught),
         take(1)
       );

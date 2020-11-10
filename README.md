@@ -71,7 +71,11 @@ Application data is stored in the following locations
 
 ### Start in development mode
 
-`yarn start`
+#### Windows (Powershell)
+`($env:HTTPS = "true") -and (yarn start)`
+
+#### Linux, macOS (Bash)
+`HTTPS=true yarn start`
 
 ### Tests
 

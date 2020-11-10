@@ -21,6 +21,12 @@ export default {
     return fetchJsonResponse(`${url}/${path}/status`);
   },
 
+  setupStatus$(url: string): Observable<any> {
+    return from(fetch(`${url}/${path}/setup-status`)).pipe(
+      catchError((err) => logAndThrow(url, err))
+    );
+  },
+
   statusByService$(serviceName: string, url: string): Observable<Status> {
     return fetchJsonResponse(`${url}/${path}/status/${serviceName}`);
   },
