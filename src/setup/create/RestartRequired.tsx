@@ -39,9 +39,17 @@ const RestartRequired = (): ReactElement => {
       <Grid item container>
         <InfoBar text="Docker Installed!" icon={CheckIcon} />
       </Grid>
-      <Grid item container justify="center">
+      <Grid item container justify="center" direction="column">
         <Typography variant="h6" component="h2" align="center">
-          Reboot required to continue.
+          System reboot required to continue.
+        </Typography>
+        <Typography
+          variant="overline"
+          component="p"
+          color="textSecondary"
+          align="center"
+        >
+          After reboot, please reopen XUD Explorer.
         </Typography>
       </Grid>
       <Grid item container justify="flex-end">
