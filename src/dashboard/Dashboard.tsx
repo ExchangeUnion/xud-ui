@@ -1,135 +1,50 @@
-import { Button, Grid, Typography } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import Drawer from "@material-ui/core/Drawer";
-import List from "@material-ui/core/List";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
-import CachedIcon from "@material-ui/icons/Cached";
-import HistoryIcon from "@material-ui/icons/History";
-import RemoveRedEyeOutlinedIcon from "@material-ui/icons/RemoveRedEyeOutlined";
-import React, { ReactElement } from "react";
-import { Route, Switch, useHistory, useRouteMatch } from "react-router-dom";
-import { Path } from "../router/Path";
-import MenuItem, { MenuItemProps } from "./menu/MenuItem";
-import Overview from "./overview/Overview";
-import Tradehistory from "./tradehistory/Tradehistory";
-import Wallets from "./wallet/Wallets";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { inject, observer } from "mobx-react";
+import React, { ReactElement, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { SETTINGS_STORE } from "../stores/settingsStore";
+import { WithStores } from "../stores/WithStores";
+import { handleEvent } from "./eventHandler";
 
-export const drawerWidth = 200;
+type DashboardProps = WithStores;
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
-    drawerPaper: {
-      width: drawerWidth,
-      justifyContent: "space-between",
-    },
-    menuContainer: {
+    iframe: {
       width: "100%",
-    },
-    header: {
-      padding: "16px",
-    },
-    drawerButton: {
-      margin: theme.spacing(2),
-    },
-    content: {
-      marginLeft: drawerWidth,
-      backgroundColor: theme.palette.background.default,
-      padding: theme.spacing(3),
+      height: "100%",
+      border: "none",
     },
   })
 );
 
-const Dashboard = (): ReactElement => {
-  const history = useHistory();
-  const classes = useStyles();
-  const { path } = useRouteMatch();
-  const menuItems: MenuItemProps[] = [
-    {
-      path: Path.OVERVIEW,
-      text: "Overview",
-      component: Overview,
-      icon: <RemoveRedEyeOutlinedIcon />,
-      isFallback: true,
-    },
-    {
-      path: Path.WALLETS,
-      text: "Wallets",
-      component: Wallets,
-      icon: <AccountBalanceWalletOutlinedIcon />,
-    },
-    {
-      path: Path.TRADEHISTORY,
-      text: "Tradehistory",
-      component: Tradehistory,
-      icon: <HistoryIcon />,
-    },
-  ];
+const Dashboard = inject(SETTINGS_STORE)(
+  observer(
+    (props: DashboardProps): ReactElement => {
+      const history = useHistory();
+      const classes = useStyles();
+      const { settingsStore } = props;
 
-  const disconnect = (): void => {
-    const nextPath =
-      (window as any).electron.platform() === "win32"
-        ? Path.HOME
-        : Path.CONNECT_TO_REMOTE;
-    history.push(nextPath);
-  };
+      useEffect(() => {
+        const messageListenerHandler = (event: MessageEvent) => {
+          if (event.origin === settingsStore!.xudDockerUrl) {
+            handleEvent(event, history);
+          }
+        };
+        window.addEventListener("message", messageListenerHandler);
+        return () =>
+          window.removeEventListener("message", messageListenerHandler);
+      }, [history, settingsStore]);
 
-  return (
-    <Box>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        anchor="left"
-      >
-        <Grid container item>
-          <Typography
-            className={classes.header}
-            variant="overline"
-            component="p"
-            color="textSecondary"
-          >
-            XUD Explorer
-          </Typography>
-          <List className={classes.menuContainer}>
-            {menuItems.map((item) => (
-              <MenuItem
-                path={item.path}
-                text={item.text}
-                component={item.component}
-                key={item.text}
-                icon={item.icon}
-                isFallback={item.isFallback}
-              />
-            ))}
-          </List>
-        </Grid>
-        <Button
-          size="small"
-          startIcon={<CachedIcon />}
-          variant="outlined"
-          title="Disconnect from xud-docker"
-          className={classes.drawerButton}
-          onClick={disconnect}
-        >
-          Disconnect
-        </Button>
-      </Drawer>
-      <main className={classes.content}>
-        <Switch>
-          {menuItems.map((item) => (
-            <Route path={`${path}${item.path}`} key={item.text}>
-              {item.component}
-            </Route>
-          ))}
-          <Route path={path}>
-            <Overview />
-          </Route>
-        </Switch>
-      </main>
-    </Box>
-  );
-};
+      return (
+        <iframe
+          className={classes.iframe}
+          src={settingsStore!.xudDockerUrl}
+          title="XUD Explorer Dashboard"
+        />
+      );
+    }
+  )
+);
 
 export default Dashboard;
