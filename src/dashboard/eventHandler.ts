@@ -9,6 +9,11 @@ export const handleEvent = (event: MessageEvent, history: History): void => {
     return;
   }
 
+  if (data.startsWith("connectionFailed")) {
+    history.push(Path.HOME);
+    return;
+  }
+
   const valueStartIdx = data.indexOf(":") + 2;
   const value = data.substr(valueStartIdx);
 
