@@ -65,7 +65,7 @@ const RestartRequired = (): ReactElement => {
               });
             }}
           >
-            Reboot Now
+            Reboot PC
           </Button>
         </Grid>
         <LinkToDiscord />
