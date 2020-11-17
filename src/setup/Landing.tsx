@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
     },
     selected: {
+      color: theme.palette.primary.light,
       border: `3px outset ${theme.palette.primary.light}`,
     },
     cardTitle: {
@@ -60,12 +61,12 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: theme.spacing(2),
     },
     cardIcon: {
-      color: theme.palette.primary.light,
       fontSize: 80,
       margin: theme.spacing(3),
     },
     buttonContainer: {
       marginTop: theme.spacing(3),
+      minHeight: 36,
     },
   })
 );
@@ -79,11 +80,13 @@ const Landing = inject(
     const items: Item[] = createItems();
     const classes = useStyles();
     const history = useHistory();
-    const [selectedItem, setSelectedItem] = useState(items[0]);
+    const [selectedItem, setSelectedItem] = useState<Item | undefined>(
+      undefined
+    );
 
     const getItemClass = (item: Item): string => {
       return `${classes.card} ${
-        selectedItem.path === item.path ? classes.selected : ""
+        selectedItem?.path === item.path ? classes.selected : ""
       }`;
     };
 
@@ -127,17 +130,19 @@ const Landing = inject(
           justify="flex-end"
           className={classes.buttonContainer}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            disableElevation
-            endIcon={<ArrowRightAltIcon />}
-            onClick={() => {
-              history.push(selectedItem.path);
-            }}
-          >
-            Next
-          </Button>
+          {!!selectedItem && (
+            <Button
+              variant="contained"
+              color="primary"
+              disableElevation
+              endIcon={<ArrowRightAltIcon />}
+              onClick={() => {
+                history.push(selectedItem!.path);
+              }}
+            >
+              Next
+            </Button>
+          )}
         </Grid>
       </RowsContainer>
     );
