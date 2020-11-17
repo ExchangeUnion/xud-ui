@@ -1,5 +1,5 @@
 import { Button, Grid, Typography } from "@material-ui/core";
-import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import CheckIcon from "@material-ui/icons/Check";
 import React, { ReactElement, useEffect } from "react";
 import { combineLatest, of } from "rxjs";
@@ -58,7 +58,7 @@ const RestartRequired = (): ReactElement => {
             variant="contained"
             color="primary"
             disableElevation
-            endIcon={<ArrowRightAltIcon />}
+            endIcon={<ArrowForwardIcon />}
             onClick={() => {
               restart$().subscribe(() => {
                 window.close();

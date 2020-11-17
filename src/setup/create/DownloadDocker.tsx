@@ -5,7 +5,7 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import React, { ReactElement, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { downloadDocker$ } from "../../common/dockerUtil";
@@ -61,7 +61,7 @@ const DownloadDocker = (): ReactElement => {
                 variant="contained"
                 color="primary"
                 disableElevation
-                endIcon={<ArrowRightAltIcon />}
+                endIcon={<ArrowForwardIcon />}
                 onClick={() => {
                   setIsDownloading(true);
                   downloadDocker$().subscribe(() =>

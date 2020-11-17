@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import AddCircleTwoToneIcon from "@material-ui/icons/AddCircleTwoTone";
-import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import PlayArrowTwoToneIcon from "@material-ui/icons/PlayArrowTwoTone";
 import PowerTwoToneIcon from "@material-ui/icons/PowerTwoTone";
 import { inject, observer } from "mobx-react";
@@ -135,7 +135,7 @@ const Landing = inject(
               variant="contained"
               color="primary"
               disableElevation
-              endIcon={<ArrowRightAltIcon />}
+              endIcon={<ArrowForwardIcon />}
               onClick={() => {
                 history.push(selectedItem!.path);
               }}
