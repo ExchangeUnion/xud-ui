@@ -145,7 +145,7 @@ const ConnectToRemote = inject(SETTINGS_STORE)(
           <Button
             variant="outlined"
             disableElevation
-            onClick={history.goBack}
+            onClick={() => history.push(Path.HOME)}
             startIcon={<ArrowBackIcon />}
           >
             Back

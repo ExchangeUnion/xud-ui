@@ -4,6 +4,7 @@ import { ThemeProvider } from "@material-ui/styles";
 import { Provider } from "mobx-react";
 import React, { ReactElement } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { isWindows } from "./common/appUtil";
 import { XUD_DOCKER_LOCAL_MAINNET_URL } from "./constants";
 import Dashboard from "./dashboard/Dashboard";
 import { Path } from "./router/Path";
@@ -101,11 +102,7 @@ function App(): ReactElement {
               <IncorrectWslSettings />
             </Route>
             <Route path={Path.HOME}>
-              {(window as any).electron.platform() === "win32" ? (
-                <Landing />
-              ) : (
-                <DockerNotDetected />
-              )}
+              {isWindows() ? <Landing /> : <DockerNotDetected />}
             </Route>
           </Switch>
         </Router>

@@ -1,11 +1,13 @@
 import { History } from "history";
+import { isWindows } from "../common/appUtil";
 import { Path } from "../router/Path";
 
 export const handleEvent = (event: MessageEvent, history: History): void => {
   const data: string = event.data;
 
   if (data.startsWith("disconnect")) {
-    history.push(Path.CONNECT_TO_REMOTE);
+    const nextPath = isWindows() ? Path.HOME : Path.CONNECT_TO_REMOTE;
+    history.push(nextPath);
     return;
   }
 
