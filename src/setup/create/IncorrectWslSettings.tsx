@@ -1,5 +1,5 @@
 import { Button, Grid, Typography } from "@material-ui/core";
-import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined";
 import React, { ReactElement, useEffect } from "react";
 import { useHistory } from "react-router-dom";
@@ -73,7 +73,7 @@ const IncorrectWslSettings = (): ReactElement => {
             variant="contained"
             color="primary"
             disableElevation
-            endIcon={<ArrowRightAltIcon />}
+            endIcon={<ArrowForwardIcon />}
             onClick={() => {
               (window as any).electron.openExternal(WSL2_INSTALL_URL);
             }}

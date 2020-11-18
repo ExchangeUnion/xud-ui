@@ -9,6 +9,7 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { History } from "history";
 import { inject, observer } from "mobx-react";
 import React, { useState } from "react";
@@ -139,6 +140,16 @@ const ConnectToRemote = inject(SETTINGS_STORE)(
               </Grid>
             </form>
           </Grid>
+        </Grid>
+        <Grid item container>
+          <Button
+            variant="outlined"
+            disableElevation
+            onClick={() => history.push(Path.HOME)}
+            startIcon={<ArrowBackIcon />}
+          >
+            Back
+          </Button>
         </Grid>
       </RowsContainer>
     );

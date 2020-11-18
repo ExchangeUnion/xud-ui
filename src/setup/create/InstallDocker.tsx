@@ -1,5 +1,5 @@
 import { Button, Grid, Typography } from "@material-ui/core";
-import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
 import React, { ReactElement, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -65,7 +65,7 @@ const InstallDocker = (): ReactElement => {
               variant="contained"
               color="primary"
               disableElevation
-              endIcon={<ArrowRightAltIcon />}
+              endIcon={<ArrowForwardIcon />}
               onClick={() => {
                 setIsInstalling(true);
                 installDocker$().subscribe((installSuccessful) => {
