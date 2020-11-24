@@ -8,6 +8,7 @@ import {
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
+import InputAdornment from "@material-ui/core/InputAdornment";
 import Typography from "@material-ui/core/Typography";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { History } from "history";
@@ -38,6 +39,9 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: -12,
       marginLeft: -12,
     },
+    adornmentMargin: {
+      marginRight: 0,
+    },
   })
 );
 
@@ -48,6 +52,11 @@ const ConnectToRemote = inject(SETTINGS_STORE)(
     const [ipAndPort, setIpAndPort] = useState(settingsStore!.xudDockerUrl);
     const [connectionFailed, setConnectionFailed] = useState(false);
     const [connecting, setConnecting] = useState(false);
+    const ipAndPortWithoutHttp = ipAndPort.startsWith("http://")
+      ? ipAndPort.substring(7)
+      : ipAndPort.startsWith("https://")
+      ? ipAndPort.substring(8)
+      : ipAndPort;
 
     return (
       <RowsContainer>
@@ -83,10 +92,20 @@ const ConnectToRemote = inject(SETTINGS_STORE)(
                     id="ip-port"
                     label="IP:Port"
                     variant="outlined"
-                    value={ipAndPort}
+                    value={ipAndPortWithoutHttp}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment
+                          className={classes.adornmentMargin}
+                          position="start"
+                        >
+                          https://
+                        </InputAdornment>
+                      ),
+                    }}
                     onChange={(e) => {
                       setConnectionFailed(false);
-                      setIpAndPort(e.target.value);
+                      setIpAndPort(`https://${e.target.value}`);
                     }}
                   />
                 </Grid>
@@ -163,15 +182,12 @@ const handleConnectClick = (
   xudDockerUrl: string,
   setXudDockerUrl: (ip: string) => void
 ): void => {
-  const address = xudDockerUrl.startsWith("http")
-    ? xudDockerUrl
-    : `https://${xudDockerUrl}`;
   setConnecting(true);
-  api.statusByService$("xud", address).subscribe({
+  api.statusByService$("xud", xudDockerUrl).subscribe({
     next: () => {
       setConnectionFailed(false);
       setConnecting(false);
-      setXudDockerUrl(address);
+      setXudDockerUrl(xudDockerUrl);
       history.push(Path.DASHBOARD);
     },
     error: () => {
