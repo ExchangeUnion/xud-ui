@@ -1,4 +1,4 @@
-# XUD EXPLORER
+# XUD UI
 
 A graphical user interface for interacting with a [xud-docker](https://github.com/ExchangeUnion/xud-docker) environment.
 
@@ -26,7 +26,7 @@ A graphical user interface for interacting with a [xud-docker](https://github.co
 
 ## Getting started
 
-- Download and run the XUD Explorer executable. The latest release can be found [here](https://github.com/ExchangeUnion/xud-ui/releases/latest).
+- Download and run the XUD UI executable. The latest release can be found [here](https://github.com/ExchangeUnion/xud-ui/releases/latest).
 
 - Make sure to have a [xud-docker](https://github.com/ExchangeUnion/xud-docker) environment running with API enabled. You can do that by either entering the environment with `bash xud.sh --proxy.disabled=false` or enabling the API permanently in `mainnet.conf`:
 
@@ -40,23 +40,23 @@ expose-ports = ["8889"]
   - mainnet: 8889 (`localhost:8889`) - _default_
   - testnet: 18889 (`localhost:18889`)
   - simnet: 28889 (`localhost:28889`)
-- If you are running xud-docker mainnet locally, XUD Explorer connects automatically to this instance
+- If you are running xud-docker mainnet locally, XUD UI connects automatically to this instance
 
 ## Application logs
 
 Logs are written to the following locations
 
-- on Linux: ~/.config/xud-explorer/logs/
-- on macOS: ~/Library/Logs/xud-explorer/
-- on Windows: %USERPROFILE%\AppData\Roaming\xud-explorer\logs\
+- on Linux: ~/.config/xud-ui/logs/
+- on macOS: ~/Library/Logs/xud-ui/
+- on Windows: %USERPROFILE%\AppData\Roaming\xud-ui\logs\
 
 ## Application data
 
 Application data is stored in the following locations
 
-- on Linux: ~/.config/xud-explorer/
-- on macOS: ~/Library/Application\ Support/xud-explorer/
-- on Windows: %USERPROFILE%\AppData\Roaming\xud-explorer\
+- on Linux: ~/.config/xud-ui/
+- on macOS: ~/Library/Application\ Support/xud-ui/
+- on Windows: %USERPROFILE%\AppData\Roaming\xud-ui\
 
 ## Development
 

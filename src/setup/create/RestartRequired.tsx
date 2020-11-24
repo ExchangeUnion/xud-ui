@@ -49,7 +49,7 @@ const RestartRequired = (): ReactElement => {
           color="textSecondary"
           align="center"
         >
-          After reboot, please reopen XUD Explorer.
+          After reboot, please reopen XUD UI.
         </Typography>
       </Grid>
       <Grid item container justify="flex-end">

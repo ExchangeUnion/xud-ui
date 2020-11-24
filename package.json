@@ -1,9 +1,9 @@
 {
-  "name": "xud-explorer",
+  "name": "xud-ui",
   "description": "For market makers who want to have a visual way to control their xud environment",
   "author": "Exchange Union",
   "build": {
-    "appId": "com.xud-explorer",
+    "appId": "com.xud-ui",
     "linux": {
       "category": "Finance",
       "icon": "public/assets/512x512.png"
@@ -18,7 +18,7 @@
   },
   "main": "public/electron.js",
   "homepage": "./",
-  "version": "1.2.0-alpha.3",
+  "version": "1.2.0-alpha.4",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",

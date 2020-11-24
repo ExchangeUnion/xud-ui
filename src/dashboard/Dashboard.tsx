@@ -40,7 +40,7 @@ const Dashboard = inject(SETTINGS_STORE)(
         <iframe
           className={classes.iframe}
           src={settingsStore!.xudDockerUrl}
-          title="XUD Explorer Dashboard"
+          title="XUD UI Dashboard"
         />
       );
     }
