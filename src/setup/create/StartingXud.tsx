@@ -38,6 +38,7 @@ const StartingXud = inject(SETTINGS_STORE)(
         catchError((e, caught) => caught),
         take(1)
       );
+
       window.addEventListener("beforeunload", windowBeforeUnloadHandler);
       startXudDocker$()
         .pipe(
