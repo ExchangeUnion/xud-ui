@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import { interval, timer } from "rxjs";
 import { catchError, mergeMap, take, takeUntil } from "rxjs/operators";
 import api from "../../api";
-import { pullExp$, startXudDocker$ } from "../../common/dockerUtil";
+import { startXudDocker$ } from "../../common/dockerUtil";
 import { Path } from "../../router/Path";
 import { SETTINGS_STORE } from "../../stores/settingsStore";
 import { WithStores } from "../../stores/WithStores";
@@ -32,28 +32,37 @@ const StartingXud = inject(SETTINGS_STORE)(
     }, []);
 
     useEffect(() => {
+      const windowBeforeUnloadHandler = (e: Event) => (e.returnValue = false);
       const apiResponsive$ = interval(1000).pipe(
         mergeMap(() => api.setupStatus$(settingsStore!.xudDockerUrl)),
         catchError((e, caught) => caught),
         take(1)
       );
-      apiResponsive$.subscribe(() => {
-        history.push(Path.DASHBOARD);
-      });
-      pullExp$()
+      window.addEventListener("beforeunload", windowBeforeUnloadHandler);
+      startXudDocker$()
         .pipe(
-          mergeMap(() => startXudDocker$()),
           takeUntil(apiResponsive$),
           catchError((e, caught) => {
             console.error(
               "Failed to start xud-docker. Retrying in 1 second",
               e
             );
+            window.removeEventListener(
+              "beforeunload",
+              windowBeforeUnloadHandler
+            );
             return timer(1000).pipe(mergeMap(() => caught));
           })
         )
-        .subscribe((output) => {
-          console.log("Containers have been started", output);
+        .subscribe({
+          next: (output) => console.log("xud-docker has been started", output),
+          complete: () => {
+            window.removeEventListener(
+              "beforeunload",
+              windowBeforeUnloadHandler
+            );
+            history.push(Path.DASHBOARD);
+          },
         });
     }, [settingsStore, history]);
 
