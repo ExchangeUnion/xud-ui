@@ -16,10 +16,12 @@ import PowerTwoToneIcon from "@material-ui/icons/PowerTwoTone";
 import { inject, observer } from "mobx-react";
 import React, { ElementType, useState } from "react";
 import { useHistory } from "react-router-dom";
-import RowsContainer from "./RowsContainer";
+import { isXudDockerEnvCreated } from "../common/dockerUtil";
+import { Network } from "../enums";
 import { Path } from "../router/Path";
 import { DOCKER_STORE } from "../stores/dockerStore";
 import { SETTINGS_STORE } from "../stores/settingsStore";
+import RowsContainer from "./RowsContainer";
 import XudLogo from "./XudLogo";
 
 type Item = {
@@ -76,8 +78,7 @@ const Landing = inject(
   DOCKER_STORE
 )(
   observer(() => {
-    // TODO: pass in `true` as argument if environment is created
-    const items: Item[] = createItems();
+    const items: Item[] = createItems(isXudDockerEnvCreated(Network.MAINNET));
     const classes = useStyles();
     const history = useHistory();
     const [selectedItem, setSelectedItem] = useState<Item | undefined>(
