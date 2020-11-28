@@ -13,7 +13,13 @@
       "icon": "public/assets/512x512.png"
     },
     "win": {
-      "icon": "public/assets/512x512.png"
+      "icon": "public/assets/512x512.png",
+      "extraResources": [
+        {
+          "from": "public/assets/xud-launcher.exe",
+          "to": "./xud-launcher.exe"
+        }
+      ]
     }
   },
   "main": "public/electron.js",
