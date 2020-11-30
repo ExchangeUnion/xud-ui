@@ -10,6 +10,8 @@ const DOCKER_BINARY_DOWNLOAD_URL =
   "https://desktop.docker.com/win/stable/Docker%20Desktop%20Installer.exe";
 const DOCKER_INSTALLER_FILE_NAME = "docker-installer.exe";
 
+const WINDOWS_DOCKER_EXECUTABLE_PATH = "C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe";
+
 // List of commands we're allowing the client to execute.
 const AVAILABLE_COMMANDS = {
   docker_version: "docker version",
@@ -22,6 +24,7 @@ const AVAILABLE_COMMANDS = {
   docker_settings: "settings",
   wsl_version: "wsl --set-default-version 2",
   pull_exp: "docker pull exchangeunion/exp",
+  start_docker: `"${WINDOWS_DOCKER_EXECUTABLE_PATH}"`,
   start_xud_docker:
     "docker run --rm -e PASSWORD=12345678 -e BACKUPDIR=/tmp -e HOSTFS=/ -e HOSTPWD=/root -e HOSTHOME=/root -e DOCKER_SOCK=//var/run/docker.sock -e NETWORK=mainnet -v //var/run/docker.sock:/var/run/docker.sock exchangeunion/exp --proxy.disabled false",
 };

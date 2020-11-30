@@ -36,6 +36,7 @@ const AVAILABLE_COMMANDS = {
   SETTINGS: "docker_settings",
   WSL_VERSION: "wsl_version",
   PULL_EXP: "pull_exp",
+  START_DOCKER: "start_docker",
   START_XUD_DOCKER: "start_xud_docker",
 };
 
@@ -106,6 +107,21 @@ const installDocker$ = (): Observable<boolean> => {
     }),
     catchError((e: any) => {
       console.error("Error installing Docker:", e);
+      return of(false);
+    }),
+    take(1)
+  );
+};
+
+const startDocker$ = (): Observable<boolean> => {
+  console.log("starting docker");
+  return execCommand$(AVAILABLE_COMMANDS.START_DOCKER).pipe(
+    map((output) => {
+      console.log("output from startDocker$", output);
+      return true;
+    }),
+    catchError((e: any) => {
+      console.error("Error starting Docker:", e);
       return of(false);
     }),
     take(1)
@@ -249,4 +265,5 @@ export {
   dockerSettings$,
   pullExp$,
   startXudDocker$,
+  startDocker$,
 };
