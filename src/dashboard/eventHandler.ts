@@ -24,6 +24,11 @@ export const handleEvent = (event: MessageEvent, history: History): void => {
     return;
   }
 
+  if (data.startsWith("openLink")) {
+    (window as any).electron.openExternal(value);
+    return;
+  }
+
   if (data.startsWith("logError")) {
     (window as any).electron.logError(value);
     return;
