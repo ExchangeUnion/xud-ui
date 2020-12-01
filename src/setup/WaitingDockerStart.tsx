@@ -7,11 +7,12 @@ import RowsContainer from "./RowsContainer";
 import InfoBar from "./create/InfoBar";
 import { interval } from "rxjs";
 import { filter, mergeMap, take } from "rxjs/operators";
-import { isDockerRunning$ } from "../common/dockerUtil";
+import { isDockerRunning$, startDocker$ } from "../common/dockerUtil";
 
 const WaitingDockerStart = (): ReactElement => {
   const history = useHistory();
   useEffect(() => {
+    startDocker$().subscribe(() => {});
     interval(1000)
       .pipe(
         mergeMap(() => isDockerRunning$()),
@@ -25,14 +26,11 @@ const WaitingDockerStart = (): ReactElement => {
   return (
     <RowsContainer>
       <Grid item container>
-        <InfoBar
-          text="Waiting for Docker to start"
-          showCircularProgress={true}
-        />
+        <InfoBar text="Starting Docker..." showCircularProgress={true} />
       </Grid>
       <Grid item container justify="center">
         <Typography variant="h6" component="h2">
-          Waiting for Docker to start.
+          Starting Docker - this could take a minute. Please wait.
         </Typography>
       </Grid>
       <LinkToDiscord />
