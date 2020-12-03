@@ -3,7 +3,8 @@ import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
 import React, { ReactElement, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { installDocker$ } from "../../common/dockerUtil";
+import { filter, mergeMap, shareReplay } from "rxjs/operators";
+import { installDocker$, modifyDockerSettings$ } from "../../common/dockerUtil";
 import { Path } from "../../router/Path";
 import { DockerInstallPromptScreenshot } from "../DockerInstallPromptScreenshot";
 import LinkToDiscord from "../LinkToDiscord";
@@ -68,12 +69,21 @@ const InstallDocker = (): ReactElement => {
               endIcon={<ArrowForwardIcon />}
               onClick={() => {
                 setIsInstalling(true);
-                installDocker$().subscribe((installSuccessful) => {
-                  if (installSuccessful) {
-                    localStorage.setItem("rebootRequired", "true");
+                const install$ = installDocker$().pipe(shareReplay(1));
+                install$.subscribe((installSuccessful) => {
+                  if (!installSuccessful) {
+                    history.push(Path.START_ENVIRONMENT);
                   }
-                  history.push(Path.START_ENVIRONMENT);
                 });
+                install$
+                  .pipe(
+                    filter((result) => !!result),
+                    mergeMap(() => modifyDockerSettings$())
+                  )
+                  .subscribe(() => {
+                    localStorage.setItem("rebootRequired", "true");
+                    history.push(Path.START_ENVIRONMENT);
+                  });
               }}
             >
               Install Now
