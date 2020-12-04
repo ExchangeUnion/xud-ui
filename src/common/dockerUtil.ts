@@ -34,6 +34,7 @@ const AVAILABLE_COMMANDS = {
   RESTART: "restart",
   WINDOWS_VERSION: "windows_version",
   SETTINGS: "docker_settings",
+  MODIFY_DOCKER_SETTINGS: "modify_docker_settings",
   WSL_VERSION: "wsl_version",
   PULL_EXP: "pull_exp",
   START_DOCKER: "start_docker",
@@ -211,6 +212,18 @@ const dockerSettings$ = (): Observable<DockerSettings> => {
   );
 };
 
+const modifyDockerSettings$ = (): Observable<boolean> => {
+  return execCommand$(AVAILABLE_COMMANDS.MODIFY_DOCKER_SETTINGS).pipe(
+    map(() => {
+      return true;
+    }),
+    catchError((e: any) => {
+      console.error("Error modifying Docker settings:", e);
+      return of(false);
+    })
+  );
+};
+
 const isWSL2$ = (): Observable<boolean> => {
   return execCommand$(AVAILABLE_COMMANDS.WSL_VERSION).pipe(
     map((output) => {
@@ -263,6 +276,7 @@ export {
   windowsVersion$,
   isWSL2$,
   dockerSettings$,
+  modifyDockerSettings$,
   pullExp$,
   startXudDocker$,
   startDocker$,
