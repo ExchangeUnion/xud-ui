@@ -1,5 +1,5 @@
 import { Observable, of } from "rxjs";
-import { catchError, map, mergeMap, take } from "rxjs/operators";
+import { catchError, map, take } from "rxjs/operators";
 import { v4 as uuidv4 } from "uuid";
 import { Network } from "../enums";
 
@@ -41,6 +41,7 @@ const AVAILABLE_COMMANDS = {
   GEN_XUD_DOCKER: "gen_xud_docker",
   START_XUD_DOCKER: "start_xud_docker",
   STOP_XUD_DOCKER: "stop_xud_docker",
+  SETUP_XUD_DOCKER: "setup_xud_docker",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
@@ -241,8 +242,7 @@ const isWSL2$ = (): Observable<boolean> => {
 };
 
 const startXudDocker$ = (): Observable<boolean> => {
-  return execCommand$(AVAILABLE_COMMANDS.GEN_XUD_DOCKER).pipe(
-    mergeMap(() => execCommand$(AVAILABLE_COMMANDS.START_XUD_DOCKER)),
+  return execCommand$(AVAILABLE_COMMANDS.SETUP_XUD_DOCKER).pipe(
     map((output) => {
       console.log("output for start xud-docker", output);
       return true;
