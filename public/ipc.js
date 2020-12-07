@@ -39,6 +39,7 @@ const AVAILABLE_COMMANDS = {
   gen_xud_docker: `${LAUNCHER} -n mainnet gen`,
   stop_xud_docker: `${LAUNCHER} down`,
   start_xud_docker: `${LAUNCHER} -n mainnet up -- -d`,
+  setup_xud_docker: `${LAUNCHER} setup`
 };
 
 const execCommand = (cmd) => {
