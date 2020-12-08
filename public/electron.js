@@ -1,4 +1,5 @@
 const electron = require("electron");
+const { Menu, Tray } = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
@@ -7,7 +8,7 @@ const { ipcHandler, execCommand } = require("./ipc");
 const { combineLatest } = require("rxjs");
 const { take } = require("rxjs/operators");
 
-let mainWindow;
+let mainWindow, tray;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -33,7 +34,64 @@ function createWindow() {
     mainWindow.show();
   });
   ipcHandler(mainWindow);
+
+  mainWindow.on("minimize", (e) => {
+    e.preventDefault();
+    mainWindow.hide();
+  });
+
+  mainWindow.on("close", (e) => {
+    if (!app.isQuiting) {
+      e.preventDefault();
+      mainWindow.hide();
+      tray.setContextMenu(trayMenuWithShow);
+    }
+  });
 }
+
+const trayMenuWithShow = Menu.buildFromTemplate([
+  {
+    label: "Show",
+    click: () => {
+      mainWindow.show();
+      tray.setContextMenu(trayMenuWithHide);
+    },
+  },
+  {
+    label: "Quit",
+    click: () => {
+      app.isQuiting = true;
+      app.quit();
+    },
+  },
+]);
+
+const trayMenuWithHide = Menu.buildFromTemplate([
+  {
+    label: "Hide",
+    click: () => {
+      mainWindow.hide();
+      tray.setContextMenu(trayMenuWithShow);
+    },
+  },
+  {
+    label: "Quit",
+    click: () => {
+      app.isQuiting = true;
+      app.quit();
+    },
+  },
+]);
+
+app
+  .whenReady()
+  .then(() => {
+    tray = new Tray(path.join(__dirname, "./assets/512x512.png"));
+    tray.setContextMenu(trayMenuWithHide);
+  })
+  .catch((e) => {
+    console.log(e);
+  });
 
 app.on("ready", createWindow);
 
@@ -68,3 +126,7 @@ app.on(
     callback(true);
   }
 );
+
+app.on("before-quit", () => {
+  app.isQuiting = true;
+});
