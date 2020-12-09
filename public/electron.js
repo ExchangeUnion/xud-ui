@@ -11,8 +11,10 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 900,
     height: 680,
+    minHeight: 680,
+    width: 900,
+    minWidth: 900,
     backgroundColor: "#303030",
     show: false,
     autoHideMenuBar: true,
