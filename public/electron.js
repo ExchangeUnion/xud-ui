@@ -35,6 +35,18 @@ function createWindow() {
   ipcHandler(mainWindow);
 }
 
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on("second-instance", () => {
+    if (mainWindow) {
+      mainWindow.isMinimized() && mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
+
 app.on("ready", createWindow);
 
 app.on("window-all-closed", () => {
