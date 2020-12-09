@@ -7,6 +7,7 @@ const isDev = require("electron-is-dev");
 const { ipcHandler, execCommand } = require("./ipc");
 const { combineLatest } = require("rxjs");
 const { take } = require("rxjs/operators");
+const log = require("electron-log");
 
 let mainWindow, tray;
 
@@ -38,6 +39,7 @@ function createWindow() {
   mainWindow.on("minimize", (e) => {
     e.preventDefault();
     mainWindow.hide();
+    tray.setContextMenu(trayMenuWithShow);
   });
 
   mainWindow.on("close", (e) => {
@@ -88,14 +90,21 @@ app
   .then(() => {
     tray = new Tray(path.join(__dirname, "./assets/512x512.png"));
     tray.setContextMenu(trayMenuWithHide);
+    tray.on("double-click", () => {
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+      } else {
+        mainWindow.show();
+      }
+    });
   })
   .catch((e) => {
-    console.log(e);
+    log.error(e);
   });
 
 app.on("ready", createWindow);
 
-app.on("window-all-closed", () => {
+app.on("will-quit", () => {
   combineLatest([
     execCommand("docker stop mainnet_xud_1"),
     execCommand("docker stop mainnet_connext_1"),
