@@ -36,10 +36,8 @@ const AVAILABLE_COMMANDS = {
   modify_docker_settings: "settings modify",
   wsl_version: "wsl --set-default-version 2",
   start_docker: `"${WINDOWS_DOCKER_EXECUTABLE_PATH}"`,
-  gen_xud_docker: `${LAUNCHER} -n mainnet gen`,
   stop_xud_docker: `${LAUNCHER} down`,
-  start_xud_docker: `${LAUNCHER} -n mainnet up -- -d`,
-  setup_xud_docker: `${LAUNCHER} setup`
+  setup_xud_docker: `${LAUNCHER} setup`,
 };
 
 const execCommand = (cmd) => {
@@ -90,16 +88,20 @@ const ipcHandler = (mainWindow) => {
     if (command) {
       execCommand(command).subscribe({
         next: (stdout) => {
-          mainWindow.webContents.send("execute-command", {
-            reqId,
-            output: stdout,
-          });
+          if (!mainWindow.isDestroyed()) {
+            mainWindow.webContents.send("execute-command", {
+              reqId,
+              output: stdout,
+            });
+          }
         },
         error: (error) => {
-          mainWindow.webContents.send("execute-command", {
-            reqId,
-            error,
-          });
+          if (!mainWindow.isDestroyed()) {
+            mainWindow.webContents.send("execute-command", {
+              reqId,
+              error,
+            });
+          }
         },
       });
     } else {

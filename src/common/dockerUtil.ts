@@ -38,8 +38,6 @@ const AVAILABLE_COMMANDS = {
   MODIFY_DOCKER_SETTINGS: "modify_docker_settings",
   WSL_VERSION: "wsl_version",
   START_DOCKER: "start_docker",
-  GEN_XUD_DOCKER: "gen_xud_docker",
-  START_XUD_DOCKER: "start_xud_docker",
   STOP_XUD_DOCKER: "stop_xud_docker",
   SETUP_XUD_DOCKER: "setup_xud_docker",
 };
