@@ -21,9 +21,9 @@ const StartingXud = inject(SETTINGS_STORE)(
     const history = useHistory();
 
     useEffect(() => {
-      const fakeLoading$ = interval(5000);
-      const fakeLoadingSub = fakeLoading$.pipe(take(1)).subscribe(() => {
-        setProgress((oldProgress) => oldProgress + 1);
+      const fakeLoading$ = interval(1000);
+      const fakeLoadingSub = fakeLoading$.subscribe(() => {
+        setProgress((oldProgress) => Math.min(100, oldProgress + 1));
       });
 
       return () => {
@@ -32,14 +32,12 @@ const StartingXud = inject(SETTINGS_STORE)(
     }, []);
 
     useEffect(() => {
-      const windowBeforeUnloadHandler = (e: Event) => (e.returnValue = false);
       const apiResponsive$ = interval(1000).pipe(
         mergeMap(() => api.setupStatus$(settingsStore!.xudDockerUrl)),
         catchError((e, caught) => caught),
         take(1)
       );
 
-      window.addEventListener("beforeunload", windowBeforeUnloadHandler);
       startXudDocker$()
         .pipe(
           takeUntil(apiResponsive$),
@@ -48,20 +46,12 @@ const StartingXud = inject(SETTINGS_STORE)(
               "Failed to start xud-docker. Retrying in 1 second",
               e
             );
-            window.removeEventListener(
-              "beforeunload",
-              windowBeforeUnloadHandler
-            );
             return timer(1000).pipe(mergeMap(() => caught));
           })
         )
         .subscribe({
           next: (output) => console.log("xud-docker has been started", output),
           complete: () => {
-            window.removeEventListener(
-              "beforeunload",
-              windowBeforeUnloadHandler
-            );
             history.push(Path.DASHBOARD);
           },
         });
