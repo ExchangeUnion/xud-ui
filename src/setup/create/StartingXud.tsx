@@ -1,4 +1,4 @@
-import { Grid, LinearProgress, Typography } from "@material-ui/core";
+import { Grid, Grow, LinearProgress, Typography } from "@material-ui/core";
 import { inject, observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -18,6 +18,7 @@ type StartingXudProps = WithStores;
 const StartingXud = inject(SETTINGS_STORE)(
   observer(({ settingsStore }: StartingXudProps) => {
     const [progress, setProgress] = useState(0);
+    const [showContent, setShowContent] = useState(true);
     const history = useHistory();
 
     useEffect(() => {
@@ -52,30 +53,39 @@ const StartingXud = inject(SETTINGS_STORE)(
         .subscribe({
           next: (output) => console.log("xud-docker has been started", output),
           complete: () => {
-            history.push(Path.DASHBOARD);
+            setProgress(100);
+            setTimeout(() => setShowContent(false), 500);
+            setTimeout(() => history.push(Path.DASHBOARD), 1000);
           },
         });
     }, [settingsStore, history]);
 
     return (
-      <RowsContainer>
-        <Grid
-          item
-          container
-          justify="center"
-          alignItems="center"
-          direction="column"
-        >
-          <XudLogo />
-          <Typography variant="h6" component="h2" align="center">
-            Powering OpenDEX
-          </Typography>
-        </Grid>
-        <Grid>
-          <LinearProgress variant="determinate" value={progress} />
-        </Grid>
-        <LinkToDiscord />
-      </RowsContainer>
+      <Grow
+        in={showContent}
+        timeout={{
+          exit: 500,
+        }}
+      >
+        <RowsContainer>
+          <Grid
+            item
+            container
+            justify="center"
+            alignItems="center"
+            direction="column"
+          >
+            <XudLogo />
+            <Typography variant="h6" component="h2" align="center">
+              Powering OpenDEX
+            </Typography>
+          </Grid>
+          <Grid>
+            <LinearProgress variant="determinate" value={progress} />
+          </Grid>
+          <LinkToDiscord />
+        </RowsContainer>
+      </Grow>
     );
   })
 );
