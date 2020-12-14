@@ -7,10 +7,12 @@ on:
 
 jobs:
   draft:
-    id: release_drafter
-    uses: release-drafter/release-drafter@v5
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: release_drafter
+        uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
     name: Publish for ${{ matrix.os }}
