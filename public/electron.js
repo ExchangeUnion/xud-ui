@@ -13,8 +13,10 @@ let mainWindow, tray;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 900,
     height: 680,
+    minHeight: 680,
+    width: 900,
+    minWidth: 900,
     backgroundColor: "#303030",
     show: false,
     autoHideMenuBar: true,
@@ -129,6 +131,18 @@ app
   .catch((e) => {
     log.error(e);
   });
+
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on("second-instance", () => {
+    if (mainWindow) {
+      mainWindow.isMinimized() && mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
 
 app.on("ready", createWindow);
 
