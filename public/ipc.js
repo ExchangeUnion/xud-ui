@@ -1,4 +1,5 @@
 const { ipcMain } = require("electron");
+const isDev = require("electron-is-dev");
 const { exec } = require("child_process");
 const { Observable } = require("rxjs");
 const os = require("os");
@@ -17,6 +18,10 @@ const DOCKER_SETTINGS_PATH = path.join(
   os.homedir(),
   "AppData/Roaming/Docker/settings.json"
 );
+const LAUNCHER_LOCATION = isDev
+  ? "./assets/xud-launcher.exe"
+  : "../../xud-launcher.exe";
+const LAUNCHER = path.join(__dirname, LAUNCHER_LOCATION);
 
 // List of commands we're allowing the client to execute.
 const AVAILABLE_COMMANDS = {
@@ -30,10 +35,9 @@ const AVAILABLE_COMMANDS = {
   docker_settings: "settings",
   modify_docker_settings: "settings modify",
   wsl_version: "wsl --set-default-version 2",
-  pull_exp: "docker pull exchangeunion/exp",
   start_docker: `"${WINDOWS_DOCKER_EXECUTABLE_PATH}"`,
-  start_xud_docker:
-    "docker run --rm -e PASSWORD=12345678 -e BACKUPDIR=/tmp -e HOSTFS=/ -e HOSTPWD=/root -e HOSTHOME=/root -e DOCKER_SOCK=//var/run/docker.sock -e NETWORK=mainnet -v //var/run/docker.sock:/var/run/docker.sock exchangeunion/exp --proxy.disabled false",
+  stop_xud_docker: `${LAUNCHER} down`,
+  setup_xud_docker: `${LAUNCHER} setup`,
 };
 
 const execCommand = (cmd) => {
@@ -84,16 +88,20 @@ const ipcHandler = (mainWindow) => {
     if (command) {
       execCommand(command).subscribe({
         next: (stdout) => {
-          mainWindow.webContents.send("execute-command", {
-            reqId,
-            output: stdout,
-          });
+          if (!mainWindow.isDestroyed()) {
+            mainWindow.webContents.send("execute-command", {
+              reqId,
+              output: stdout,
+            });
+          }
         },
         error: (error) => {
-          mainWindow.webContents.send("execute-command", {
-            reqId,
-            error,
-          });
+          if (!mainWindow.isDestroyed()) {
+            mainWindow.webContents.send("execute-command", {
+              reqId,
+              error,
+            });
+          }
         },
       });
     } else {
@@ -106,4 +114,8 @@ const ipcHandler = (mainWindow) => {
   });
 };
 
-module.exports = { ipcHandler, execCommand };
+module.exports = {
+  ipcHandler,
+  execCommand,
+  AVAILABLE_COMMANDS,
+};

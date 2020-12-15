@@ -1,11 +1,12 @@
-import { Grid, LinearProgress, Typography } from "@material-ui/core";
+import { Grid, Grow, LinearProgress, Typography } from "@material-ui/core";
 import { inject, observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { interval, timer } from "rxjs";
 import { catchError, mergeMap, take, takeUntil } from "rxjs/operators";
 import api from "../../api";
-import { pullExp$, startXudDocker$ } from "../../common/dockerUtil";
+import { startXudDocker$ } from "../../common/dockerUtil";
+import { XUD_DOCKER_LOCAL_MAINNET_URL } from "../../constants";
 import { Path } from "../../router/Path";
 import { SETTINGS_STORE } from "../../stores/settingsStore";
 import { WithStores } from "../../stores/WithStores";
@@ -18,12 +19,13 @@ type StartingXudProps = WithStores;
 const StartingXud = inject(SETTINGS_STORE)(
   observer(({ settingsStore }: StartingXudProps) => {
     const [progress, setProgress] = useState(0);
+    const [showContent, setShowContent] = useState(true);
     const history = useHistory();
 
     useEffect(() => {
-      const fakeLoading$ = interval(5000);
-      const fakeLoadingSub = fakeLoading$.pipe(take(1)).subscribe(() => {
-        setProgress((oldProgress) => oldProgress + 1);
+      const fakeLoading$ = interval(1000);
+      const fakeLoadingSub = fakeLoading$.subscribe(() => {
+        setProgress((oldProgress) => Math.min(100, oldProgress + 1));
       });
 
       return () => {
@@ -32,17 +34,15 @@ const StartingXud = inject(SETTINGS_STORE)(
     }, []);
 
     useEffect(() => {
+      settingsStore!.setXudDockerUrl(XUD_DOCKER_LOCAL_MAINNET_URL);
       const apiResponsive$ = interval(1000).pipe(
         mergeMap(() => api.setupStatus$(settingsStore!.xudDockerUrl)),
         catchError((e, caught) => caught),
         take(1)
       );
-      apiResponsive$.subscribe(() => {
-        history.push(Path.DASHBOARD);
-      });
-      pullExp$()
+
+      startXudDocker$()
         .pipe(
-          mergeMap(() => startXudDocker$()),
           takeUntil(apiResponsive$),
           catchError((e, caught) => {
             console.error(
@@ -52,30 +52,42 @@ const StartingXud = inject(SETTINGS_STORE)(
             return timer(1000).pipe(mergeMap(() => caught));
           })
         )
-        .subscribe((output) => {
-          console.log("Containers have been started", output);
+        .subscribe({
+          next: (output) => console.log("xud-docker has been started", output),
+          complete: () => {
+            setProgress(100);
+            setTimeout(() => setShowContent(false), 500);
+            setTimeout(() => history.push(Path.DASHBOARD), 1000);
+          },
         });
     }, [settingsStore, history]);
 
     return (
-      <RowsContainer>
-        <Grid
-          item
-          container
-          justify="center"
-          alignItems="center"
-          direction="column"
-        >
-          <XudLogo />
-          <Typography variant="h6" component="h2" align="center">
-            Powering OpenDEX
-          </Typography>
-        </Grid>
-        <Grid>
-          <LinearProgress variant="determinate" value={progress} />
-        </Grid>
-        <LinkToDiscord />
-      </RowsContainer>
+      <Grow
+        in={showContent}
+        timeout={{
+          exit: 500,
+        }}
+      >
+        <RowsContainer>
+          <Grid
+            item
+            container
+            justify="center"
+            alignItems="center"
+            direction="column"
+          >
+            <XudLogo />
+            <Typography variant="h6" component="h2" align="center">
+              Powering OpenDEX
+            </Typography>
+          </Grid>
+          <Grid>
+            <LinearProgress variant="determinate" value={progress} />
+          </Grid>
+          <LinkToDiscord />
+        </RowsContainer>
+      </Grow>
     );
   })
 );

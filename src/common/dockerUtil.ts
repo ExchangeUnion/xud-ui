@@ -1,6 +1,7 @@
 import { Observable, of } from "rxjs";
 import { catchError, map, take } from "rxjs/operators";
 import { v4 as uuidv4 } from "uuid";
+import { Network } from "../enums";
 
 const execCommand$ = (command: string): Observable<string> => {
   return new Observable((subscriber) => {
@@ -36,9 +37,9 @@ const AVAILABLE_COMMANDS = {
   SETTINGS: "docker_settings",
   MODIFY_DOCKER_SETTINGS: "modify_docker_settings",
   WSL_VERSION: "wsl_version",
-  PULL_EXP: "pull_exp",
   START_DOCKER: "start_docker",
-  START_XUD_DOCKER: "start_xud_docker",
+  STOP_XUD_DOCKER: "stop_xud_docker",
+  SETUP_XUD_DOCKER: "setup_xud_docker",
 };
 
 const isDockerInstalled$ = (): Observable<boolean> => {
@@ -238,21 +239,8 @@ const isWSL2$ = (): Observable<boolean> => {
   );
 };
 
-const pullExp$ = (): Observable<boolean> => {
-  return execCommand$(AVAILABLE_COMMANDS.PULL_EXP).pipe(
-    map((output) => {
-      console.log("output for pull exp", output);
-      return true;
-    }),
-    catchError((e: any) => {
-      console.error("Error pulling exp image:", e);
-      return of(false);
-    })
-  );
-};
-
 const startXudDocker$ = (): Observable<boolean> => {
-  return execCommand$(AVAILABLE_COMMANDS.START_XUD_DOCKER).pipe(
+  return execCommand$(AVAILABLE_COMMANDS.SETUP_XUD_DOCKER).pipe(
     map((output) => {
       console.log("output for start xud-docker", output);
       return true;
@@ -262,6 +250,10 @@ const startXudDocker$ = (): Observable<boolean> => {
       return of(false);
     })
   );
+};
+
+const isXudDockerEnvCreated = (network: Network): boolean => {
+  return (window as any).electron.xudDockerEnvExists(network);
 };
 
 export {
@@ -277,7 +269,7 @@ export {
   isWSL2$,
   dockerSettings$,
   modifyDockerSettings$,
-  pullExp$,
-  startXudDocker$,
   startDocker$,
+  startXudDocker$,
+  isXudDockerEnvCreated,
 };

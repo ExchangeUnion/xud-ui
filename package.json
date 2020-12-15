@@ -13,12 +13,18 @@
       "icon": "public/assets/512x512.png"
     },
     "win": {
-      "icon": "public/assets/512x512.png"
+      "icon": "public/assets/512x512.png",
+      "extraResources": [
+        {
+          "from": "public/assets/xud-launcher.exe",
+          "to": "./xud-launcher.exe"
+        }
+      ]
     }
   },
   "main": "public/electron.js",
   "homepage": "./",
-  "version": "1.2.0-beta.1",
+  "version": "1.2.0-alpha.11",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",

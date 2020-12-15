@@ -4,12 +4,11 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const isDev = require("electron-is-dev");
-const { ipcHandler, execCommand } = require("./ipc");
-const { combineLatest } = require("rxjs");
-const { take } = require("rxjs/operators");
 const log = require("electron-log");
+const { ipcHandler, execCommand, AVAILABLE_COMMANDS } = require("./ipc");
+const { take } = require("rxjs/operators");
 
-let mainWindow, tray;
+let mainWindow, tray, readyToQuit;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -48,16 +47,16 @@ function createWindow() {
 const handleMoveToTrayNotification = () => {
   const notification = {
     title: "XUD UI is still running",
-    body: "Select shutdown here if you want to shutdown your environment"
-  }
+    body: "Select shutdown here if you want to shutdown your environment",
+  };
   new Notification(notification).show();
 };
 
 const handleShutdownNotification = () => {
   const notification = {
     title: "Shutdown",
-    body: "All docker containers will be stopped"
-  }
+    body: "All docker containers will be stopped",
+  };
   new Notification(notification).show();
 };
 
@@ -77,7 +76,7 @@ const handleShutdownActions = () => {
 
 const handleShowActions = () => {
   mainWindow.show();
-  tray.setContextMenu(trayMenuWithHide); 
+  tray.setContextMenu(trayMenuWithHide);
 };
 
 const handleHideActions = () => {
@@ -90,7 +89,7 @@ const shutdownMenuItem = {
   click: () => {
     handleShutdownNotification();
     handleShutdownActions();
-  }
+  },
 };
 
 const trayMenuWithShow = Menu.buildFromTemplate([
@@ -100,7 +99,7 @@ const trayMenuWithShow = Menu.buildFromTemplate([
       handleShowActions();
     },
   },
-  shutdownMenuItem
+  shutdownMenuItem,
 ]);
 
 const trayMenuWithHide = Menu.buildFromTemplate([
@@ -110,7 +109,7 @@ const trayMenuWithHide = Menu.buildFromTemplate([
       handleHideActions();
     },
   },
-  shutdownMenuItem
+  shutdownMenuItem,
 ]);
 
 app
@@ -124,7 +123,7 @@ app
         tray.setContextMenu(trayMenuWithShow);
       } else {
         mainWindow.show();
-        tray.setContextMenu(trayMenuWithHide); 
+        tray.setContextMenu(trayMenuWithHide);
       }
     });
   })
@@ -146,20 +145,23 @@ if (!gotTheLock) {
 
 app.on("ready", createWindow);
 
-app.on("will-quit", () => {
-  combineLatest([
-    execCommand("docker stop mainnet_xud_1"),
-    execCommand("docker stop mainnet_connext_1"),
-    execCommand("docker stop mainnet_lndbtc_1"),
-    execCommand("docker stop mainnet_lndltc_1"),
-    execCommand("docker stop mainnet_utils_1"),
-    execCommand("docker stop mainnet_proxy_1"),
-    execCommand("docker stop mainnet_boltz_1"),
-  ])
-    .pipe(take(1))
-    .subscribe(() => {});
-  if (process.platform !== "darwin") {
+app.on("will-quit", (e) => {
+  const quitApp = () => {
+    readyToQuit = true;
     app.quit();
+  };
+  if (process.platform === "win32" && !readyToQuit) {
+    e.preventDefault();
+    execCommand(AVAILABLE_COMMANDS.stop_xud_docker)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {},
+        error: (err) => {
+          log.error("failed to stop containers.", err);
+          quitApp();
+        },
+        complete: () => quitApp(),
+      });
   }
 });
 
