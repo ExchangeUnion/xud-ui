@@ -5,16 +5,6 @@ on:
     tags:
       - "v*"
 
-jobs:
-  draft:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: release-drafter/release-drafter@v5
-        with:
-          config-name: release-drafter.yml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   publish:
     name: Publish for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
