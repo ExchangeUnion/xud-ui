@@ -1,4 +1,5 @@
 const electron = require("electron");
+const { Menu, Tray, Notification } = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
@@ -6,8 +7,9 @@ const isDev = require("electron-is-dev");
 const { ipcHandler, execCommand } = require("./ipc");
 const { combineLatest } = require("rxjs");
 const { take } = require("rxjs/operators");
+const log = require("electron-log");
 
-let mainWindow;
+let mainWindow, tray;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -35,7 +37,100 @@ function createWindow() {
     mainWindow.show();
   });
   ipcHandler(mainWindow);
+
+  mainWindow.on("close", (e) => {
+    if (!app.isQuiting) {
+      handleMainWindowHideActions(e);
+    }
+  });
 }
+
+const handleMoveToTrayNotification = () => {
+  const notification = {
+    title: "XUD UI is still running",
+    body: "Select shutdown here if you want to shutdown your environment"
+  }
+  new Notification(notification).show();
+};
+
+const handleShutdownNotification = () => {
+  const notification = {
+    title: "Shutdown",
+    body: "All docker containers will be stopped"
+  }
+  new Notification(notification).show();
+};
+
+const handleMainWindowHideActions = (e) => {
+  e.preventDefault();
+  mainWindow.hide();
+  tray.setContextMenu(trayMenuWithShow);
+  handleMoveToTrayNotification();
+};
+
+const handleShutdownActions = () => {
+  setTimeout(() => {
+    app.isQuiting = true;
+    app.quit();
+  }, 1000);
+};
+
+const handleShowActions = () => {
+  mainWindow.show();
+  tray.setContextMenu(trayMenuWithHide); 
+};
+
+const handleHideActions = () => {
+  mainWindow.hide();
+  tray.setContextMenu(trayMenuWithShow);
+};
+
+const shutdownMenuItem = {
+  label: "Shutdown",
+  click: () => {
+    handleShutdownNotification();
+    handleShutdownActions();
+  }
+};
+
+const trayMenuWithShow = Menu.buildFromTemplate([
+  {
+    label: "Show",
+    click: () => {
+      handleShowActions();
+    },
+  },
+  shutdownMenuItem
+]);
+
+const trayMenuWithHide = Menu.buildFromTemplate([
+  {
+    label: "Hide",
+    click: () => {
+      handleHideActions();
+    },
+  },
+  shutdownMenuItem
+]);
+
+app
+  .whenReady()
+  .then(() => {
+    tray = new Tray(path.join(__dirname, "./assets/512x512.png"));
+    tray.setContextMenu(trayMenuWithHide);
+    tray.on("double-click", () => {
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+        tray.setContextMenu(trayMenuWithShow);
+      } else {
+        mainWindow.show();
+        tray.setContextMenu(trayMenuWithHide); 
+      }
+    });
+  })
+  .catch((e) => {
+    log.error(e);
+  });
 
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
@@ -51,7 +146,7 @@ if (!gotTheLock) {
 
 app.on("ready", createWindow);
 
-app.on("window-all-closed", () => {
+app.on("will-quit", () => {
   combineLatest([
     execCommand("docker stop mainnet_xud_1"),
     execCommand("docker stop mainnet_connext_1"),
@@ -82,3 +177,7 @@ app.on(
     callback(true);
   }
 );
+
+app.on("before-quit", () => {
+  app.isQuiting = true;
+});
