@@ -8,7 +8,7 @@ const log = require("electron-log");
 const { ipcHandler, execCommand, AVAILABLE_COMMANDS } = require("./ipc");
 const { take } = require("rxjs/operators");
 
-let mainWindow, tray;
+let mainWindow, tray, readyToQuit;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -145,20 +145,23 @@ if (!gotTheLock) {
 
 app.on("ready", createWindow);
 
-app.on("will-quit", () => {
-  if (process.platform === "win32") {
+app.on("will-quit", (e) => {
+  const quitApp = () => {
+    readyToQuit = true;
+    app.quit();
+  };
+  if (process.platform === "win32" && !readyToQuit) {
+    e.preventDefault();
     execCommand(AVAILABLE_COMMANDS.stop_xud_docker)
       .pipe(take(1))
       .subscribe({
         next: () => {},
         error: (err) => {
           log.error("failed to stop containers.", err);
-          app.quit();
+          quitApp();
         },
-        complete: () => app.quit(),
+        complete: () => quitApp(),
       });
-  } else if (process.platform !== "darwin") {
-    app.quit();
   }
 });
 
