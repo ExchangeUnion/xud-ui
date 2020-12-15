@@ -24,7 +24,7 @@ jobs:
           - os: ubuntu-latest
             artifact_name: xud-ui-*.AppImage
           - os: windows-latest
-            artifact_name: xud-ui-*.exe
+            artifact_name: xud-ui*.exe
           - os: macos-latest
             artifact_name: xud-ui-*.dmg
 
