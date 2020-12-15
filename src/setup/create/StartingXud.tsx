@@ -6,6 +6,7 @@ import { interval, timer } from "rxjs";
 import { catchError, mergeMap, take, takeUntil } from "rxjs/operators";
 import api from "../../api";
 import { startXudDocker$ } from "../../common/dockerUtil";
+import { XUD_DOCKER_LOCAL_MAINNET_URL } from "../../constants";
 import { Path } from "../../router/Path";
 import { SETTINGS_STORE } from "../../stores/settingsStore";
 import { WithStores } from "../../stores/WithStores";
@@ -33,6 +34,7 @@ const StartingXud = inject(SETTINGS_STORE)(
     }, []);
 
     useEffect(() => {
+      settingsStore!.setXudDockerUrl(XUD_DOCKER_LOCAL_MAINNET_URL);
       const apiResponsive$ = interval(1000).pipe(
         mergeMap(() => api.setupStatus$(settingsStore!.xudDockerUrl)),
         catchError((e, caught) => caught),
