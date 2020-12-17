@@ -2,6 +2,7 @@ import { Observable, of } from "rxjs";
 import { catchError, map, take } from "rxjs/operators";
 import { v4 as uuidv4 } from "uuid";
 import { Network } from "../enums";
+import { logError, logInfo } from "./appUtil";
 
 const execCommand$ = (command: string): Observable<string> => {
   return new Observable((subscriber) => {
@@ -58,7 +59,7 @@ const isDockerInstalled$ = (): Observable<boolean> => {
       ) {
         return of(false);
       }
-      console.error("Error checking Docker installed status:", e);
+      logError("Error checking Docker installed status:", e);
       return of(false);
     })
   );
@@ -80,35 +81,35 @@ const isDockerRunning$ = (): Observable<boolean> => {
       ) {
         return of(false);
       }
-      console.error("Error checking Docker running status:", e);
+      logError("Error checking Docker running status:", e);
       return of(false);
     })
   );
 };
 
 const downloadDocker$ = (): Observable<boolean> => {
-  console.log("starting docker download");
+  logInfo("starting docker download");
   return execCommand$(AVAILABLE_COMMANDS.DOWNLOAD).pipe(
     map((output) => {
-      console.log("output from downloadDocker$", output);
+      logInfo("output from downloadDocker$", output);
       return true;
     }),
     catchError((e: any) => {
-      console.error("Error downloading Docker:", e);
+      logError("Error downloading Docker:", e);
       return of(false);
     })
   );
 };
 
 const installDocker$ = (): Observable<boolean> => {
-  console.log("starting docker install");
+  logInfo("starting docker install");
   return execCommand$(AVAILABLE_COMMANDS.INSTALL).pipe(
     map((output) => {
-      console.log("output from installDocker$", output);
+      logInfo("output from installDocker$", output);
       return true;
     }),
     catchError((e: any) => {
-      console.error("Error installing Docker:", e);
+      logError("Error installing Docker:", e);
       return of(false);
     }),
     take(1)
@@ -116,14 +117,14 @@ const installDocker$ = (): Observable<boolean> => {
 };
 
 const startDocker$ = (): Observable<boolean> => {
-  console.log("starting docker");
+  logInfo("starting docker");
   return execCommand$(AVAILABLE_COMMANDS.START_DOCKER).pipe(
     map((output) => {
-      console.log("output from startDocker$", output);
+      logInfo("output from startDocker$", output);
       return true;
     }),
     catchError((e: any) => {
-      console.error("Error starting Docker:", e);
+      logError("Error starting Docker:", e);
       return of(false);
     }),
     take(1)
@@ -133,7 +134,7 @@ const startDocker$ = (): Observable<boolean> => {
 const dockerDownloadStatus$ = (): Observable<number> => {
   return execCommand$(AVAILABLE_COMMANDS.DOWNLOAD_STATUS).pipe(
     map((output) => {
-      console.log("output from isDockerDownloaded$", output);
+      logInfo("output from isDockerDownloaded$", output);
       const isDownloaded = output.includes("docker-installer.exe");
       if (isDownloaded) {
         return 100;
@@ -144,7 +145,7 @@ const dockerDownloadStatus$ = (): Observable<number> => {
       if (e.message?.includes("Command failed: dir | findstr /R")) {
         return of(0);
       }
-      console.error("Error checking if Docker is downloaded:", e);
+      logError("Error checking if Docker is downloaded:", e);
       return of(0);
     })
   );
@@ -179,7 +180,7 @@ const rebootRequired$ = (): Observable<boolean> => {
 const windowsVersion$ = (): Observable<number> => {
   return execCommand$(AVAILABLE_COMMANDS.WINDOWS_VERSION).pipe(
     map((output) => {
-      console.log("version output", output);
+      logInfo("version output", output);
       // We parse the output of "ver" command and determine if
       // the next-to-last numeric group version 18917 or higher?
       // 1. LOWER => WSL1
@@ -191,7 +192,7 @@ const windowsVersion$ = (): Observable<number> => {
       return parseInt(versionString[0].split(".")[2]);
     }),
     catchError((e: any) => {
-      console.error("Error detecting Windows version:", e);
+      logError("Error detecting Windows version:", e);
       return of(10);
     })
   );
@@ -207,7 +208,7 @@ const dockerSettings$ = (): Observable<DockerSettings> => {
       return (JSON.parse(output) as unknown) as DockerSettings;
     }),
     catchError((e: any) => {
-      console.error("Error detecting Docker settings:", e);
+      logError("Error detecting Docker settings:", e);
       return of({});
     })
   );
@@ -219,7 +220,7 @@ const modifyDockerSettings$ = (): Observable<boolean> => {
       return true;
     }),
     catchError((e: any) => {
-      console.error("Error modifying Docker settings:", e);
+      logError("Error modifying Docker settings:", e);
       return of(false);
     })
   );
@@ -229,11 +230,11 @@ const isWSL2$ = (): Observable<boolean> => {
   return execCommand$(AVAILABLE_COMMANDS.WSL_VERSION).pipe(
     map((output) => {
       const cleanedOutput = output.replace(/[^\w\s]/gi, "").trim();
-      console.log("output for isWSL2", cleanedOutput);
+      logInfo("output for isWSL2", cleanedOutput);
       return !cleanedOutput.includes("requires an update");
     }),
     catchError((e: any) => {
-      console.error("Error detecting WSL version:", e);
+      logError("Error detecting WSL version:", e);
       return of(false);
     })
   );
@@ -242,12 +243,8 @@ const isWSL2$ = (): Observable<boolean> => {
 const startXudDocker$ = (): Observable<boolean> => {
   return execCommand$(AVAILABLE_COMMANDS.SETUP_XUD_DOCKER).pipe(
     map((output) => {
-      console.log("output for start xud-docker", output);
+      logInfo("output for start xud-docker", output);
       return true;
-    }),
-    catchError((e: any) => {
-      console.error("Error starting xud-docker:", e);
-      return of(false);
     })
   );
 };

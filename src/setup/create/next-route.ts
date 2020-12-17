@@ -1,5 +1,6 @@
 import { combineLatest, Observable } from "rxjs";
 import { map, take } from "rxjs/operators";
+import { logInfo } from "../../common/appUtil";
 import { DockerSettings } from "../../common/dockerUtil";
 import { Path } from "../../router/Path";
 
@@ -32,15 +33,15 @@ const getNextRoute = (
         isWSL2,
         dockerSettings,
       ]) => {
-        console.log("isInstalled", isInstalled);
-        console.log("isRunning", isRunning);
-        console.log("isDownloaded", isDownloaded);
-        console.log("rebootRequired", rebootRequired);
-        console.log("isWSL2", isWSL2);
+        logInfo("isInstalled", isInstalled);
+        logInfo("isRunning", isRunning);
+        logInfo("isDownloaded", isDownloaded);
+        logInfo("rebootRequired", rebootRequired);
+        logInfo("isWSL2", isWSL2);
         const { wslEngineEnabled } = dockerSettings as DockerSettings;
-        console.log("wslEngineEnabled", wslEngineEnabled);
+        logInfo("wslEngineEnabled", wslEngineEnabled);
         const dockerSettingsExist = wslEngineEnabled !== undefined;
-        console.log("dockerSettingsExist", dockerSettingsExist);
+        logInfo("dockerSettingsExist", dockerSettingsExist);
         if (rebootRequired) {
           return Path.RESTART_REQUIRED;
         }
