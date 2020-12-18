@@ -42,12 +42,14 @@ function createWindow() {
       handleMainWindowHideActions(e);
     }
   });
+  mainWindow.on("minimize", () => tray.setContextMenu(trayMenuWithShow));
+  mainWindow.on("show", () => tray.setContextMenu(trayMenuWithHide));
 }
 
 const handleMoveToTrayNotification = () => {
   const notification = {
     title: "XUD UI is still running",
-    body: "Select shutdown here if you want to shutdown your environment",
+    body: "Select shutdown here if you want to shutdown your local environment",
   };
   new Notification(notification).show();
 };
@@ -55,15 +57,14 @@ const handleMoveToTrayNotification = () => {
 const handleShutdownNotification = () => {
   const notification = {
     title: "Shutdown",
-    body: "All docker containers will be stopped",
+    body: "All locally running xud-docker containers will be stopped",
   };
   new Notification(notification).show();
 };
 
 const handleMainWindowHideActions = (e) => {
   e.preventDefault();
-  mainWindow.hide();
-  tray.setContextMenu(trayMenuWithShow);
+  handleHideActions();
   handleMoveToTrayNotification();
 };
 
@@ -76,7 +77,6 @@ const handleShutdownActions = () => {
 
 const handleShowActions = () => {
   mainWindow.show();
-  tray.setContextMenu(trayMenuWithHide);
 };
 
 const handleHideActions = () => {
@@ -119,11 +119,9 @@ app
     tray.setContextMenu(trayMenuWithHide);
     tray.on("double-click", () => {
       if (mainWindow.isVisible()) {
-        mainWindow.hide();
-        tray.setContextMenu(trayMenuWithShow);
+        handleHideActions();
       } else {
-        mainWindow.show();
-        tray.setContextMenu(trayMenuWithHide);
+        handleShowActions();
       }
     });
   })
@@ -137,8 +135,7 @@ if (!gotTheLock) {
 } else {
   app.on("second-instance", () => {
     if (mainWindow) {
-      mainWindow.isMinimized() && mainWindow.restore();
-      mainWindow.focus();
+      handleShowActions();
     }
   });
 }
@@ -166,9 +163,7 @@ app.on("will-quit", (e) => {
 });
 
 app.on("activate", () => {
-  if (mainWindow === null) {
-    createWindow();
-  }
+  mainWindow ? mainWindow.show() : createWindow();
 });
 
 // SSL/TSL: self signed certificate support
