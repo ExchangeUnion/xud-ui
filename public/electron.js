@@ -163,9 +163,7 @@ app.on("will-quit", (e) => {
 });
 
 app.on("activate", () => {
-  if (mainWindow === null) {
-    createWindow();
-  }
+  mainWindow ? mainWindow.show() : createWindow();
 });
 
 // SSL/TSL: self signed certificate support
