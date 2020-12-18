@@ -12,7 +12,7 @@ export const handleEvent = (event: MessageEvent, history: History): void => {
   }
 
   if (data.startsWith("connectionFailed")) {
-    history.push(Path.HOME);
+    history.push(Path.CONNECTION_LOST);
     return;
   }
 

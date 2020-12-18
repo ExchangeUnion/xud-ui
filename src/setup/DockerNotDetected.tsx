@@ -15,6 +15,7 @@ import { Link as RouterLink, useHistory } from "react-router-dom";
 import { timer } from "rxjs";
 import { delay, mergeMap, retryWhen } from "rxjs/operators";
 import api from "../api";
+import { isWindows } from "../common/appUtil";
 import { Path } from "../router/Path";
 import { DOCKER_STORE } from "../stores/dockerStore";
 import { SETTINGS_STORE } from "../stores/settingsStore";
@@ -28,6 +29,9 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     spinnerContainer: {
       padding: theme.spacing(8),
+    },
+    titleContainer: {
+      padding: theme.spacing(2),
     },
   })
 );
@@ -66,18 +70,28 @@ const DockerNotDetected = inject(
             justify="center"
             wrap="nowrap"
             spacing={2}
+            className={classes.titleContainer}
           >
             <Grid item>
               <ReportProblemOutlinedIcon fontSize="large" />
             </Grid>
             <Grid item>
-              <Typography variant="h4" component="h1">
-                {connectionFailed
+              <Typography variant="h4" component="h1" align="center">
+                {isWindows()
+                  ? "Connection to XUD Docker lost"
+                  : connectionFailed
                   ? "Unable to connect to XUD Docker"
                   : "Waiting for XUD Docker"}
               </Typography>
             </Grid>
           </Grid>
+          {isWindows() && (
+            <Grid item container alignItems="center" justify="center">
+              <Typography variant="body1" align="center">
+                Trying to reconnect. Please check your environment.
+              </Typography>
+            </Grid>
+          )}
           {!connectionFailed && (
             <Grid
               container
@@ -91,16 +105,16 @@ const DockerNotDetected = inject(
           <Grid container item alignItems="center" justify="center">
             <Button
               component={RouterLink}
-              to={Path.CONNECT_TO_REMOTE}
+              to={isWindows() ? Path.HOME : Path.CONNECT_TO_REMOTE}
               variant="outlined"
               endIcon={<ArrowForwardIcon />}
             >
-              Connect remote XUD Docker
+              {isWindows() ? "Go To Start Page" : "Connect remote XUD Docker"}
             </Button>
           </Grid>
         </Grid>
         <Grid container item alignItems="center">
-          <LinkToSetupGuide />
+          {!isWindows() && <LinkToSetupGuide />}
         </Grid>
       </RowsContainer>
     );

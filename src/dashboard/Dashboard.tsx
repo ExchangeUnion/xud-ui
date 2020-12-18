@@ -30,7 +30,7 @@ const Dashboard = inject(SETTINGS_STORE)(
       useEffect(() => {
         api.statusByService$("proxy", settingsStore!.xudDockerUrl).subscribe({
           next: () => {},
-          error: () => history.push(Path.HOME),
+          error: () => history.push(Path.CONNECTION_LOST),
         });
         const messageListenerHandler = (event: MessageEvent) => {
           if (event.origin === settingsStore!.xudDockerUrl) {

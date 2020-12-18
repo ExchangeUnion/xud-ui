@@ -1,5 +1,6 @@
 export enum Path {
   CONNECT_TO_REMOTE = "/connect_remote",
+  CONNECTION_LOST = "/connection_lost",
   DASHBOARD = "/dashboard",
   DOWNLOAD_DOCKER = "/download_docker",
   HOME = "/",

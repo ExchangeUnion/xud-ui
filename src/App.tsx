@@ -101,6 +101,9 @@ function App(): ReactElement {
             <Route path={Path.INCOMPATIBLE_WSL_SETTINGS}>
               <IncorrectWslSettings />
             </Route>
+            <Route path={Path.CONNECTION_LOST}>
+              <DockerNotDetected />
+            </Route>
             <Route path={Path.HOME}>
               {isWindows() ? <Landing /> : <DockerNotDetected />}
             </Route>
