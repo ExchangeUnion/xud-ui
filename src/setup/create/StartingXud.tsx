@@ -1,10 +1,17 @@
-import { Grid, Grow, LinearProgress, Typography } from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  Grow,
+  LinearProgress,
+  Typography,
+} from "@material-ui/core";
 import { inject, observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { interval, timer } from "rxjs";
+import { interval } from "rxjs";
 import { catchError, mergeMap, take, takeUntil } from "rxjs/operators";
 import api from "../../api";
+import { logError, logInfo } from "../../common/appUtil";
 import { startXudDocker$ } from "../../common/dockerUtil";
 import { XUD_DOCKER_LOCAL_MAINNET_URL } from "../../constants";
 import { Path } from "../../router/Path";
@@ -20,6 +27,7 @@ const StartingXud = inject(SETTINGS_STORE)(
   observer(({ settingsStore }: StartingXudProps) => {
     const [progress, setProgress] = useState(0);
     const [showContent, setShowContent] = useState(true);
+    const [error, setError] = useState("");
     const history = useHistory();
 
     useEffect(() => {
@@ -42,18 +50,21 @@ const StartingXud = inject(SETTINGS_STORE)(
       );
 
       startXudDocker$()
-        .pipe(
-          takeUntil(apiResponsive$),
-          catchError((e, caught) => {
-            console.error(
-              "Failed to start xud-docker. Retrying in 1 second",
-              e
-            );
-            return timer(1000).pipe(mergeMap(() => caught));
-          })
-        )
+        .pipe(takeUntil(apiResponsive$))
         .subscribe({
-          next: (output) => console.log("xud-docker has been started", output),
+          next: () => logInfo("xud-docker has been started"),
+          error: (err) => {
+            logError(`Error starting xud-docker: ${err}`);
+            let errorMsg;
+            if (typeof err === "string") {
+              const indexOfError = err.indexOf("ERROR");
+              errorMsg =
+                indexOfError > -1 ? err.substring(indexOfError) : undefined;
+            }
+            setError(
+              errorMsg || "Please check the application logs for error details"
+            );
+          },
           complete: () => {
             setProgress(100);
             setTimeout(() => setShowContent(false), 500);
@@ -62,7 +73,7 @@ const StartingXud = inject(SETTINGS_STORE)(
         });
     }, [settingsStore, history]);
 
-    return (
+    return !error ? (
       <Grow
         in={showContent}
         timeout={{
@@ -88,6 +99,34 @@ const StartingXud = inject(SETTINGS_STORE)(
           <LinkToDiscord />
         </RowsContainer>
       </Grow>
+    ) : (
+      <RowsContainer>
+        <Grid
+          item
+          container
+          justify="center"
+          alignItems="center"
+          direction="column"
+        >
+          <Typography variant="body1" color="error">
+            Error starting xud-docker
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            {error}
+          </Typography>
+        </Grid>
+        <Grid item container justify="center">
+          <Button
+            color="primary"
+            variant="contained"
+            disableElevation
+            onClick={() => history.push(Path.START_ENVIRONMENT)}
+          >
+            Retry
+          </Button>
+          <LinkToDiscord />
+        </Grid>
+      </RowsContainer>
     );
   })
 );

@@ -66,6 +66,9 @@ describe("nextStep$", () => {
     testScheduler = new TestScheduler((actual, expected) => {
       expect(actual).toEqual(expected);
     });
+    (window as any).electron = {
+      logInfo: () => {},
+    };
   });
 
   it("directs to download", () => {

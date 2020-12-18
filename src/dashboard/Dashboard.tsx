@@ -2,6 +2,8 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import { inject, observer } from "mobx-react";
 import React, { ReactElement, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import api from "../api";
+import { Path } from "../router/Path";
 import { SETTINGS_STORE } from "../stores/settingsStore";
 import { WithStores } from "../stores/WithStores";
 import { handleEvent } from "./eventHandler";
@@ -26,6 +28,10 @@ const Dashboard = inject(SETTINGS_STORE)(
       const { settingsStore } = props;
 
       useEffect(() => {
+        api.statusByService$("proxy", settingsStore!.xudDockerUrl).subscribe({
+          next: () => {},
+          error: () => history.push(Path.CONNECTION_LOST),
+        });
         const messageListenerHandler = (event: MessageEvent) => {
           if (event.origin === settingsStore!.xudDockerUrl) {
             handleEvent(event, history);

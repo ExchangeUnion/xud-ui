@@ -4,6 +4,7 @@ import CheckIcon from "@material-ui/icons/Check";
 import React, { ReactElement, useEffect } from "react";
 import { combineLatest, of } from "rxjs";
 import { mergeMap } from "rxjs/operators";
+import { logInfo } from "../../common/appUtil";
 import {
   DockerSettings,
   dockerSettings$,
@@ -20,10 +21,10 @@ const RestartRequired = (): ReactElement => {
       .pipe(
         mergeMap(([dockerSettings, isWSL2]) => {
           const { wslEngineEnabled } = dockerSettings as DockerSettings;
-          console.log("wslEngineEnabled", wslEngineEnabled);
-          console.log("isWSL2", isWSL2);
+          logInfo("wslEngineEnabled", wslEngineEnabled);
+          logInfo("isWSL2", isWSL2);
           if (wslEngineEnabled && !isWSL2) {
-            console.log(
+            logInfo(
               "TODO: change wslEngineEnabled to false since only WSL 1 is supported"
             );
           }
@@ -31,7 +32,7 @@ const RestartRequired = (): ReactElement => {
         })
       )
       .subscribe((r) => {
-        console.log("settings have been updated", r);
+        logInfo("settings have been updated", r);
       });
   });
   return (
