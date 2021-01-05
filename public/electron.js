@@ -24,6 +24,7 @@ function createWindow() {
       preload: path.join(__dirname, "./preload.js"),
       worldSafeExecuteJavaScript: true,
       contextIsolation: true,
+      enableRemoteModule: true,
     },
   });
   mainWindow.loadURL(

@@ -1,7 +1,9 @@
 import { observable, reaction } from "mobx";
+import { ConnectionType } from "../enums";
 
 export type Settings = {
   xudDockerUrl: string;
+  connectionType?: ConnectionType;
 };
 
 export type SettingsStore = ReturnType<typeof useSettingsStore>;
@@ -17,6 +19,12 @@ export const useSettingsStore = (defaultSettings: Settings) => {
     },
     setXudDockerUrl(url: string): void {
       store.settings.xudDockerUrl = url;
+    },
+    get connectionType(): ConnectionType | undefined {
+      return store.settings.connectionType;
+    },
+    setConnectionType(value: ConnectionType): void {
+      store.settings.connectionType = value;
     },
   });
 

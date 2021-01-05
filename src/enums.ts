@@ -3,3 +3,8 @@ export enum Network {
   TESTNET = "testnet",
   SIMNET = "simnet",
 }
+
+export enum ConnectionType {
+  LOCAL = "local",
+  REMOTE = "remote",
+}

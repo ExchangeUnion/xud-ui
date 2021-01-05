@@ -34,7 +34,7 @@ const Dashboard = inject(SETTINGS_STORE)(
         });
         const messageListenerHandler = (event: MessageEvent) => {
           if (event.origin === settingsStore!.xudDockerUrl) {
-            handleEvent(event, history);
+            handleEvent(event, history, settingsStore!);
           }
         };
         window.addEventListener("message", messageListenerHandler);

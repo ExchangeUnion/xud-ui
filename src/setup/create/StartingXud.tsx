@@ -14,6 +14,7 @@ import api from "../../api";
 import { logError, logInfo } from "../../common/appUtil";
 import { startXudDocker$ } from "../../common/dockerUtil";
 import { XUD_DOCKER_LOCAL_MAINNET_URL } from "../../constants";
+import { ConnectionType } from "../../enums";
 import { Path } from "../../router/Path";
 import { SETTINGS_STORE } from "../../stores/settingsStore";
 import { WithStores } from "../../stores/WithStores";
@@ -67,6 +68,7 @@ const StartingXud = inject(SETTINGS_STORE)(
           },
           complete: () => {
             setProgress(100);
+            settingsStore!.setConnectionType(ConnectionType.LOCAL);
             setTimeout(() => setShowContent(false), 500);
             setTimeout(() => history.push(Path.DASHBOARD), 1000);
           },
