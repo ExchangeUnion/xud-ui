@@ -135,15 +135,16 @@ const ConnectToRemote = inject(SETTINGS_STORE)(
                       color="primary"
                       disabled={connecting}
                       disableElevation
-                      onClick={() =>
+                      onClick={(e) => {
+                        e.preventDefault();
                         handleConnectClick(
                           setConnectionFailed,
                           setConnecting,
                           history,
                           ipAndPort,
                           settingsStore!.setXudDockerUrl
-                        )
-                      }
+                        );
+                      }}
                     >
                       {connectionFailed ? "Retry" : "Connect"}
                     </Button>
