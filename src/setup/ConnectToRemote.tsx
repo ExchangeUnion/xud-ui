@@ -20,6 +20,7 @@ import { Path } from "../router/Path";
 import { SETTINGS_STORE } from "../stores/settingsStore";
 import { WithStores } from "../stores/WithStores";
 import RowsContainer from "./RowsContainer";
+import { ConnectionType } from "../enums";
 
 type ConnectToRemoteProps = WithStores;
 
@@ -141,7 +142,8 @@ const ConnectToRemote = inject(SETTINGS_STORE)(
                           setConnecting,
                           history,
                           ipAndPort,
-                          settingsStore!.setXudDockerUrl
+                          settingsStore!.setXudDockerUrl,
+                          settingsStore!.setConnectionType
                         )
                       }
                     >
@@ -180,7 +182,8 @@ const handleConnectClick = (
   setConnecting: (value: boolean) => void,
   history: History,
   xudDockerUrl: string,
-  setXudDockerUrl: (ip: string) => void
+  setXudDockerUrl: (ip: string) => void,
+  setConnectionType: (type: ConnectionType) => void
 ): void => {
   setConnecting(true);
   api.statusByService$("xud", xudDockerUrl).subscribe({
@@ -188,6 +191,7 @@ const handleConnectClick = (
       setConnectionFailed(false);
       setConnecting(false);
       setXudDockerUrl(xudDockerUrl);
+      setConnectionType(ConnectionType.REMOTE);
       history.push(Path.DASHBOARD);
     },
     error: () => {

@@ -1,8 +1,13 @@
 import { History } from "history";
-import { isWindows } from "../common/appUtil";
+import { isWindows, logError } from "../common/appUtil";
 import { Path } from "../router/Path";
+import { SettingsStore } from "../stores/settingsStore";
 
-export const handleEvent = (event: MessageEvent, history: History): void => {
+export const handleEvent = (
+  event: MessageEvent,
+  history: History,
+  settingsStore: SettingsStore
+): void => {
   const data: string = event.data;
 
   if (data.startsWith("disconnect")) {
@@ -32,5 +37,29 @@ export const handleEvent = (event: MessageEvent, history: History): void => {
   if (data.startsWith("logError")) {
     (window as any).electron.logError(value);
     return;
+  }
+
+  if (data.startsWith("chooseDirectory")) {
+    (window as any).electron
+      .dialog()
+      .showOpenDialog(undefined, {
+        properties: ["openDirectory"],
+      })
+      .then((resp: { canceled: boolean; filePaths: string }) => {
+        if (!resp.canceled) {
+          (event.source as WindowProxy | Window).postMessage(
+            `chooseDirectory: ${resp.filePaths[0]}`,
+            event.origin
+          );
+        }
+      })
+      .catch(logError);
+  }
+
+  if (data.startsWith("getConnectionType")) {
+    (event.source as WindowProxy | Window).postMessage(
+      `connectionType: ${settingsStore.connectionType}`,
+      event.origin
+    );
   }
 };
